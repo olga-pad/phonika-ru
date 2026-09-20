@@ -14,6 +14,37 @@ window.addEventListener('DOMContentLoaded',()=>{
   letterHelp.onclick=()=>{const x=currentLetter();if(!x)return;letterMastery.disabled=true;speak(x[1]);};if(help)help.onclick=()=>{if(!current)return;usedHint=true;wordMastery.disabled=true;speak(current[0],.68);};
   letterPictureBtn.onclick=()=>{const x=currentLetter();if(!x)return;letterMastery.disabled=true;letterPicture.hidden=!letterPicture.hidden;setActionLabels();};wordPictureBtn.onclick=()=>{if(!current)return;usedHint=true;wordMastery.disabled=true;wordPicture.hidden=!wordPicture.hidden;setActionLabels();};
   const REQUIRED_SESSION_READS=3;
+  // Five-success game: the dinosaur moves one step for every independent read.
+  const DINO_GOAL=5;
+  let dinoProgress=0;
+  const readingView=document.getElementById('readingView');
+  const dinoTrack=document.createElement('div');
+  dinoTrack.className='dino-track';
+  dinoTrack.setAttribute('aria-label','Прогресс занятия');
+  dinoTrack.innerHTML='<div class="dino-path"></div><div class="dino-steps"></div><div class="dino">🦕</div><div class="dino-finish">🏁</div>';
+  readingView?.insertBefore(dinoTrack,readingView.querySelector('.stage'));
+  const dinoSteps=dinoTrack.querySelector('.dino-steps');
+  for(let i=0;i<DINO_GOAL;i++){const step=document.createElement('span');step.className='dino-step';dinoSteps.append(step);}
+  const dino=document.querySelector('.dino');
+  const updateDino=()=>{
+    [...dinoSteps.children].forEach((step,i)=>step.classList.toggle('done',i<dinoProgress));
+    const pct=DINO_GOAL?Math.min(100,(dinoProgress/DINO_GOAL)*100):0;
+    dino.style.left=`calc(${pct}% - ${pct/100*34}px)`;
+  };
+  const celebration=document.createElement('section');
+  celebration.className='dino-celebration';
+  celebration.hidden=true;
+  celebration.innerHTML='<div class="fireworks" aria-hidden="true"><span>✨</span><span>🎆</span><span>✨</span><span>🎉</span><span>⭐</span></div><div class="celebration-dino">🦕</div><h1>Ура!</h1><p>Пять слов прочитано!</p><button type="button" class="primary dino-again">Ещё раз</button>';
+  readingView?.insertAdjacentElement('afterend',celebration);
+  const finishDinoGame=()=>{
+    readingView.hidden=true; celebration.hidden=false;
+    if(navigator.vibrate) navigator.vibrate([70,40,70]);
+  };
+  celebration.querySelector('.dino-again')?.addEventListener('click',()=>{
+    dinoProgress=0;updateDino();celebration.hidden=true;readingView.hidden=false;
+    resetLessonGoal('words');showSessionWord();setActionLabels();
+  });
+  updateDino();
   const lessonGoals={words:new Set(),letters:new Set()},lessonSuccesses={words:new Map(),letters:new Map()};
   const resetLessonGoal=(kind)=>{
     const items=kind==='words'?sessionWords:letterSession;
@@ -76,7 +107,11 @@ window.addEventListener('DOMContentLoaded',()=>{
     if(wordMastery.disabled||usedHint||markedThisTurn)return;
     const key=current?.[0];if(!key)return;
     if(typeof baseWordMastery==='function')baseWordMastery.call(wordMastery,event);
-    if(markedThisTurn)markLessonPassed('words',key);
+    if(markedThisTurn){
+      markLessonPassed('words',key);
+      if(dinoProgress<DINO_GOAL){dinoProgress++;updateDino();}
+      if(dinoProgress>=DINO_GOAL)setTimeout(finishDinoGame,320);
+    }
   };
   const baseLetterMastery=letterMastery.onclick;
   letterMastery.onclick=(event)=>{
