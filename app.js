@@ -48,13 +48,17 @@ window.addEventListener('DOMContentLoaded',()=>{
     const next=document.createElement('button');next.type='button';next.className='nav-arrow nav-next';next.setAttribute('aria-label','Следующий');next.innerHTML=icon('right');
     nav.append(prev,next);stage.append(nav);
     const state=()=>({i:kind==='words'?sessionIndex:letterIndex,total:kind==='words'?sessionWords.length:letterSession.length});
-    const refresh=()=>{const {i,total}=state();prev.hidden=i<=0;next.hidden=total<=0;};
+    const refresh=()=>{const {total}=state();prev.hidden=total<=0;next.hidden=total<=0;};
     navRefreshers[kind]=refresh;
-    prev.onclick=()=>{if(kind==='words'){if(sessionIndex<=0)return;sessionIndex--;showSessionWord();}else{if(letterIndex<=0)return;letterIndex--;showLetter();}setActionLabels();refresh();};
+    prev.onclick=()=>{const {total}=state();if(!total)return;if(kind==='words'){sessionIndex=sessionIndex<=0?total-1:sessionIndex-1;showSessionWord();wordMastery.disabled=false;usedHint=false;markedThisTurn=false;}else{letterIndex=letterIndex<=0?total-1:letterIndex-1;showLetter();letterMastery.disabled=false;}setActionLabels();refresh();};
     next.onclick=()=>{
       const {i,total}=state();if(!total)return;
-      if(i>=total-1){completeLesson(kind);return;}
-      if(kind==='words'){sessionIndex++;showSessionWord();wordMastery.disabled=false;usedHint=false;markedThisTurn=false;}else{letterIndex++;showLetter();letterMastery.disabled=false;}
+      if(i>=total-1){
+        if(allLessonItemsMastered(kind)){completeLesson(kind);return;}
+        restartPendingCycle(kind);refresh();return;
+      }
+      if(kind==='words'){sessionIndex++;showSessionWord();wordMastery.disabled=false;usedHint=false;markedThisTurn=false;}
+      else{letterIndex++;showLetter();letterMastery.disabled=false;}
       setActionLabels();refresh();
     };
     refresh();
