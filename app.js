@@ -31,7 +31,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   const restartPendingCycle=(kind)=>{
     const pending=unresolvedLessonItems(kind);
     if(!pending.length)return false;
-    if(kind==='words'){sessionWords=pending;sessionIndex=0;$('finishView').hidden=true;$('readingView').hidden=false;showSessionWord();}
+    if(kind==='words'){sessionWords=pending;sessionIndex=0;$('finishView').hidden=true;$('readingView').hidden=false;showSessionWord();wordMastery.disabled=false;usedHint=false;markedThisTurn=false;}
     else{letterSession=pending;letterIndex=0;$('letterFinishView').hidden=true;$('lettersView').hidden=false;showLetter();}
     setActionLabels();navRefreshers[kind]?.();return true;
   };
@@ -54,7 +54,7 @@ window.addEventListener('DOMContentLoaded',()=>{
     next.onclick=()=>{
       const {i,total}=state();if(!total)return;
       if(i>=total-1){completeLesson(kind);return;}
-      if(kind==='words'){sessionIndex++;showSessionWord();}else{letterIndex++;showLetter();}
+      if(kind==='words'){sessionIndex++;showSessionWord();wordMastery.disabled=false;usedHint=false;markedThisTurn=false;}else{letterIndex++;showLetter();letterMastery.disabled=false;}
       setActionLabels();refresh();
     };
     refresh();
