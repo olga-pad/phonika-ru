@@ -13,7 +13,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   card.onclick=null;word.onclick=null;letterPicture.onclick=null;wordPicture.onclick=null;
   letterHelp.onclick=()=>{const x=currentLetter();if(!x)return;letterMastery.disabled=true;speak(x[1]);};if(help)help.onclick=()=>{if(!current)return;usedHint=true;wordMastery.disabled=true;speak(current[0],.68);};
   letterPictureBtn.onclick=()=>{const x=currentLetter();if(!x)return;letterMastery.disabled=true;letterPicture.hidden=!letterPicture.hidden;setActionLabels();};wordPictureBtn.onclick=()=>{if(!current)return;usedHint=true;wordMastery.disabled=true;wordPicture.hidden=!wordPicture.hidden;setActionLabels();};
-  const lessonGoals={words:new Set(),letters:new Set()},lessonSuccesses={words:new Map(),letters:new Map()},REQUIRED_SESSION_READS=2;
+  const lessonGoals={words:new Set(),letters:new Set()},lessonSuccesses={words:new Map(),letters:new Map()},REQUIRED_SESSION_READS=3;
   const resetLessonGoal=(kind)=>{const items=kind==='words'?sessionWords:letterSession;lessonGoals[kind]=new Set(items.slice(0,kind==='words'?wordSessionSize:letterSessionSize));lessonSuccesses[kind]=new Map([...lessonGoals[kind]].map(key=>[key,0]));};
   const markLessonPassed=(kind,key)=>{if(lessonGoals[kind].has(key))lessonSuccesses[kind].set(key,Math.min(REQUIRED_SESSION_READS,(lessonSuccesses[kind].get(key)||0)+1));};
   const unresolvedLessonItems=(kind)=>[...lessonGoals[kind]].filter(x=>(lessonSuccesses[kind].get(x)||0)<REQUIRED_SESSION_READS);
