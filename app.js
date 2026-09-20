@@ -13,17 +13,73 @@ window.addEventListener('DOMContentLoaded',()=>{
   card.onclick=null;word.onclick=null;letterPicture.onclick=null;wordPicture.onclick=null;
   letterHelp.onclick=()=>{const x=currentLetter();if(!x)return;letterMastery.disabled=true;speak(x[1]);};if(help)help.onclick=()=>{if(!current)return;usedHint=true;wordMastery.disabled=true;speak(current[0],.68);};
   letterPictureBtn.onclick=()=>{const x=currentLetter();if(!x)return;letterMastery.disabled=true;letterPicture.hidden=!letterPicture.hidden;setActionLabels();};wordPictureBtn.onclick=()=>{if(!current)return;usedHint=true;wordMastery.disabled=true;wordPicture.hidden=!wordPicture.hidden;setActionLabels();};
-  const lessonGoals={words:new Set(),letters:new Set()},lessonSuccesses={words:new Map(),letters:new Map()},REQUIRED_SESSION_READS=3;
-  const resetLessonGoal=(kind)=>{const items=kind==='words'?sessionWords:letterSession;lessonGoals[kind]=new Set(items.slice(0,kind==='words'?wordSessionSize:letterSessionSize));lessonSuccesses[kind]=new Map([...lessonGoals[kind]].map(key=>[key,0]));};
-  const markLessonPassed=(kind,key)=>{if(lessonGoals[kind].has(key))lessonSuccesses[kind].set(key,Math.min(REQUIRED_SESSION_READS,(lessonSuccesses[kind].get(key)||0)+1));};
-  const unresolvedLessonItems=(kind)=>[...lessonGoals[kind]].filter(x=>(lessonSuccesses[kind].get(x)||0)<REQUIRED_SESSION_READS);
-  const repeatUnresolved=(kind)=>{const pending=unresolvedLessonItems(kind);if(!pending.length)return false;if(kind==='words'){sessionWords=pending;sessionIndex=0;showSessionWord();}else{letterSession=pending;letterIndex=0;showLetter();}setActionLabels();navRefreshers[kind]?.();return true;};
-  const completeLesson=(kind)=>{const pending=unresolvedLessonItems(kind);if(pending.length){if(kind==='words')$('finishView').hidden=true;else $('letterFinishView').hidden=true;repeatUnresolved(kind);return;}const goals=[...lessonGoals[kind]];const allPassed=goals.length>0&&goals.every(key=>(lessonSuccesses[kind].get(key)||0)>=REQUIRED_SESSION_READS);if(!allPassed){if(kind==='words')$('finishView').hidden=true;else $('letterFinishView').hidden=true;repeatUnresolved(kind);return;}if(kind==='words'){$('readingView').hidden=true;$('finishView').hidden=false;}else{$('lettersView').hidden=true;$('letterFinishView').hidden=false;}};
-  const successAllowed=(kind)=>{const goals=[...lessonGoals[kind]];return goals.length>0&&goals.every(key=>(lessonSuccesses[kind].get(key)||0)>=REQUIRED_SESSION_READS);};const finishGuard=new MutationObserver(()=>{if(!$('finishView').hidden&&!successAllowed('words')){$('finishView').hidden=true;$('readingView').hidden=false;if(unresolvedLessonItems('words').length)repeatUnresolved('words');}if(!$('letterFinishView').hidden&&!successAllowed('letters')){$('letterFinishView').hidden=true;$('lettersView').hidden=false;if(unresolvedLessonItems('letters').length)repeatUnresolved('letters');}});finishGuard.observe(document.body,{subtree:true,attributes:true,attributeFilter:['hidden']});const navRefreshers={};const makeNav=(view,kind)=>{const stage=view?.querySelector('.stage');if(!stage)return;const nav=document.createElement('div');nav.className='lesson-nav';const prev=document.createElement('button');prev.type='button';prev.className='nav-arrow nav-prev';prev.setAttribute('aria-label','Предыдущий');prev.innerHTML=icon('left');const next=document.createElement('button');next.type='button';next.className='nav-arrow nav-next';next.setAttribute('aria-label','Следующий');next.innerHTML=icon('right');nav.append(prev,next);stage.append(nav);const state=()=>({i:kind==='words'?sessionIndex:letterIndex,total:kind==='words'?sessionWords.length:letterSession.length});const refresh=()=>{const {i,total}=state();prev.hidden=i<=0;next.hidden=total<=0;};navRefreshers[kind]=refresh;prev.onclick=()=>{if(kind==='words'){if(sessionIndex<=0)return;sessionIndex--;showSessionWord();}else{if(letterIndex<=0)return;letterIndex--;showLetter();}setActionLabels();refresh();};next.onclick=()=>{const {i,total}=state();if(!total)return;const key=kind==='words'?current?.[0]:currentLetter()?.[0];const passed=key&&(lessonSuccesses[kind].get(key)||0)>=REQUIRED_SESSION_READS;if(!passed){if(kind==='words'){wordMastery.disabled=true;}else{letterMastery.disabled=true;}}if(i>=total-1){completeLesson(kind);return;}if(kind==='words'){sessionIndex++;showSessionWord();}else{letterIndex++;showLetter();}setActionLabels();refresh();};refresh();};
+  const REQUIRED_SESSION_READS=3;
+  const lessonGoals={words:new Set(),letters:new Set()},lessonSuccesses={words:new Map(),letters:new Map()};
+  const resetLessonGoal=(kind)=>{
+    const items=kind==='words'?sessionWords:letterSession;
+    const size=kind==='words'?wordSessionSize:letterSessionSize;
+    lessonGoals[kind]=new Set(items.slice(0,size));
+    lessonSuccesses[kind]=new Map([...lessonGoals[kind]].map(key=>[key,0]));
+    if(kind==='words')$('finishView').hidden=true;else $('letterFinishView').hidden=true;
+  };
+  const markLessonPassed=(kind,key)=>{
+    if(!lessonGoals[kind].has(key))return;
+    lessonSuccesses[kind].set(key,Math.min(REQUIRED_SESSION_READS,(lessonSuccesses[kind].get(key)||0)+1));
+  };
+  const unresolvedLessonItems=(kind)=>[...lessonGoals[kind]].filter(key=>(lessonSuccesses[kind].get(key)||0)<REQUIRED_SESSION_READS);
+  const allLessonItemsMastered=(kind)=>lessonGoals[kind].size>0&&unresolvedLessonItems(kind).length===0;
+  const restartPendingCycle=(kind)=>{
+    const pending=unresolvedLessonItems(kind);
+    if(!pending.length)return false;
+    if(kind==='words'){sessionWords=pending;sessionIndex=0;$('finishView').hidden=true;$('readingView').hidden=false;showSessionWord();}
+    else{letterSession=pending;letterIndex=0;$('letterFinishView').hidden=true;$('lettersView').hidden=false;showLetter();}
+    setActionLabels();navRefreshers[kind]?.();return true;
+  };
+  const completeLesson=(kind)=>{
+    if(!allLessonItemsMastered(kind)){restartPendingCycle(kind);return;}
+    if(kind==='words'){$('readingView').hidden=true;$('finishView').hidden=false;}
+    else{$('lettersView').hidden=true;$('letterFinishView').hidden=false;}
+  };
+  const navRefreshers={};
+  const makeNav=(view,kind)=>{
+    const stage=view?.querySelector('.stage');if(!stage)return;
+    const nav=document.createElement('div');nav.className='lesson-nav';
+    const prev=document.createElement('button');prev.type='button';prev.className='nav-arrow nav-prev';prev.setAttribute('aria-label','Предыдущий');prev.innerHTML=icon('left');
+    const next=document.createElement('button');next.type='button';next.className='nav-arrow nav-next';next.setAttribute('aria-label','Следующий');next.innerHTML=icon('right');
+    nav.append(prev,next);stage.append(nav);
+    const state=()=>({i:kind==='words'?sessionIndex:letterIndex,total:kind==='words'?sessionWords.length:letterSession.length});
+    const refresh=()=>{const {i,total}=state();prev.hidden=i<=0;next.hidden=total<=0;};
+    navRefreshers[kind]=refresh;
+    prev.onclick=()=>{if(kind==='words'){if(sessionIndex<=0)return;sessionIndex--;showSessionWord();}else{if(letterIndex<=0)return;letterIndex--;showLetter();}setActionLabels();refresh();};
+    next.onclick=()=>{
+      const {i,total}=state();if(!total)return;
+      if(i>=total-1){completeLesson(kind);return;}
+      if(kind==='words'){sessionIndex++;showSessionWord();}else{letterIndex++;showLetter();}
+      setActionLabels();refresh();
+    };
+    refresh();
+  };
   makeNav(document.getElementById('readingView'),'words');makeNav(document.getElementById('lettersView'),'letters');
   const ensureSoundCards=()=>{if(section!=='letters'||letterSession.length)return;const review=letters.map(x=>x[0]).filter(ch=>lst(ch).mastered).sort((a,b)=>lst(a).masteredAt-lst(b).masteredAt);letterSession=(review.length?review:letters.map(x=>x[0])).slice(0,letterSessionSize);letterIndex=0;$('lettersView').hidden=false;if(letterSession.length)showLetter();setActionLabels();navRefreshers.letters?.();};
-  const baseWordMastery=wordMastery.onclick;wordMastery.onclick=(event)=>{if(wordMastery.disabled||usedHint||markedThisTurn)return;const key=current?.[0];if(typeof baseWordMastery==='function')baseWordMastery.call(wordMastery,event);if(markedThisTurn&&key)markLessonPassed('words',key);};
-  const baseLetterMastery=letterMastery.onclick;letterMastery.onclick=(event)=>{if(letterMastery.disabled)return;const key=currentLetter()?.[0];if(typeof baseLetterMastery==='function')baseLetterMastery.call(letterMastery,event);if(letterMarked&&key)markLessonPassed('letters',key);document.querySelector('#lettersView .nav-next')?.click();};
+  const baseWordMastery=wordMastery.onclick;
+  wordMastery.onclick=(event)=>{
+    if(wordMastery.disabled||usedHint||markedThisTurn)return;
+    const key=current?.[0];if(!key)return;
+    if(typeof baseWordMastery==='function')baseWordMastery.call(wordMastery,event);
+    if(markedThisTurn)markLessonPassed('words',key);
+  };
+  const baseLetterMastery=letterMastery.onclick;
+  letterMastery.onclick=(event)=>{
+    if(letterMastery.disabled)return;
+    const key=currentLetter()?.[0];if(!key)return;
+    if(typeof baseLetterMastery==='function')baseLetterMastery.call(letterMastery,event);
+    if(letterMarked)markLessonPassed('letters',key);
+  };
+  const finishGuard=new MutationObserver(()=>{
+    if(!$('finishView').hidden&&!allLessonItemsMastered('words')){$('finishView').hidden=true;$('readingView').hidden=false;restartPendingCycle('words');}
+    if(!$('letterFinishView').hidden&&!allLessonItemsMastered('letters')){$('letterFinishView').hidden=true;$('lettersView').hidden=false;restartPendingCycle('letters');}
+  });
+  finishGuard.observe(document.body,{subtree:true,attributes:true,attributeFilter:['hidden']});
   const refreshCurrentNav=()=>{ensureSoundCards();navRefreshers[section==='letters'?'letters':'words']?.();};
   $('lettersTab').addEventListener('click',()=>requestAnimationFrame(()=>{ensureSoundCards();resetLessonGoal('letters');refreshCurrentNav();}));
   $('wordsTab').addEventListener('click',()=>requestAnimationFrame(()=>{resetLessonGoal('words');refreshCurrentNav();}));
