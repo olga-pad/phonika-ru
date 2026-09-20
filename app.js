@@ -31,7 +31,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   const restartPendingCycle=(kind)=>{
     const pending=unresolvedLessonItems(kind);
     if(!pending.length)return false;
-    if(kind==='words'){sessionWords=pending;sessionIndex=0;$('finishView').hidden=true;$('readingView').hidden=false;showSessionWord();wordMastery.disabled=false;usedHint=false;markedThisTurn=false;}
+    if(kind==='words'){sessionWords=pending;sessionIndex=0;$('finishView').hidden=true;$('readingView').hidden=false;showSessionWord();}
     else{letterSession=pending;letterIndex=0;$('letterFinishView').hidden=true;$('lettersView').hidden=false;showLetter();}
     setActionLabels();navRefreshers[kind]?.();return true;
   };
@@ -48,18 +48,24 @@ window.addEventListener('DOMContentLoaded',()=>{
     const next=document.createElement('button');next.type='button';next.className='nav-arrow nav-next';next.setAttribute('aria-label','Следующий');next.innerHTML=icon('right');
     nav.append(prev,next);stage.append(nav);
     const state=()=>({i:kind==='words'?sessionIndex:letterIndex,total:kind==='words'?sessionWords.length:letterSession.length});
-    const refresh=()=>{const {total}=state();prev.hidden=total<=0;next.hidden=total<=0;};
+    const refresh=()=>{const {total}=state();prev.hidden=total===0;next.hidden=total===0;prev.disabled=false;next.disabled=false;};
     navRefreshers[kind]=refresh;
-    prev.onclick=()=>{const {total}=state();if(!total)return;if(kind==='words'){sessionIndex=sessionIndex<=0?total-1:sessionIndex-1;showSessionWord();wordMastery.disabled=false;usedHint=false;markedThisTurn=false;}else{letterIndex=letterIndex<=0?total-1:letterIndex-1;showLetter();letterMastery.disabled=false;}setActionLabels();refresh();};
+    const showAt=(index)=>{
+      if(kind==='words'){sessionIndex=index;showSessionWord();}
+      else{letterIndex=index;showLetter();}
+      setActionLabels();refresh();
+    };
+    prev.onclick=()=>{
+      const {i,total}=state();if(!total)return;
+      showAt((i-1+total)%total);
+    };
     next.onclick=()=>{
       const {i,total}=state();if(!total)return;
-      if(i>=total-1){
+      if(i===total-1){
         if(allLessonItemsMastered(kind)){completeLesson(kind);return;}
-        restartPendingCycle(kind);refresh();return;
+        restartPendingCycle(kind);return;
       }
-      if(kind==='words'){sessionIndex++;showSessionWord();wordMastery.disabled=false;usedHint=false;markedThisTurn=false;}
-      else{letterIndex++;showLetter();letterMastery.disabled=false;}
-      setActionLabels();refresh();
+      showAt(i+1);
     };
     refresh();
   };
