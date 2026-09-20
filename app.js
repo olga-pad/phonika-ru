@@ -14,36 +14,22 @@ window.addEventListener('DOMContentLoaded',()=>{
   letterHelp.onclick=()=>{const x=currentLetter();if(!x)return;letterMastery.disabled=true;speak(x[1]);};if(help)help.onclick=()=>{if(!current)return;usedHint=true;wordMastery.disabled=true;speak(current[0],.68);};
   letterPictureBtn.onclick=()=>{const x=currentLetter();if(!x)return;letterMastery.disabled=true;letterPicture.hidden=!letterPicture.hidden;setActionLabels();};wordPictureBtn.onclick=()=>{if(!current)return;usedHint=true;wordMastery.disabled=true;wordPicture.hidden=!wordPicture.hidden;setActionLabels();};
   const REQUIRED_SESSION_READS=3;
-  // Five-success game: the dinosaur moves one step for every independent read.
-  const DINO_GOAL=5;
+  // Dinosaur progress follows the word-session size selected in the parent area.
   let dinoProgress=0;
   const readingView=document.getElementById('readingView');
   const dinoTrack=document.createElement('div');
-  dinoTrack.className='dino-track';
-  dinoTrack.setAttribute('aria-label','Прогресс занятия');
-  dinoTrack.innerHTML='<div class="dino-path"></div><div class="dino-steps"></div><div class="dino">🦕</div><div class="dino-finish">🏁</div>';
+  dinoTrack.className='dino-track';dinoTrack.setAttribute('aria-label','Прогресс занятия');
+  dinoTrack.innerHTML='<div class="dino-path"></div><div class="dino-steps"></div><div class="dino">🦕</div><div class="dino-finish">🏁</div><div class="dino-count"></div>';
   readingView?.insertBefore(dinoTrack,readingView.querySelector('.stage'));
-  const dinoSteps=dinoTrack.querySelector('.dino-steps');
-  for(let i=0;i<DINO_GOAL;i++){const step=document.createElement('span');step.className='dino-step';dinoSteps.append(step);}
-  const dino=document.querySelector('.dino');
-  const updateDino=()=>{
-    [...dinoSteps.children].forEach((step,i)=>step.classList.toggle('done',i<dinoProgress));
-    const pct=DINO_GOAL?Math.min(100,(dinoProgress/DINO_GOAL)*100):0;
-    dino.style.left=`calc(${pct}% - ${pct/100*34}px)`;
-  };
-  const celebration=document.createElement('section');
-  celebration.className='dino-celebration';
-  celebration.hidden=true;
-  celebration.innerHTML='<div class="fireworks" aria-hidden="true"><span>✨</span><span>🎆</span><span>✨</span><span>🎉</span><span>⭐</span></div><div class="celebration-dino">🦕</div><h1>Ура!</h1><p>Пять слов прочитано!</p><button type="button" class="primary dino-again">Ещё раз</button>';
+  const dinoSteps=dinoTrack.querySelector('.dino-steps'),dino=dinoTrack.querySelector('.dino'),dinoCount=dinoTrack.querySelector('.dino-count');
+  const dinoGoal=()=>Math.max(1,Number(wordSessionSize)||5);
+  const buildDinoSteps=()=>{const goal=dinoGoal();dinoSteps.replaceChildren();for(let i=0;i<goal;i++){const step=document.createElement('span');step.className='dino-step';dinoSteps.append(step);}};
+  const updateDino=()=>{const goal=dinoGoal();if(dinoSteps.children.length!==goal)buildDinoSteps();[...dinoSteps.children].forEach((step,i)=>step.classList.toggle('done',i<dinoProgress));const pct=Math.min(100,(dinoProgress/goal)*100);dino.style.left=`calc(${pct}% - ${pct/100*46}px)`;dinoCount.textContent=`${Math.min(dinoProgress,goal)} / ${goal}`;};
+  const celebration=document.createElement('section');celebration.className='dino-celebration';celebration.hidden=true;
+  celebration.innerHTML='<div class="fireworks" aria-hidden="true"><span>✨</span><span>🎆</span><span>✨</span><span>🎉</span><span>⭐</span></div><div class="celebration-dino">🦕</div><h1>Ура!</h1><p class="dino-result"></p><button type="button" class="primary dino-again">Ещё раз</button>';
   readingView?.insertAdjacentElement('afterend',celebration);
-  const finishDinoGame=()=>{
-    readingView.hidden=true; celebration.hidden=false;
-    if(navigator.vibrate) navigator.vibrate([70,40,70]);
-  };
-  celebration.querySelector('.dino-again')?.addEventListener('click',()=>{
-    dinoProgress=0;updateDino();celebration.hidden=true;readingView.hidden=false;
-    resetLessonGoal('words');showSessionWord();setActionLabels();
-  });
+  const finishDinoGame=()=>{celebration.querySelector('.dino-result').textContent=`${dinoGoal()} слов прочитано!`;readingView.hidden=true;celebration.hidden=false;if(navigator.vibrate)navigator.vibrate([70,40,70]);};
+  celebration.querySelector('.dino-again')?.addEventListener('click',()=>{dinoProgress=0;updateDino();celebration.hidden=true;readingView.hidden=false;resetLessonGoal('words');showSessionWord();setActionLabels();});
   updateDino();
   const lessonGoals={words:new Set(),letters:new Set()},lessonSuccesses={words:new Map(),letters:new Map()};
   const resetLessonGoal=(kind)=>{
@@ -109,8 +95,11 @@ window.addEventListener('DOMContentLoaded',()=>{
     if(typeof baseWordMastery==='function')baseWordMastery.call(wordMastery,event);
     if(markedThisTurn){
       markLessonPassed('words',key);
-      if(dinoProgress<DINO_GOAL){dinoProgress++;updateDino();}
-      if(dinoProgress>=DINO_GOAL)setTimeout(finishDinoGame,320);
+      if(dinoProgress<dinoGoal()){dinoProgress++;updateDino();}
+      wordMastery.classList.add('pressed-feedback');
+      wordMastery.innerHTML=icon('check')+'<span>Готово!</span>';
+      setTimeout(()=>wordMastery.classList.remove('pressed-feedback'),420);
+      if(dinoProgress>=dinoGoal())setTimeout(finishDinoGame,520);
     }
   };
   const baseLetterMastery=letterMastery.onclick;
@@ -127,6 +116,6 @@ window.addEventListener('DOMContentLoaded',()=>{
   finishGuard.observe(document.body,{subtree:true,attributes:true,attributeFilter:['hidden']});
   const refreshCurrentNav=()=>{ensureSoundCards();navRefreshers[section==='letters'?'letters':'words']?.();};
   $('lettersTab').addEventListener('click',()=>requestAnimationFrame(()=>{ensureSoundCards();resetLessonGoal('letters');refreshCurrentNav();}));
-  $('wordsTab').addEventListener('click',()=>requestAnimationFrame(()=>{resetLessonGoal('words');refreshCurrentNav();}));
+  $('wordsTab').addEventListener('click',()=>requestAnimationFrame(()=>{dinoProgress=0;updateDino();resetLessonGoal('words');refreshCurrentNav();}));
   switchSection(section==='letters'?'letters':'words');ensureSoundCards();resetLessonGoal(section==='letters'?'letters':'words');setActionLabels();refreshCurrentNav();requestAnimationFrame(()=>{ensureSoundCards();setActionLabels();refreshCurrentNav();});setTimeout(()=>{ensureSoundCards();setActionLabels();refreshCurrentNav();},0);
 });
