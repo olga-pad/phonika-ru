@@ -1,5 +1,5 @@
 'use strict';
-document.write('<script src="./app-core.js?v=51"><\/script>');
+document.write('<script src="./app-core.js?v=52"><\/script>');
 window.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('letterNext')?.remove();document.getElementById('next')?.remove();
   if(!localStorage.getItem('ss-style') && !(Storage.load()||{}).style){style='upper';persist();}
