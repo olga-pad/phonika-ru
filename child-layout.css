@@ -16,13 +16,14 @@
 
 /* Dinosaur session progress */
 #childView .dino-track{position:relative;width:min(78%,600px);height:82px;margin:5px auto 0;flex:0 0 82px;padding-right:68px}
-#childView .dino-path{position:absolute;left:36px;right:102px;top:48px;height:6px;background:#d9e1e8;border-radius:99px}
-#childView .dino-steps{position:absolute;left:39px;right:105px;top:35px;display:flex;justify-content:space-between}
+#childView .dino-path{position:absolute;left:36px;right:50px;top:48px;height:6px;background:#d9e1e8;border-radius:99px}
+#childView .dino-steps{position:absolute;left:39px;right:53px;top:35px;display:flex;justify-content:space-between}
 #childView .dino-step{width:31px;height:31px;border-radius:50%;background:#fff;border:4px solid #d5dde6;transition:.25s transform,.25s background}
-#childView .dino-step.done{background:#35b96f;border-color:#35b96f;transform:scale(1.06)}
+#childView .dino-step.done{background:#35b96f;border-color:#35b96f;transform:scale(1.06);color:#fff;display:flex;align-items:center;justify-content:center}
+#childView .dino-step.half{background:linear-gradient(90deg,#35b96f 50%,#fff 50%);border-color:#35b96f #d5dde6 #d5dde6 #35b96f}
+#childView .step-check{font-size:20px;font-weight:900;line-height:1;color:#fff}
 #childView .dino{position:absolute;left:0;top:0;font-size:50px;line-height:1;transition:left .42s cubic-bezier(.2,.8,.25,1);z-index:2}
-#childView .dino-finish{position:absolute;right:72px;top:2px;font-size:44px;z-index:2}
-#childView .dino-count{position:absolute;right:-4px;top:22px;min-width:62px;padding:8px 9px;border-radius:15px;background:#edf6ff;color:#123f73;font-size:16px;font-weight:800}
+#childView .dino-finish{position:absolute;right:10px;top:2px;font-size:44px;z-index:2}
 #childView .mastery-btn.pressed-feedback{background:#168d50!important;transform:scale(.975);box-shadow:inset 0 3px 8px #075d3830!important}
 #childView .mastery-btn:disabled{background:#dce7e1!important;color:#80928a!important;border:1px solid #ccd9d3!important;box-shadow:none!important;opacity:1!important}
 #childView .mastery-btn:disabled svg{opacity:.55}
@@ -32,5 +33,7 @@
 #childView .dino-celebration .dino-again{display:block;background:#2389e8;color:#fff;width:min(86%,340px)}
 #childView .fireworks{height:86px;font-size:42px;display:flex;gap:18px;align-items:center;justify-content:center}#childView .fireworks span{display:inline-block;animation:firePop .8s ease-out infinite alternate}
 @keyframes firePop{from{transform:scale(.65) translateY(8px);opacity:.55}to{transform:scale(1.2) translateY(-8px);opacity:1}}@keyframes dinoBounce{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-10px) rotate(3deg)}}
-@media(max-width:700px){#childView .dino-track{width:100%;height:70px;flex-basis:70px;padding-right:58px;margin-top:3px}#childView .dino-path{left:29px;right:91px;top:42px;height:5px}#childView .dino-steps{left:31px;right:94px;top:31px}#childView .dino-step{width:26px;height:26px;border-width:3px}#childView .dino{font-size:43px}#childView .dino-finish{right:61px;top:4px;font-size:37px}#childView .dino-count{right:0;top:21px;min-width:53px;font-size:14px;padding:7px 7px}#childView .celebration-dino{font-size:82px}}
+@media(max-width:700px){#childView .dino-track{width:100%;height:70px;flex-basis:70px;padding-right:58px;margin-top:3px}#childView .dino-path{left:29px;right:43px;top:42px;height:5px}#childView .dino-steps{left:31px;right:46px;top:31px}#childView .dino-step{width:26px;height:26px;border-width:3px}#childView .dino{font-size:43px}#childView .dino-finish{right:3px;top:4px;font-size:37px}#childView .dino-count{right:0;top:21px;min-width:53px;font-size:14px;padding:7px 7px}#childView .celebration-dino{font-size:82px}}
 @media(prefers-reduced-motion:reduce){#childView .dino,#childView .fireworks span,#childView .celebration-dino{animation:none;transition:none}}
+
+#childView .dino{transform:scaleX(-1)}
