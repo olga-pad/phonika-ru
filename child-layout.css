@@ -115,3 +115,12 @@
 /* Desktop: brand text only. Mobile: home icon only. */
 @media(min-width:601px){#childView .brand-home .home-icon{display:none!important}#childView .brand-home .brand-full{display:inline!important}}
 @media(max-width:600px){#childView .brand-home .home-icon{display:inline!important}#childView .brand-home .brand-full{display:none!important}}
+
+/* Final desktop override: legacy layout also contains a home icon; hide every home glyph at desktop width. */
+@media(min-width:601px){
+ #childView .home-icon,
+ #childView .home-btn,
+ #childView .home-button,
+ #childView [class*="home-icon"]{display:none!important}
+ #childView .brand-home{padding-left:4px!important}
+}
