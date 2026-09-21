@@ -239,3 +239,16 @@
 @media(min-width:601px){
  #childView #parentOpen .parent-label{display:inline!important}
 }
+
+/* Mobile navigation icons: identical color treatment for Home and Parent. */
+@media(max-width:600px){
+ #childView header #childHome .home-icon,
+ #childView header #parentOpen,
+ #childView header #parentOpen .parent-chart-icon{color:#174f85!important}
+ #childView header #parentOpen .parent-chart-icon i{background:#174f85!important}
+ #childView header #childHome,
+ #childView header #parentOpen{
+   background:#fff!important;
+   border-color:#b9d0e8!important;
+ }
+}
