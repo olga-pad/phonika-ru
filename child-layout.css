@@ -252,3 +252,13 @@
    border-color:#b9d0e8!important;
  }
 }
+
+/* Desktop brand: home icon uses the same blue as the Phonika.ru wordmark. */
+@media(min-width:601px){
+ #childView .brand-home,
+ #childView .brand-home .home-icon,
+ #childView .brand-home .brand-full,
+ #childView .brand-home .brand-full .quiet{color:#2f67a3!important}
+ #childView .brand-home svg,
+ #childView .brand-home svg path{fill:#2f67a3!important;color:#2f67a3!important}
+}
