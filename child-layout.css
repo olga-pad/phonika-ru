@@ -293,3 +293,13 @@
 @media(max-width:600px){
  #childView .dino{transform:translate(-31px,-32px) scaleX(-1)!important}
 }
+
+/* Fine tune progress endpoints: dinosaur close above dots, flag aligned after track. */
+#childView .dino{transform:translate(-38px,-24px) scaleX(-1)!important}
+#childView .dino-finish,
+#childView .finish-flag{transform:translate(38px,-2px)!important}
+@media(max-width:600px){
+ #childView .dino{transform:translate(-31px,-20px) scaleX(-1)!important}
+ #childView .dino-finish,
+ #childView .finish-flag{transform:translate(31px,-2px)!important}
+}
