@@ -63,6 +63,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   const unresolvedLessonItems=(kind)=>[...lessonGoals[kind]].filter(key=>(lessonSuccesses[kind].get(key)||0)<REQUIRED_SESSION_READS);
   const allLessonItemsMastered=(kind)=>lessonGoals[kind].size>0&&unresolvedLessonItems(kind).length===0;
   const restartPendingCycle=(kind)=>{
+    wordMastery.dataset.continueNext='';letterMastery.dataset.continueNext='';
     const pending=unresolvedLessonItems(kind);
     if(!pending.length)return false;
     if(kind==='words'){sessionWords=pending;sessionIndex=0;$('finishView').hidden=true;$('readingView').hidden=false;showSessionWord();}
@@ -85,6 +86,7 @@ window.addEventListener('DOMContentLoaded',()=>{
     const refresh=()=>{const {total}=state();prev.hidden=total===0;next.hidden=total===0;prev.disabled=false;next.disabled=false;};
     navRefreshers[kind]=refresh;
     const showAt=(index)=>{
+      clearContinue();
       if(kind==='words'){sessionIndex=index;showSessionWord();}
       else{letterIndex=index;showLetter();}
       setActionLabels();refresh();
@@ -105,8 +107,16 @@ window.addEventListener('DOMContentLoaded',()=>{
   };
   makeNav(document.getElementById('readingView'),'words');makeNav(document.getElementById('lettersView'),'letters');
   const ensureSoundCards=()=>{if(section!=='letters'||letterSession.length)return;const review=letters.map(x=>x[0]).filter(ch=>lst(ch).mastered).sort((a,b)=>lst(a).masteredAt-lst(b).masteredAt);letterSession=(review.length?review:letters.map(x=>x[0])).slice(0,letterSessionSize);letterIndex=0;$('lettersView').hidden=false;if(letterSession.length)showLetter();setActionLabels();navRefreshers.letters?.();};
+  const clearContinue=()=>{wordMastery.dataset.continueNext='';letterMastery.dataset.continueNext='';};
+  const continueNext=(kind,button)=>{
+    if(button.dataset.continueNext!=='1')return false;
+    button.dataset.continueNext='';
+    document.querySelector(kind==='words'?'#readingView .nav-next':'#lettersView .nav-next')?.click();
+    return true;
+  };
   const baseWordMastery=wordMastery.onclick;
   wordMastery.onclick=(event)=>{
+    if(continueNext('words',wordMastery))return;
     if(wordMastery.disabled||usedHint||markedThisTurn)return;
     const key=current?.[0];if(!key)return;
     if(typeof baseWordMastery==='function')baseWordMastery.call(wordMastery,event);
@@ -115,17 +125,24 @@ window.addEventListener('DOMContentLoaded',()=>{
       markLessonPassed('words',key);
       if(dinoProgress<dinoGoal()){dinoProgress=Math.min(dinoGoal(),dinoProgress+1);updateDino();}
       wordMastery.classList.add('pressed-feedback');
-      wordMastery.innerHTML=icon('check')+'<span>Готово!</span>';
+      wordMastery.dataset.continueNext='1';
+      wordMastery.innerHTML='<span>Продолжить</span>'+icon('right');
       setTimeout(()=>wordMastery.classList.remove('pressed-feedback'),420);
       if(dinoProgress>=dinoGoal())setTimeout(finishDinoGame,520);
     }
   };
   const baseLetterMastery=letterMastery.onclick;
   letterMastery.onclick=(event)=>{
+    if(continueNext('letters',letterMastery))return;
     if(letterMastery.disabled)return;
     const key=currentLetter()?.[0];if(!key)return;
     if(typeof baseLetterMastery==='function')baseLetterMastery.call(letterMastery,event);
-    if(letterMarked){celebrateCorrect(letterMastery);markLessonPassed('letters',key);if(dinoProgress<dinoGoal()){dinoProgress=Math.min(dinoGoal(),dinoProgress+1);updateDino();}}
+    if(letterMarked){
+      celebrateCorrect(letterMastery);markLessonPassed('letters',key);
+      if(dinoProgress<dinoGoal()){dinoProgress=Math.min(dinoGoal(),dinoProgress+1);updateDino();}
+      letterMastery.dataset.continueNext='1';
+      letterMastery.innerHTML='<span>Продолжить</span>'+icon('right');
+    }
   };
   const finishGuard=new MutationObserver(()=>{
     if(!$('finishView').hidden&&!allLessonItemsMastered('words')){$('finishView').hidden=true;$('readingView').hidden=false;restartPendingCycle('words');}
