@@ -72,3 +72,11 @@
 #parentView .tone-words{border-color:#dcebd6} #parentView .tone-words .collapse-toggle{background:#f4faF1}
 #parentView .tone-style{border-color:#eadde7} #parentView .tone-style .collapse-toggle{background:#fcf5fa}
 #parentView .parent-collapsible .collapse-toggle:hover{filter:brightness(.985)}
+
+/* Slightly stronger pastel contrast for parent accordion headers. */
+#parentView .tone-known{border-color:#bdded1} #parentView .tone-known .collapse-toggle{background:#e3f3ed}
+#parentView .tone-level{border-color:#c5d8ef} #parentView .tone-level .collapse-toggle{background:#e5eef9}
+#parentView .tone-session{border-color:#dbc9e9} #parentView .tone-session .collapse-toggle{background:#f0e7f7}
+#parentView .tone-sounds{border-color:#ebd1aa} #parentView .tone-sounds .collapse-toggle{background:#fff0d9}
+#parentView .tone-words{border-color:#c9e2bf} #parentView .tone-words .collapse-toggle{background:#e9f5e4}
+#parentView .tone-style{border-color:#dfc6d9} #parentView .tone-style .collapse-toggle{background:#f7e8f2}
