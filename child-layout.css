@@ -171,3 +171,20 @@
    letter-spacing:0!important;
  }
 }
+
+/* Mobile parent entry: icon only, matching the desktop chart glyph. */
+@media(max-width:600px){
+ #childView header #parentOpen{
+   width:56px!important;min-width:56px!important;
+   overflow:hidden!important;white-space:nowrap!important;
+   text-indent:-9999px!important;
+ }
+ #childView header #parentOpen::before{
+   content:""!important;text-indent:0!important;
+   display:block!important;width:30px!important;height:28px!important;
+   background:
+     linear-gradient(#174f85,#174f85) 2px 17px/6px 9px no-repeat,
+     linear-gradient(#174f85,#174f85) 12px 10px/6px 16px no-repeat,
+     linear-gradient(#174f85,#174f85) 22px 3px/6px 23px no-repeat!important;
+ }
+}
