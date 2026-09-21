@@ -345,3 +345,40 @@
   z-index:auto!important;
 }
 #parentView #styleMenu[hidden]{display:none!important}
+
+/* Letter styles: explicit inline six-choice palette inside the accordion. */
+#parentView #letterStyle .style-select{
+  width:100%!important;
+  text-align:left!important;
+}
+#parentView #styleMenu:not([hidden]){
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:10px!important;
+  padding:12px 0 2px!important;
+  position:static!important;
+  width:100%!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+#parentView #styleMenu .style-option{
+  min-height:62px!important;
+  border:1.5px solid #cbdad6!important;
+  border-radius:16px!important;
+  background:#fff!important;
+  font-size:25px!important;
+  font-weight:750!important;
+  color:#173b35!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+#parentView #styleMenu .style-option.selected{
+  border-color:#2389e8!important;
+  background:#eaf4ff!important;
+  box-shadow:0 0 0 2px rgba(35,137,232,.12)!important;
+}
+@media(max-width:430px){
+ #parentView #styleMenu:not([hidden]){grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
