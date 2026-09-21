@@ -329,3 +329,19 @@
  #childView .dino-track{margin-top:28px!important}
  #childView .dino{transform:translate(-8px,-19px) scaleX(-1)!important}
 }
+
+/* Letter-style accordion sits after Individual route and must not clip its option menu. */
+#parentView .parent-collapsible:has(#letterStyle),
+#parentView .parent-collapsible:has(#letterStyle) .collapse-body,
+#parentView .parent-collapsible:has(#letterStyle) .panel,
+#parentView #letterStyle{overflow:visible!important;max-height:none!important}
+#parentView #styleMenu:not([hidden]){
+  display:grid!important;
+  position:static!important;
+  width:100%!important;
+  max-height:none!important;
+  overflow:visible!important;
+  margin-top:10px!important;
+  z-index:auto!important;
+}
+#parentView #styleMenu[hidden]{display:none!important}
