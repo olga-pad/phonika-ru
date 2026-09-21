@@ -94,3 +94,9 @@
 #parentView .tone-sounds .collapse-toggle,
 #parentView .tone-words .collapse-toggle,
 #parentView .tone-style .collapse-toggle{background:#f0e7f7}
+
+/* Parent intro card aligned with the lavender dashboard palette. */
+#parentView .parent-summary{background:#f7f3fa;border:1px solid #e5d9ee;box-shadow:0 4px 14px rgba(80,55,100,.05)}
+#parentView .parent-summary strong{color:#3f3150}
+#parentView .parent-summary .intro{color:#71647d}
+#parentView .parent-summary .route-icon{font-size:18px;margin-right:3px}
