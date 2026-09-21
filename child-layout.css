@@ -222,3 +222,20 @@
      linear-gradient(#174f85,#174f85) 22px 3px/6px 23px no-repeat!important;
  }
 }
+
+/* Parent entry: one real 3-bar icon. Desktop shows label; mobile shows icon only. */
+#childView #parentOpen{display:flex;align-items:center;justify-content:center;gap:10px}
+#childView #parentOpen .parent-chart-icon{display:inline-flex;align-items:flex-end;gap:4px;width:26px;height:25px;flex:0 0 26px}
+#childView #parentOpen .parent-chart-icon i{display:block;width:5px;background:#174f85;border-radius:1px}
+#childView #parentOpen .parent-chart-icon i:nth-child(1){height:9px}
+#childView #parentOpen .parent-chart-icon i:nth-child(2){height:16px}
+#childView #parentOpen .parent-chart-icon i:nth-child(3){height:23px}
+#childView #parentOpen::before,#childView #parentOpen::after{content:none!important;display:none!important}
+@media(max-width:600px){
+ #childView header #parentOpen{color:#174f85!important;text-indent:0!important;font-size:0!important}
+ #childView #parentOpen .parent-label{display:none!important}
+ #childView #parentOpen .parent-chart-icon{display:inline-flex!important}
+}
+@media(min-width:601px){
+ #childView #parentOpen .parent-label{display:inline!important}
+}
