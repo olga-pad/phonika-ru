@@ -201,3 +201,24 @@
      linear-gradient(#174f85,#174f85) 22px 3px/6px 23px no-repeat!important;
  }
 }
+
+/* Definitive mobile parent icon: hide ALL original button content; show only one 3-bar icon. */
+@media(max-width:600px){
+ #childView header #parentOpen{
+   color:transparent!important;
+   text-shadow:none!important;
+   overflow:hidden!important;
+ }
+ #childView header #parentOpen > *{display:none!important}
+ #childView header #parentOpen::before{content:none!important;display:none!important}
+ #childView header #parentOpen::after{
+   content:""!important;
+   position:absolute!important;left:50%!important;top:50%!important;
+   transform:translate(-50%,-50%)!important;
+   display:block!important;width:30px!important;height:28px!important;
+   background:
+     linear-gradient(#174f85,#174f85) 2px 17px/6px 9px no-repeat,
+     linear-gradient(#174f85,#174f85) 12px 10px/6px 16px no-repeat,
+     linear-gradient(#174f85,#174f85) 22px 3px/6px 23px no-repeat!important;
+ }
+}
