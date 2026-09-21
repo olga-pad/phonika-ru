@@ -275,3 +275,15 @@
    stroke:#2f67a3!important;
  }
 }
+
+/* Progress track: keep dinosaur before the first dot and finish flag after the last dot. */
+#childView .dino-track{padding-left:46px!important;padding-right:46px!important}
+#childView .dino{transform:translateX(-38px) scaleX(-1)!important}
+#childView .dino-finish,
+#childView .finish-flag{transform:translateX(38px)!important}
+@media(max-width:600px){
+ #childView .dino-track{padding-left:38px!important;padding-right:38px!important}
+ #childView .dino{transform:translateX(-31px) scaleX(-1)!important}
+ #childView .dino-finish,
+ #childView .finish-flag{transform:translateX(31px)!important}
+}
