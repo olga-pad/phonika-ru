@@ -13,7 +13,7 @@ test('приложение открывается и показывает осн
   await resetApp(page);
   await expect(page.getByRole('button', { name: 'Звуки' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Читаю' })).toBeVisible();
-  await expect(page.getByRole('button', { name: /Кабинет родителя/ })).toBeVisible();
+  await expect(page.locator('#parentOpen')).toBeVisible();
 });
 
 test('в режиме звуков можно показать и скрыть картинку', async ({ page }) => {
@@ -36,7 +36,7 @@ test('подсказка блокирует отметку «Прочитал с
 
 test('родитель может отметить все звуки как знакомые', async ({ page }) => {
   await resetApp(page);
-  await page.getByRole('button', { name: /Кабинет родителя/ }).click();
+  await page.locator('#parentOpen').click();
   const knownPanel = page.locator('.tone-known');
   await knownPanel.locator('.collapse-toggle').click();
   await page.locator('#toggleAllSounds').click();
@@ -67,10 +67,7 @@ test('после освоения нужных звуков становятся
 
 test('выбранный стиль букв сохраняется после перезагрузки', async ({ page }) => {
   await resetApp(page);
-  await page.getByRole('button', { name: /Кабинет родителя/ }).click();
-  const stylePanel = page.locator('#letterStyle').closest('.panel');
-  const toggle = stylePanel.locator('.collapse-toggle');
-  if (await toggle.count()) await toggle.click();
+  await page.locator('#parentOpen').click();
   await page.locator('#styleSelect').click();
   await page.locator('.style-option[data-style="handLower"]').click();
   await page.reload();
