@@ -23,14 +23,14 @@ window.addEventListener('DOMContentLoaded',()=>{
   readingView?.insertBefore(dinoTrack,readingView.querySelector('.stage'));
   const dinoSteps=dinoTrack.querySelector('.dino-steps'),dino=dinoTrack.querySelector('.dino');
   const sessionGoal=(kind)=>Math.max(1,Number(document.getElementById(kind==='letters'?'letterSessionSize':'wordSessionSize')?.value)||5);
-  const dinoGoal=()=>sessionGoal(section==='letters'?'letters':'words');
+  const dinoGoal=()=>sessionGoal(section==='letters'?'letters':'words')*2;
   const buildDinoSteps=()=>{const goal=dinoGoal();dinoSteps.replaceChildren();for(let i=0;i<goal;i++){const step=document.createElement('span');step.className='dino-step';dinoSteps.append(step);}};
   const updateDino=()=>{
     const goal=dinoGoal();if(dinoSteps.children.length!==goal)buildDinoSteps();
-    const full=Math.floor(dinoProgress),half=dinoProgress-full>=.5;
+    const full=Math.floor(dinoProgress);
     [...dinoSteps.children].forEach((step,i)=>{
       step.classList.toggle('done',i<full);
-      step.classList.toggle('half',i===full&&half);
+      step.classList.remove('half');
       step.innerHTML=i<full?'<span class="step-check">✓</span>':'';
     });
     const pct=Math.min(100,(dinoProgress/goal)*100);
@@ -109,7 +109,7 @@ window.addEventListener('DOMContentLoaded',()=>{
     if(typeof baseWordMastery==='function')baseWordMastery.call(wordMastery,event);
     if(markedThisTurn){
       markLessonPassed('words',key);
-      if(dinoProgress<dinoGoal()){dinoProgress=Math.min(dinoGoal(),dinoProgress+.5);updateDino();}
+      if(dinoProgress<dinoGoal()){dinoProgress=Math.min(dinoGoal(),dinoProgress+1);updateDino();}
       wordMastery.classList.add('pressed-feedback');
       wordMastery.innerHTML=icon('check')+'<span>Готово!</span>';
       setTimeout(()=>wordMastery.classList.remove('pressed-feedback'),420);
@@ -121,7 +121,7 @@ window.addEventListener('DOMContentLoaded',()=>{
     if(letterMastery.disabled)return;
     const key=currentLetter()?.[0];if(!key)return;
     if(typeof baseLetterMastery==='function')baseLetterMastery.call(letterMastery,event);
-    if(letterMarked){markLessonPassed('letters',key);if(dinoProgress<dinoGoal()){dinoProgress=Math.min(dinoGoal(),dinoProgress+.5);updateDino();}}
+    if(letterMarked){markLessonPassed('letters',key);if(dinoProgress<dinoGoal()){dinoProgress=Math.min(dinoGoal(),dinoProgress+1);updateDino();}}
   };
   const finishGuard=new MutationObserver(()=>{
     if(!$('finishView').hidden&&!allLessonItemsMastered('words')){$('finishView').hidden=true;$('readingView').hidden=false;restartPendingCycle('words');}
