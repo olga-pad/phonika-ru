@@ -156,3 +156,18 @@
    content:"▥";font-size:29px;line-height:1;font-weight:700;letter-spacing:-5px;
  }
 }
+
+/* Parent button: keep only the simple ascending three-bar icon. */
+@media(max-width:600px){
+ #childView header #parentOpen::before{
+   content:"▮ ▮ ▮"!important;
+   display:inline-block;
+   font-size:0!important;
+   width:30px;height:28px;
+   background:
+     linear-gradient(#174f85,#174f85) 2px 17px/6px 9px no-repeat,
+     linear-gradient(#174f85,#174f85) 12px 10px/6px 16px no-repeat,
+     linear-gradient(#174f85,#174f85) 22px 3px/6px 23px no-repeat!important;
+   letter-spacing:0!important;
+ }
+}
