@@ -387,3 +387,28 @@
 #parentView .style-fixed{overflow:visible!important}
 #parentView .style-fixed>h2{margin:0 0 14px!important;font-size:clamp(22px,3vw,28px)!important;color:#173b35!important}
 #parentView .style-fixed .intro{margin:0 0 16px!important}
+
+/* Preserve the original lavender Style letters card, without accordion controls. */
+#parentView .style-fixed{
+  background:#f3eafb!important;
+  border:1.5px solid #ddc9ee!important;
+  border-radius:24px!important;
+  overflow:visible!important;
+  padding:0 0 22px!important;
+}
+#parentView .style-fixed>h2{
+  background:#eee1f7!important;
+  border-radius:22px 22px 0 0!important;
+  padding:20px 34px!important;
+  margin:0 0 14px!important;
+  color:#173b35!important;
+}
+#parentView .style-fixed>.intro,
+#parentView .style-fixed>.letter-style{
+  margin-left:34px!important;
+  margin-right:34px!important;
+}
+@media(max-width:600px){
+ #parentView .style-fixed{border-radius:24px!important}
+ #parentView .style-fixed>h2{border-radius:22px 22px 0 0!important;padding:20px 34px!important}
+}
