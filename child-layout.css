@@ -188,3 +188,16 @@
      linear-gradient(#174f85,#174f85) 22px 3px/6px 23px no-repeat!important;
  }
 }
+
+/* Remove legacy pseudo-icon completely; mobile parent button gets exactly one 3-bar mark. */
+@media(max-width:600px){
+ #childView header #parentOpen{position:relative!important;text-indent:0!important;font-size:0!important}
+ #childView header #parentOpen::before{content:none!important;display:none!important;background:none!important}
+ #childView header #parentOpen::after{
+   content:""!important;display:block!important;width:30px!important;height:28px!important;
+   background:
+     linear-gradient(#174f85,#174f85) 2px 17px/6px 9px no-repeat,
+     linear-gradient(#174f85,#174f85) 12px 10px/6px 16px no-repeat,
+     linear-gradient(#174f85,#174f85) 22px 3px/6px 23px no-repeat!important;
+ }
+}
