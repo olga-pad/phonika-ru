@@ -62,3 +62,13 @@
 #parentView .collapse-toggle[aria-expanded="true"] .collapse-chevron{transform:rotate(90deg)}
 #parentView .collapse-arrow{display:none}
 @media(max-width:430px){#parentView .collapse-action-text{font-size:14px}#parentView .collapse-chevron{width:28px;height:28px;font-size:25px}}
+
+/* Soft color coding for parent dashboard groups. */
+#parentView .parent-collapsible{border:1px solid transparent}
+#parentView .tone-known{border-color:#d8e9e2} #parentView .tone-known .collapse-toggle{background:#f1f8f5}
+#parentView .tone-level{border-color:#dce6f4} #parentView .tone-level .collapse-toggle{background:#f2f6fc}
+#parentView .tone-session{border-color:#eadff3} #parentView .tone-session .collapse-toggle{background:#f8f3fb}
+#parentView .tone-sounds{border-color:#f1e1c9} #parentView .tone-sounds .collapse-toggle{background:#fff8ed}
+#parentView .tone-words{border-color:#dcebd6} #parentView .tone-words .collapse-toggle{background:#f4faF1}
+#parentView .tone-style{border-color:#eadde7} #parentView .tone-style .collapse-toggle{background:#fcf5fa}
+#parentView .parent-collapsible .collapse-toggle:hover{filter:brightness(.985)}
