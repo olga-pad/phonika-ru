@@ -11,6 +11,6 @@ module.exports = defineConfig({
   },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'mobile', use: { ...devices['iPhone 13'] } }
+    { name: 'mobile', use: { ...devices['iPhone 13'], browserName: 'chromium' } }
   ]
 });
