@@ -303,3 +303,9 @@
  #childView .dino-finish,
  #childView .finish-flag{transform:translate(31px,-2px)!important}
 }
+
+/* Final dinosaur alignment: closer to first dot and slightly lower. */
+#childView .dino{transform:translate(-18px,-15px) scaleX(-1)!important}
+@media(max-width:600px){
+ #childView .dino{transform:translate(-15px,-13px) scaleX(-1)!important}
+}
