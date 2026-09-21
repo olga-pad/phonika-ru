@@ -100,3 +100,14 @@
 #parentView .parent-summary strong{color:#3f3150}
 #parentView .parent-summary .intro{color:#71647d}
 #parentView .parent-summary .route-icon{font-size:18px;margin-right:3px}
+
+/* Consistent home navigation: full brand on desktop, compact home icon on mobile. */
+#childView .brand-home{background:transparent;color:#173b35;padding:6px 4px;min-height:44px;border-radius:12px;display:flex;align-items:center;gap:8px;text-align:left}
+#childView .brand-home:hover{background:#f0f4f2}
+#childView .home-icon{display:none;font-size:27px;line-height:1;color:#315f55}
+#childView .brand-full{display:inline}
+@media(max-width:600px){
+ #childView .brand-full{display:none}
+ #childView .home-icon{display:inline}
+ #childView .brand-home{min-width:44px;justify-content:center;padding:5px}
+}
