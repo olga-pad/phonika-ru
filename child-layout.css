@@ -412,3 +412,26 @@
  #parentView .style-fixed{border-radius:24px!important}
  #parentView .style-fixed>h2{border-radius:22px 22px 0 0!important;padding:20px 34px!important}
 }
+
+/* Current reading stage follows the same permanent-card pattern as Letter style. */
+#parentView .level-fixed{
+  background:#f3eafb!important;
+  border:1.5px solid #ddc9ee!important;
+  border-radius:24px!important;
+  overflow:visible!important;
+  padding:0 0 22px!important;
+}
+#parentView .level-fixed>h2{
+  background:#eee1f7!important;
+  border-radius:22px 22px 0 0!important;
+  padding:20px 34px!important;
+  margin:0!important;
+  color:#173b35!important;
+}
+#parentView .level-fixed-body{
+  padding:20px 34px 0!important;
+}
+#parentView .level-fixed #level{
+  width:100%!important;
+  margin-top:8px!important;
+}
