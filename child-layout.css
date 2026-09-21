@@ -44,3 +44,14 @@
 #childView .correct-confetti span:nth-child(1){--x:-150px;--y:-110px}#childView .correct-confetti span:nth-child(2){--x:-105px;--y:-155px}#childView .correct-confetti span:nth-child(3){--x:-55px;--y:-125px}#childView .correct-confetti span:nth-child(4){--x:-20px;--y:-175px}#childView .correct-confetti span:nth-child(5){--x:35px;--y:-145px}#childView .correct-confetti span:nth-child(6){--x:80px;--y:-170px}#childView .correct-confetti span:nth-child(7){--x:125px;--y:-115px}#childView .correct-confetti span:nth-child(8){--x:155px;--y:-70px}#childView .correct-confetti span:nth-child(9){--x:-135px;--y:-55px}#childView .correct-confetti span:nth-child(10){--x:110px;--y:-45px}
 @keyframes correctBurst{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}18%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) rotate(240deg) scale(1.05)}}
 @media(prefers-reduced-motion:reduce){#childView .correct-confetti{display:none}}
+
+/* Compact accordion sections in the parent dashboard. */
+#parentView .parent-collapsible{padding:0;overflow:hidden}
+#parentView .collapse-title{margin:0}
+#parentView .collapse-toggle{width:100%;min-height:64px;padding:16px 18px;border:0;border-radius:0;background:#fff;color:#173b35;display:flex;align-items:center;justify-content:space-between;text-align:left;font-size:21px;font-weight:750;box-shadow:none}
+#parentView .collapse-toggle:hover{background:#fbfdfc}
+#parentView .collapse-arrow{font-size:27px;color:#617c75;line-height:1;transition:transform .2s ease}
+#parentView .collapse-toggle[aria-expanded="true"] .collapse-arrow{transform:rotate(180deg)}
+#parentView .collapse-body{padding:0 18px 18px}
+#parentView .collapse-body[hidden]{display:none!important}
+@media(max-width:430px){#parentView .collapse-toggle{min-height:58px;padding:14px 16px;font-size:19px}#parentView .collapse-body{padding:0 16px 16px}}
