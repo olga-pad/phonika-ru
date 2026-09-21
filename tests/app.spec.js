@@ -134,3 +134,44 @@ test('звук после двух успехов возвращается то�
   await page.locator('.tone-sounds .collapse-toggle').click();
   await expect(page.locator('.tone-sounds #letterQueue .word-row').filter({ hasText: 'А' })).toHaveCount(1);
 });
+
+
+test('после «Прочитал сам» для звука появляется фейерверк', async ({ page }) => {
+  await resetApp(page);
+  await page.getByRole('button', { name: 'Звуки' }).click();
+  await expect(page.locator('.correct-confetti')).toHaveCount(0);
+  await page.locator('#letterKnown').click();
+  await expect(page.locator('.correct-confetti')).toBeVisible();
+});
+
+test('после «Прочитал сам» для слова появляется фейерверк', async ({ page }) => {
+  const mastered = (chars) => Object.fromEntries(
+    chars.map(ch => [ch, { self: 3, mastered: true, masteredAt: 1, dueRound: 0, lastSeenRound: 0 }])
+  );
+  await resetApp(page, {
+    version: 3,
+    profile: { id: 'test-child', name: '' },
+    level: 1,
+    style: 'upper',
+    section: 'words',
+    sounds: mastered(['к', 'о', 'т', 'м', 'а', 'с']),
+    words: {},
+    soundQueue: [],
+    wordQueue: [],
+    soundRound: 1,
+    wordSessionSize: 5,
+    letterSessionSize: 5
+  });
+  await expect(page.locator('#readOk')).toBeEnabled();
+  await expect(page.locator('.correct-confetti')).toHaveCount(0);
+  await page.locator('#readOk').click();
+  await expect(page.locator('.correct-confetti')).toBeVisible();
+});
+
+test('после подсказки нельзя получить фейерверк за самостоятельное чтение', async ({ page }) => {
+  await resetApp(page);
+  await page.getByRole('button', { name: 'Звуки' }).click();
+  await page.locator('#letterHelp').click();
+  await expect(page.locator('#letterKnown')).toBeDisabled();
+  await expect(page.locator('.correct-confetti')).toHaveCount(0);
+});
