@@ -124,3 +124,18 @@
  #childView [class*="home-icon"]{display:none!important}
  #childView .brand-home{padding-left:4px!important}
 }
+
+/* Mobile header: home and parent controls are matching square buttons. */
+@media(max-width:600px){
+ #childView header #childHome,
+ #childView header #parentOpen{
+   width:58px!important;height:58px!important;min-width:58px!important;min-height:58px!important;
+   padding:0!important;border:2px solid #d3dfeb!important;border-radius:16px!important;
+   background:#f8fbff!important;color:#174f85!important;
+   display:flex!important;align-items:center!important;justify-content:center!important;
+   box-shadow:none!important;
+ }
+ #childView header #childHome .home-icon{font-size:30px!important;color:#174f85!important}
+ #childView header #parentOpen{font-size:0!important}
+ #childView header #parentOpen::before{content:"▥";font-size:31px;line-height:1;font-weight:700;letter-spacing:-5px}
+}
