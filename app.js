@@ -133,5 +133,10 @@ window.addEventListener('DOMContentLoaded',()=>{
   const refreshCurrentNav=()=>{ensureSoundCards();navRefreshers[section==='letters'?'letters':'words']?.();};
   $('lettersTab').addEventListener('click',()=>requestAnimationFrame(()=>{celebration.hidden=true;readingView.hidden=true;document.getElementById('lettersView')?.insertBefore(dinoTrack,document.getElementById('lettersView')?.querySelector('.stage'));dinoProgress=0;buildDinoSteps();updateDino();ensureSoundCards();resetLessonGoal('letters');refreshCurrentNav();}));
   $('wordsTab').addEventListener('click',()=>requestAnimationFrame(()=>{celebration.hidden=true;document.getElementById('readingView')?.insertBefore(dinoTrack,document.getElementById('readingView')?.querySelector('.stage'));dinoProgress=0;buildDinoSteps();updateDino();resetLessonGoal('words');refreshCurrentNav();}));
-  switchSection(section==='letters'?'letters':'words');ensureSoundCards();resetLessonGoal(section==='letters'?'letters':'words');setActionLabels();refreshCurrentNav();requestAnimationFrame(()=>{ensureSoundCards();setActionLabels();refreshCurrentNav();});setTimeout(()=>{ensureSoundCards();setActionLabels();refreshCurrentNav();},0);
+  switchSection(section==='letters'?'letters':'words');
+  // Put the shared progress track into the initially active section as well.
+  const initialTrackHost=section==='letters'?document.getElementById('lettersView'):document.getElementById('readingView');
+  initialTrackHost?.insertBefore(dinoTrack,initialTrackHost.querySelector('.stage'));
+  dinoProgress=0;buildDinoSteps();updateDino();
+  ensureSoundCards();resetLessonGoal(section==='letters'?'letters':'words');setActionLabels();refreshCurrentNav();requestAnimationFrame(()=>{ensureSoundCards();setActionLabels();refreshCurrentNav();});setTimeout(()=>{ensureSoundCards();setActionLabels();refreshCurrentNav();},0);
 });
