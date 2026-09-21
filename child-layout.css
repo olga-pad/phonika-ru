@@ -459,3 +459,14 @@
   margin-top:0!important;
   min-height:54px!important;
 }
+
+/* Responsive Phonika lockup: desktop = text only, mobile = home only */
+@media(min-width:701px){
+ #childView .brand-lockup .brand-home{display:none!important}
+ #childView .brand-lockup{width:auto!important;height:auto!important;min-height:48px!important;display:flex!important}
+ #childView .brand-lockup>span:last-child{display:block!important}
+}
+@media(max-width:700px){
+ #childView .brand-lockup>span:last-child{display:none!important}
+ #childView .brand-lockup .brand-home{display:flex!important}
+}
