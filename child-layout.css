@@ -262,3 +262,16 @@
  #childView .brand-home svg,
  #childView .brand-home svg path{fill:#2f67a3!important;color:#2f67a3!important}
 }
+
+@media(min-width:601px){
+ #childView header #childHome,
+ #childView header #childHome *,
+ #childView header .home-btn,
+ #childView header .home-btn *,
+ #childView header [aria-label*="глав"],
+ #childView header [aria-label*="глав"] *{
+   color:#2f67a3!important;
+   fill:#2f67a3!important;
+   stroke:#2f67a3!important;
+ }
+}
