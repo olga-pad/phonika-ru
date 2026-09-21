@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
 async function resetApp(page, profile = null) {
-  await page.goto('/');
+  await page.goto('./');
   await page.evaluate((value) => {
     localStorage.clear();
     if (value) localStorage.setItem('soundsteps-profile-v1', JSON.stringify(value));
