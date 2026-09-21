@@ -1,11 +1,11 @@
 'use strict';
-document.write('<script src="./app-core.js?v=54"><\/script>');
+document.write('<script src="./app-core.js?v=55"><\/script>');
 window.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('letterNext')?.remove();document.getElementById('next')?.remove();
   if(!localStorage.getItem('ss-style') && !(Storage.load()||{}).style){style='upper';persist();}
   // Keep the letter-style controls inside their accordion. Moving the closest .panel used to detach the accordion body from its header.
-  const stylePanel=document.getElementById('letterStyle')?.closest('.panel'),parentMain=document.querySelector('#parentView main');
-  if(stylePanel&&parentMain)parentMain.prepend(stylePanel);
+  const stylePanel=document.getElementById('letterStyle')?.closest('.panel'),summary=document.querySelector('#parentView .parent-summary');
+  if(stylePanel&&summary)summary.insertAdjacentElement('afterend',stylePanel);
   const styleSelectEl=document.getElementById('styleSelect'),styleMenuEl=document.getElementById('styleMenu');
   if(styleSelectEl&&styleMenuEl){
     styleSelectEl.addEventListener('click',()=>{styleMenuEl.hidden=!styleMenuEl.hidden;});
