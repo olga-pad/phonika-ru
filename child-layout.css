@@ -309,3 +309,9 @@
 @media(max-width:600px){
  #childView .dino{transform:translate(-15px,-13px) scaleX(-1)!important}
 }
+
+/* Lower the whole progress track slightly, keeping dinosaur/dots/flag together. */
+#childView .dino-track{transform:translateY(16px)!important}
+@media(max-width:600px){
+ #childView .dino-track{transform:translateY(10px)!important}
+}
