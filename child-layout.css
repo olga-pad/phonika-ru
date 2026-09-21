@@ -287,3 +287,9 @@
  #childView .dino-finish,
  #childView .finish-flag{transform:translateX(31px)!important}
 }
+
+/* Dinosaur rides above the progress dots instead of covering the active dot. */
+#childView .dino{transform:translate(-38px,-38px) scaleX(-1)!important;z-index:3!important}
+@media(max-width:600px){
+ #childView .dino{transform:translate(-31px,-32px) scaleX(-1)!important}
+}
