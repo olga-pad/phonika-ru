@@ -315,3 +315,17 @@
 @media(max-width:600px){
  #childView .dino-track{transform:translateY(10px)!important}
 }
+
+/* Give the progress character its own clear lane above the dots. */
+#childView .dino-track{
+  margin-top:34px!important;
+  overflow:visible!important;
+}
+#childView .dino{
+  transform:translate(-10px,-22px) scaleX(-1)!important;
+  z-index:4!important;
+}
+@media(max-width:600px){
+ #childView .dino-track{margin-top:28px!important}
+ #childView .dino{transform:translate(-8px,-19px) scaleX(-1)!important}
+}
