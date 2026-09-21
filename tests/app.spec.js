@@ -74,3 +74,63 @@ test('выбранный стиль букв сохраняется после �
   const profile = await page.evaluate(() => JSON.parse(localStorage.getItem('soundsteps-profile-v1')));
   expect(profile.style).toBe('handLower');
 });
+
+
+for (const size of [3, 5, 7]) {
+  test(`размер сессии звуков ${size} ограничивает очередь звуков`, async ({ page }) => {
+    await resetApp(page, {
+      version: 3,
+      profile: { id: 'test-child', name: '' },
+      level: 1,
+      style: 'upper',
+      section: 'letters',
+      sounds: {},
+      words: {},
+      soundQueue: [],
+      wordQueue: [],
+      soundRound: 1,
+      wordSessionSize: size === 3 ? 7 : 3,
+      letterSessionSize: size
+    });
+    await page.locator('#parentOpen').click();
+    const soundsPanel = page.locator('.tone-sounds');
+    await soundsPanel.locator('.collapse-toggle').click();
+    await expect(soundsPanel.locator('#letterQueue .word-row')).toHaveCount(size);
+  });
+}
+
+test('звук после двух успехов возвращается только к контрольной сессии', async ({ page }) => {
+  await resetApp(page, {
+    version: 3,
+    profile: { id: 'test-child', name: '' },
+    level: 1,
+    style: 'upper',
+    section: 'letters',
+    sounds: {
+      'а': { self: 2, mastered: false, masteredAt: 0, dueRound: 3, lastSeenRound: 1 }
+    },
+    words: {},
+    soundQueue: [],
+    wordQueue: [],
+    soundRound: 1,
+    wordSessionSize: 5,
+    letterSessionSize: 5
+  });
+
+  await page.locator('#parentOpen').click();
+  const soundsPanel = page.locator('.tone-sounds');
+  await soundsPanel.locator('.collapse-toggle').click();
+  await expect(soundsPanel.locator('#letterQueue .word-row').filter({ hasText: 'А' })).toHaveCount(0);
+
+  const profile = await page.evaluate(() => {
+    const value = JSON.parse(localStorage.getItem('soundsteps-profile-v1'));
+    value.soundRound = 3;
+    localStorage.setItem('soundsteps-profile-v1', JSON.stringify(value));
+    return value;
+  });
+  expect(profile.soundRound).toBe(3);
+  await page.reload();
+  await page.locator('#parentOpen').click();
+  await page.locator('.tone-sounds .collapse-toggle').click();
+  await expect(page.locator('.tone-sounds #letterQueue .word-row').filter({ hasText: 'А' })).toHaveCount(1);
+});
