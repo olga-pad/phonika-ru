@@ -13,6 +13,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   card.onclick=null;word.onclick=null;letterPicture.onclick=null;wordPicture.onclick=null;
   letterHelp.onclick=()=>{const x=currentLetter();if(!x)return;letterMastery.disabled=true;speak(x[1]);};if(help)help.onclick=()=>{if(!current)return;usedHint=true;wordMastery.disabled=true;speak(current[0],.68);};
   letterPictureBtn.onclick=()=>{const x=currentLetter();if(!x)return;letterMastery.disabled=true;letterPicture.hidden=!letterPicture.hidden;setActionLabels();};wordPictureBtn.onclick=()=>{if(!current)return;usedHint=true;wordMastery.disabled=true;wordPicture.hidden=!wordPicture.hidden;setActionLabels();};
+  const celebrateCorrect=(source)=>{const host=source?.closest('.reading')||document.getElementById('childView');if(!host)return;const burst=document.createElement('div');burst.className='correct-confetti';burst.setAttribute('aria-hidden','true');const bits=['🎉','✨','⭐','●','◆','★','●','✨','◆','★'];burst.innerHTML=bits.map((x,i)=>'<span style="--i:'+i+'">'+x+'</span>').join('');host.appendChild(burst);setTimeout(()=>burst.remove(),850);};
   const REQUIRED_SESSION_READS=2;
   // Dinosaur progress follows the word-session size selected in the parent area.
   let dinoProgress=0;
@@ -108,6 +109,7 @@ window.addEventListener('DOMContentLoaded',()=>{
     const key=current?.[0];if(!key)return;
     if(typeof baseWordMastery==='function')baseWordMastery.call(wordMastery,event);
     if(markedThisTurn){
+      celebrateCorrect(wordMastery);
       markLessonPassed('words',key);
       if(dinoProgress<dinoGoal()){dinoProgress=Math.min(dinoGoal(),dinoProgress+1);updateDino();}
       wordMastery.classList.add('pressed-feedback');
@@ -121,7 +123,7 @@ window.addEventListener('DOMContentLoaded',()=>{
     if(letterMastery.disabled)return;
     const key=currentLetter()?.[0];if(!key)return;
     if(typeof baseLetterMastery==='function')baseLetterMastery.call(letterMastery,event);
-    if(letterMarked){markLessonPassed('letters',key);if(dinoProgress<dinoGoal()){dinoProgress=Math.min(dinoGoal(),dinoProgress+1);updateDino();}}
+    if(letterMarked){celebrateCorrect(letterMastery);markLessonPassed('letters',key);if(dinoProgress<dinoGoal()){dinoProgress=Math.min(dinoGoal(),dinoProgress+1);updateDino();}}
   };
   const finishGuard=new MutationObserver(()=>{
     if(!$('finishView').hidden&&!allLessonItemsMastered('words')){$('finishView').hidden=true;$('readingView').hidden=false;restartPendingCycle('words');}
