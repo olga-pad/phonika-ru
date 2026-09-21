@@ -126,6 +126,7 @@ window.addEventListener('DOMContentLoaded',()=>{
       if(dinoProgress<dinoGoal()){dinoProgress=Math.min(dinoGoal(),dinoProgress+1);updateDino();}
       wordMastery.classList.add('pressed-feedback');
       wordMastery.dataset.continueNext='1';
+      wordMastery.disabled=false;
       wordMastery.innerHTML='<span>Продолжить</span>'+icon('right');
       setTimeout(()=>wordMastery.classList.remove('pressed-feedback'),420);
       if(dinoProgress>=dinoGoal())setTimeout(finishDinoGame,520);
@@ -141,6 +142,7 @@ window.addEventListener('DOMContentLoaded',()=>{
       celebrateCorrect(letterMastery);markLessonPassed('letters',key);
       if(dinoProgress<dinoGoal()){dinoProgress=Math.min(dinoGoal(),dinoProgress+1);updateDino();}
       letterMastery.dataset.continueNext='1';
+      letterMastery.disabled=false;
       letterMastery.innerHTML='<span>Продолжить</span>'+icon('right');
     }
   };
