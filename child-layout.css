@@ -80,3 +80,17 @@
 #parentView .tone-sounds{border-color:#ebd1aa} #parentView .tone-sounds .collapse-toggle{background:#fff0d9}
 #parentView .tone-words{border-color:#c9e2bf} #parentView .tone-words .collapse-toggle{background:#e9f5e4}
 #parentView .tone-style{border-color:#dfc6d9} #parentView .tone-style .collapse-toggle{background:#f7e8f2}
+
+/* Unified parent accordion palette: same lavender as session cards. */
+#parentView .tone-known,
+#parentView .tone-level,
+#parentView .tone-session,
+#parentView .tone-sounds,
+#parentView .tone-words,
+#parentView .tone-style{border-color:#dbc9e9}
+#parentView .tone-known .collapse-toggle,
+#parentView .tone-level .collapse-toggle,
+#parentView .tone-session .collapse-toggle,
+#parentView .tone-sounds .collapse-toggle,
+#parentView .tone-words .collapse-toggle,
+#parentView .tone-style .collapse-toggle{background:#f0e7f7}
