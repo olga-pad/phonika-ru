@@ -39,7 +39,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   const celebration=document.createElement('section');celebration.className='dino-celebration';celebration.hidden=true;
   celebration.innerHTML='<div class="fireworks" aria-hidden="true"><span>✨</span><span>🎆</span><span>✨</span><span>🎉</span><span>⭐</span></div><div class="celebration-dino">🦕</div><h1>Ура!</h1><p class="dino-result"></p><button type="button" class="primary dino-again">Ещё раз</button>';
   readingView?.insertAdjacentElement('afterend',celebration);
-  const finishDinoGame=()=>{celebration.querySelector('.dino-result').textContent=`${dinoGoal()} слов прочитано!`;readingView.hidden=true;celebration.hidden=false;if(navigator.vibrate)navigator.vibrate([70,40,70]);};
+  const finishDinoGame=()=>{celebration.querySelector('.dino-result').textContent=`${sessionGoal('words')} слов прочитано!`;readingView.hidden=true;celebration.hidden=false;if(navigator.vibrate)navigator.vibrate([70,40,70]);};
   celebration.querySelector('.dino-again')?.addEventListener('click',()=>{dinoProgress=0;updateDino();celebration.hidden=true;readingView.hidden=false;resetLessonGoal('words');showSessionWord();setActionLabels();});
   updateDino();
   ['wordSessionSize','letterSessionSize'].forEach(id=>document.getElementById(id)?.addEventListener('change',()=>{
@@ -129,7 +129,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   });
   finishGuard.observe(document.body,{subtree:true,attributes:true,attributeFilter:['hidden']});
   const refreshCurrentNav=()=>{ensureSoundCards();navRefreshers[section==='letters'?'letters':'words']?.();};
-  $('lettersTab').addEventListener('click',()=>requestAnimationFrame(()=>{document.getElementById('lettersView')?.insertBefore(dinoTrack,document.getElementById('lettersView')?.querySelector('.stage'));dinoProgress=0;buildDinoSteps();updateDino();ensureSoundCards();resetLessonGoal('letters');refreshCurrentNav();}));
-  $('wordsTab').addEventListener('click',()=>requestAnimationFrame(()=>{document.getElementById('readingView')?.insertBefore(dinoTrack,document.getElementById('readingView')?.querySelector('.stage'));dinoProgress=0;buildDinoSteps();updateDino();resetLessonGoal('words');refreshCurrentNav();}));
+  $('lettersTab').addEventListener('click',()=>requestAnimationFrame(()=>{celebration.hidden=true;readingView.hidden=true;document.getElementById('lettersView')?.insertBefore(dinoTrack,document.getElementById('lettersView')?.querySelector('.stage'));dinoProgress=0;buildDinoSteps();updateDino();ensureSoundCards();resetLessonGoal('letters');refreshCurrentNav();}));
+  $('wordsTab').addEventListener('click',()=>requestAnimationFrame(()=>{celebration.hidden=true;document.getElementById('readingView')?.insertBefore(dinoTrack,document.getElementById('readingView')?.querySelector('.stage'));dinoProgress=0;buildDinoSteps();updateDino();resetLessonGoal('words');refreshCurrentNav();}));
   switchSection(section==='letters'?'letters':'words');ensureSoundCards();resetLessonGoal(section==='letters'?'letters':'words');setActionLabels();refreshCurrentNav();requestAnimationFrame(()=>{ensureSoundCards();setActionLabels();refreshCurrentNav();});setTimeout(()=>{ensureSoundCards();setActionLabels();refreshCurrentNav();},0);
 });
