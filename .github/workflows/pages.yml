@@ -1,8 +1,9 @@
-name: Deploy SoundSteps to GitHub Pages
+name: Deploy SoundSteps preview to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches:
+      - feat/illustrated-png-cards
   workflow_dispatch:
 
 permissions:
@@ -21,16 +22,33 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
+      - name: Check out main site
         uses: actions/checkout@v4
+        with:
+          ref: main
+          path: site
+
+      - name: Check out illustrated PNG preview
+        uses: actions/checkout@v4
+        with:
+          ref: feat/illustrated-png-cards
+          path: preview-source
+
+      - name: Add branch preview under /preview/illustrated-png-cards
+        run: |
+          mkdir -p site/preview/illustrated-png-cards
+          rsync -a --exclude '.git' --exclude '.github' preview-source/ site/preview/illustrated-png-cards/
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
           enablement: true
+
       - name: Upload static site
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: site
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
