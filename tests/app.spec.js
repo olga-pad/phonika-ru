@@ -175,3 +175,35 @@ test('после подсказки нельзя получить фейерве
   await expect(page.locator('#letterKnown')).toBeDisabled();
   await expect(page.locator('.correct-confetti')).toHaveCount(0);
 });
+
+test('Games восстанавливается после изменения Words в кабинете родителя', async ({ page }) => {
+  await resetApp(page);
+  await page.locator('#parentOpen').click();
+  await page.locator('.tone-known .collapse-toggle').click();
+  await page.locator('#toggleAllSounds').click();
+  await page.locator('#wordSessionSize').selectOption('7');
+  await page.locator('#parentBack').click();
+
+  await page.locator('#gamesTab').click();
+  await page.locator('#findGameCard').click();
+  await page.locator('#findWordsMode').click();
+  await expect(page.locator('#findGame')).toBeVisible();
+  await expect(page.locator('#findDinoSteps .dino-step')).toHaveCount(14);
+
+  await page.locator('#parentOpen').click();
+  await page.locator('#wordSessionSize').selectOption('3');
+  await page.locator('#parentBack').click();
+  await expect(page.locator('#findGame')).toBeVisible();
+  await expect(page.locator('#readingView')).toBeHidden();
+  await expect(page.locator('#lettersView')).toBeHidden();
+  await expect(page.locator('#findDinoSteps .dino-step')).toHaveCount(6);
+  await expect(page.locator('#findDinoSteps .dino-step.done')).toHaveCount(0);
+
+  await page.locator('#parentOpen').click();
+  await page.locator('#wordSessionSize').selectOption('5');
+  await page.locator('#parentBack').click();
+  await expect(page.locator('#findGame')).toBeVisible();
+  await expect(page.locator('#readingView')).toBeHidden();
+  await expect(page.locator('#findDinoSteps .dino-step')).toHaveCount(10);
+  await expect(page.locator('#findDinoSteps .dino-step.done')).toHaveCount(0);
+});
