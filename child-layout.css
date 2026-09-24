@@ -6,15 +6,12 @@
 #childView .tabs{width:min(100%,390px);margin:-66px auto 26px;padding:4px;background:#edf4fb;border:1px solid #d5e1ef;border-radius:24px;flex:0 0 auto;position:relative;z-index:2}#childView .tab{min-height:52px;border-radius:20px;color:#123f73;font-weight:750}#childView .tab.on{background:#2389e8;color:#fff;box-shadow:0 3px 10px #2389e83a}
 #childView .reading{min-height:0;flex:1;overflow:hidden;display:flex;flex-direction:column;text-align:center;width:100%;max-width:1120px;margin:0 auto}#childView .stage{min-height:0;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 145px 28px;position:relative}#childView .word{font-size:clamp(142px,22vw,238px);font-weight:800;letter-spacing:.025em;line-height:1.05;cursor:pointer}#childView .letter-card{font-size:clamp(142px,22vw,238px);font-weight:800;line-height:.95;cursor:pointer}
 #childView .picture,#childView .letter-picture{width:100%;height:164px;min-height:164px;margin:18px 0 4px;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;font-size:120px;line-height:1;border:0;cursor:pointer}#childView .picture[hidden],#childView .letter-picture[hidden]{display:flex!important;visibility:hidden}#childView .reward{min-height:18px;margin-top:0}
-/* Quiet circular navigation: SVG chevrons are optically centered; unavailable directions disappear. */
 #childView .lesson-nav{position:absolute;inset:0;pointer-events:none}#childView .nav-arrow{pointer-events:auto;position:absolute;top:46%;transform:translateY(-50%);width:58px;height:58px;min-height:58px;padding:0;border:1.5px solid #d2deea;border-radius:50%;background:#fff;color:#123f73;box-shadow:0 2px 8px #123f730d;display:flex;align-items:center;justify-content:center}#childView .nav-arrow svg{width:30px;height:30px;display:block}#childView .nav-arrow:hover{border-color:#aebfd1;background:#fbfdff}#childView .nav-arrow:active{transform:translateY(-50%) scale(.96)}#childView .nav-arrow[hidden]{display:none!important}#childView .nav-prev{left:34px}#childView .nav-next{right:34px}
 #childView .actions,#childView #lettersView .actions{flex:0 0 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;width:min(100%,840px);margin:0 auto 2px}#childView .actions button{min-height:68px;padding:12px 18px;border-radius:17px;font-size:18px;box-shadow:0 4px 12px #123f7315;display:flex;align-items:center;justify-content:center;gap:11px}#childView .actions button svg{width:32px;height:32px;flex:0 0 auto}#childView .help{background:#2389e8;color:#fff}#childView .help svg{fill:currentColor}#childView .picture-btn{background:#f8fbff;color:#123f73;border:1px solid #cbd9ea}#childView .picture-btn svg{fill:#123f73}#childView .mastery-btn{background:#35b96f;color:#fff}#childView .mastery-btn svg{fill:#fff}#childView .primary{display:none}#childView .confirmation{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 #childView .finish{min-height:0;flex:1;color:#123f73}#childView .finish .primary,#childView .continue{display:block;background:#2389e8;color:#fff}
 @media(max-width:700px){#childView{padding:10px 14px 18px}#childView header{min-height:54px}#childView .brand-lockup{gap:0}#childView .brand-lockup .brand-home{width:38px;height:38px}#childView .brand-lockup .brand-home svg{width:36px;height:36px}#childView .brand-lockup>span:last-child{display:none}#childView #parentOpen{padding:7px 9px;min-height:40px;font-size:0}#childView #parentOpen svg{width:24px;height:24px}#childView .tabs{margin:-45px auto 8px;width:min(58%,280px)}#childView .tab{min-height:40px;font-size:15px}#childView .reading{max-width:100%}#childView .stage{padding:2px 55px 12px}#childView .word{font-size:clamp(96px,31vw,150px)}#childView .letter-card{font-size:clamp(96px,31vw,150px)}#childView .picture,#childView .letter-picture{height:96px;min-height:96px;margin:5px 0 0;font-size:76px}#childView .nav-arrow{width:48px;height:48px;min-height:48px;top:45%}#childView .nav-arrow svg{width:25px;height:25px}#childView .nav-prev{left:0}#childView .nav-next{right:0}#childView .actions,#childView #lettersView .actions{grid-template-columns:1fr;gap:10px;width:min(100%,440px);margin:0 auto}#childView .actions button{min-height:52px;padding:9px 14px;border-radius:14px;font-size:16px;line-height:1.15;gap:9px}#childView .actions button svg{width:25px;height:25px}}
 @media(max-width:390px){#childView{padding-left:10px;padding-right:10px}#childView .actions button{min-height:49px;font-size:15px}#childView .tabs{width:60%}}
 @media(max-height:700px) and (min-width:701px){#childView{padding-top:14px;padding-bottom:24px}#childView header{min-height:60px}#childView .tabs{margin-top:-54px;margin-bottom:12px}#childView .tab{min-height:42px}#childView .word{font-size:clamp(105px,18vw,172px)}#childView .letter-card{font-size:clamp(105px,18vw,172px)}#childView .picture,#childView .letter-picture{height:100px;min-height:100px;margin:6px 0 2px;font-size:76px}#childView .stage{padding-bottom:14px}#childView .actions{gap:18px}#childView .actions button{min-height:54px;padding:8px 14px}}
-
-/* Dinosaur session progress */
 #childView .dino-track{position:relative;width:min(78%,600px);height:82px;margin:5px auto 0;flex:0 0 82px;padding-right:68px}
 #childView .dino-path{position:absolute;left:36px;right:50px;top:48px;height:6px;background:#d9e1e8;border-radius:99px}
 #childView .dino-steps{position:absolute;left:39px;right:53px;top:35px;display:flex;justify-content:space-between}
@@ -35,438 +32,74 @@
 @keyframes firePop{from{transform:scale(.65) translateY(8px);opacity:.55}to{transform:scale(1.2) translateY(-8px);opacity:1}}@keyframes dinoBounce{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-10px) rotate(3deg)}}
 @media(max-width:700px){#childView .dino-track{width:100%;height:70px;flex-basis:70px;padding-right:58px;margin-top:3px}#childView .dino-path{left:29px;right:43px;top:42px;height:5px}#childView .dino-steps{left:31px;right:46px;top:31px}#childView .dino-step{width:26px;height:26px;border-width:3px}#childView .dino{font-size:43px}#childView .dino-finish{right:3px;top:4px;font-size:37px}#childView .dino-count{right:0;top:21px;min-width:53px;font-size:14px;padding:7px 7px}#childView .celebration-dino{font-size:82px}}
 @media(prefers-reduced-motion:reduce){#childView .dino,#childView .fireworks span,#childView .celebration-dino{animation:none;transition:none}}
-
 #childView .dino{transform:scaleX(-1)}
-
-/* Small reward burst after a successful independent answer. */
 #childView .correct-confetti{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:30}
 #childView .correct-confetti span{position:absolute;left:50%;top:55%;font-size:22px;line-height:1;animation:correctBurst .8s ease-out forwards;transform:translate(-50%,-50%) rotate(calc(var(--i)*31deg))}
 #childView .correct-confetti span:nth-child(1){--x:-150px;--y:-110px}#childView .correct-confetti span:nth-child(2){--x:-105px;--y:-155px}#childView .correct-confetti span:nth-child(3){--x:-55px;--y:-125px}#childView .correct-confetti span:nth-child(4){--x:-20px;--y:-175px}#childView .correct-confetti span:nth-child(5){--x:35px;--y:-145px}#childView .correct-confetti span:nth-child(6){--x:80px;--y:-170px}#childView .correct-confetti span:nth-child(7){--x:125px;--y:-115px}#childView .correct-confetti span:nth-child(8){--x:155px;--y:-70px}#childView .correct-confetti span:nth-child(9){--x:-135px;--y:-55px}#childView .correct-confetti span:nth-child(10){--x:110px;--y:-45px}
 @keyframes correctBurst{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}18%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) rotate(240deg) scale(1.05)}}
 @media(prefers-reduced-motion:reduce){#childView .correct-confetti{display:none}}
-
-/* Compact accordion sections in the parent dashboard. */
-#parentView .parent-collapsible{padding:0;overflow:hidden}
-#parentView .collapse-title{margin:0}
-#parentView .collapse-toggle{width:100%;min-height:64px;padding:16px 18px;border:0;border-radius:0;background:#fff;color:#173b35;display:flex;align-items:center;justify-content:space-between;text-align:left;font-size:21px;font-weight:750;box-shadow:none}
-#parentView .collapse-toggle:hover{background:#fbfdfc}
-#parentView .collapse-arrow{font-size:27px;color:#617c75;line-height:1;transition:transform .2s ease}
-#parentView .collapse-toggle[aria-expanded="true"] .collapse-arrow{transform:rotate(180deg)}
-#parentView .collapse-body{padding:0 18px 18px}
-#parentView .collapse-body[hidden]{display:none!important}
-@media(max-width:430px){#parentView .collapse-toggle{min-height:58px;padding:14px 16px;font-size:19px}#parentView .collapse-body{padding:0 16px 16px}}
-
-/* Clear accordion affordance: explicit action + familiar chevron. */
-#parentView .collapse-action{display:flex;align-items:center;gap:8px;color:#2389e8;font-size:15px;font-weight:750;white-space:nowrap}
-#parentView .collapse-chevron{width:30px;height:30px;border-radius:50%;background:#edf4fb;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:500;line-height:1;transition:transform .2s ease}
-#parentView .collapse-toggle[aria-expanded="true"] .collapse-chevron{transform:rotate(90deg)}
-#parentView .collapse-arrow{display:none}
-@media(max-width:430px){#parentView .collapse-action-text{font-size:14px}#parentView .collapse-chevron{width:28px;height:28px;font-size:25px}}
-
-/* Soft color coding for parent dashboard groups. */
-#parentView .parent-collapsible{border:1px solid transparent}
-#parentView .tone-known{border-color:#d8e9e2} #parentView .tone-known .collapse-toggle{background:#f1f8f5}
-#parentView .tone-level{border-color:#dce6f4} #parentView .tone-level .collapse-toggle{background:#f2f6fc}
-#parentView .tone-session{border-color:#eadff3} #parentView .tone-session .collapse-toggle{background:#f8f3fb}
-#parentView .tone-sounds{border-color:#f1e1c9} #parentView .tone-sounds .collapse-toggle{background:#fff8ed}
-#parentView .tone-words{border-color:#dcebd6} #parentView .tone-words .collapse-toggle{background:#f4faF1}
-#parentView .tone-style{border-color:#eadde7} #parentView .tone-style .collapse-toggle{background:#fcf5fa}
-#parentView .parent-collapsible .collapse-toggle:hover{filter:brightness(.985)}
-
-/* Slightly stronger pastel contrast for parent accordion headers. */
-#parentView .tone-known{border-color:#bdded1} #parentView .tone-known .collapse-toggle{background:#e3f3ed}
-#parentView .tone-level{border-color:#c5d8ef} #parentView .tone-level .collapse-toggle{background:#e5eef9}
-#parentView .tone-session{border-color:#dbc9e9} #parentView .tone-session .collapse-toggle{background:#f0e7f7}
-#parentView .tone-sounds{border-color:#ebd1aa} #parentView .tone-sounds .collapse-toggle{background:#fff0d9}
-#parentView .tone-words{border-color:#c9e2bf} #parentView .tone-words .collapse-toggle{background:#e9f5e4}
-#parentView .tone-style{border-color:#dfc6d9} #parentView .tone-style .collapse-toggle{background:#f7e8f2}
-
-/* Unified parent accordion palette: same lavender as session cards. */
-#parentView .tone-known,
-#parentView .tone-level,
-#parentView .tone-session,
-#parentView .tone-sounds,
-#parentView .tone-words,
-#parentView .tone-style{border-color:#dbc9e9}
-#parentView .tone-known .collapse-toggle,
-#parentView .tone-level .collapse-toggle,
-#parentView .tone-session .collapse-toggle,
-#parentView .tone-sounds .collapse-toggle,
-#parentView .tone-words .collapse-toggle,
-#parentView .tone-style .collapse-toggle{background:#f0e7f7}
-
-/* Parent intro card aligned with the lavender dashboard palette. */
-#parentView .parent-summary{background:#f7f3fa;border:1px solid #e5d9ee;box-shadow:0 4px 14px rgba(80,55,100,.05)}
-#parentView .parent-summary strong{color:#3f3150}
-#parentView .parent-summary .intro{color:#71647d}
-#parentView .parent-summary .route-icon{font-size:18px;margin-right:3px}
-
-/* Consistent home navigation: full brand on desktop, compact home icon on mobile. */
-#childView .brand-home{background:transparent;color:#173b35;padding:6px 4px;min-height:44px;border-radius:12px;display:flex;align-items:center;gap:8px;text-align:left}
-#childView .brand-home:hover{background:#f0f4f2}
-#childView .home-icon{display:none;font-size:27px;line-height:1;color:#315f55}
-#childView .brand-full{display:inline}
-@media(max-width:600px){
- #childView .brand-full{display:none}
- #childView .home-icon{display:inline}
- #childView .brand-home{min-width:44px;justify-content:center;padding:5px}
-}
-
-/* Desktop: brand text only. Mobile: home icon only. */
+#parentView .parent-collapsible{padding:0;overflow:hidden;border:1px solid transparent}
+#parentView .collapse-title{margin:0}#parentView .collapse-toggle{width:100%;min-height:64px;padding:16px 18px;border:0;border-radius:0;background:#fff;color:#173b35;display:flex;align-items:center;justify-content:space-between;text-align:left;font-size:21px;font-weight:750;box-shadow:none}#parentView .collapse-toggle:hover{background:#fbfdfc}#parentView .collapse-body{padding:0 18px 18px}#parentView .collapse-body[hidden]{display:none!important}
+#parentView .collapse-action{display:flex;align-items:center;gap:8px;color:#2389e8;font-size:15px;font-weight:750;white-space:nowrap}#parentView .collapse-chevron{width:30px;height:30px;border-radius:50%;background:#edf4fb;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:500;line-height:1;transition:transform .2s ease}#parentView .collapse-toggle[aria-expanded="true"] .collapse-chevron{transform:rotate(90deg)}#parentView .collapse-arrow{display:none}
+@media(max-width:430px){#parentView .collapse-toggle{min-height:58px;padding:14px 16px;font-size:19px}#parentView .collapse-body{padding:0 16px 16px}#parentView .collapse-action-text{font-size:14px}#parentView .collapse-chevron{width:28px;height:28px;font-size:25px}}
+#parentView .tone-known,#parentView .tone-level,#parentView .tone-session,#parentView .tone-sounds,#parentView .tone-words,#parentView .tone-style{border-color:#dbc9e9}#parentView .tone-known .collapse-toggle,#parentView .tone-level .collapse-toggle,#parentView .tone-session .collapse-toggle,#parentView .tone-sounds .collapse-toggle,#parentView .tone-words .collapse-toggle,#parentView .tone-style .collapse-toggle{background:#f0e7f7}
+#parentView .parent-summary{background:#f7f3fa;border:1px solid #e5d9ee;box-shadow:0 4px 14px rgba(80,55,100,.05)}#parentView .parent-summary strong{color:#3f3150}#parentView .parent-summary .intro{color:#71647d}#parentView .parent-summary .route-icon{font-size:18px;margin-right:3px}
+#childView .brand-home{background:transparent;color:#173b35;padding:6px 4px;min-height:44px;border-radius:12px;display:flex;align-items:center;gap:8px;text-align:left}#childView .brand-home:hover{background:#f0f4f2}#childView .home-icon{display:none;font-size:27px;line-height:1;color:#315f55}#childView .brand-full{display:inline}
 @media(min-width:601px){#childView .brand-home .home-icon{display:none!important}#childView .brand-home .brand-full{display:inline!important}}
-@media(max-width:600px){#childView .brand-home .home-icon{display:inline!important}#childView .brand-home .brand-full{display:none!important}}
+@media(max-width:600px){#childView .brand-full{display:none}#childView .home-icon{display:inline}#childView .brand-home{min-width:44px;justify-content:center;padding:5px}#childView .brand-home .home-icon{display:inline!important}#childView .brand-home .brand-full{display:none!important}}
+@media(min-width:601px){#childView .home-icon,#childView .home-btn,#childView .home-button,#childView [class*="home-icon"]{display:none!important}#childView .brand-home{padding-left:4px!important}}
+@media(max-width:600px){#childView header #childHome,#childView header #parentOpen{width:56px!important;height:56px!important;min-width:56px!important;min-height:56px!important;padding:0!important;border:1.5px solid #b9d0e8!important;border-radius:16px!important;background:#fff!important;color:#174f85!important;display:flex!important;align-items:center!important;justify-content:center!important;box-shadow:none!important}#childView header #childHome .home-icon{font-size:29px!important;color:#174f85!important}#childView header #parentOpen{color:#174f85!important;text-indent:0!important;font-size:0!important}#childView #parentOpen .parent-label{display:none!important}#childView #parentOpen .parent-chart-icon{display:inline-flex!important}}
+#childView #parentOpen{display:flex;align-items:center;justify-content:center;gap:10px}#childView #parentOpen .parent-chart-icon{display:inline-flex;align-items:flex-end;gap:4px;width:26px;height:25px;flex:0 0 26px}#childView #parentOpen .parent-chart-icon i{display:block;width:5px;background:#174f85;border-radius:1px}#childView #parentOpen .parent-chart-icon i:nth-child(1){height:9px}#childView #parentOpen .parent-chart-icon i:nth-child(2){height:16px}#childView #parentOpen .parent-chart-icon i:nth-child(3){height:23px}#childView #parentOpen::before,#childView #parentOpen::after{content:none!important;display:none!important}
+@media(min-width:601px){#childView #parentOpen .parent-label{display:inline!important}#childView .brand-home,#childView .brand-home .home-icon,#childView .brand-home .brand-full,#childView .brand-home .brand-full .quiet{color:#2f67a3!important}}
+#childView .dino-track{padding-left:46px!important;padding-right:46px!important;transform:translateY(16px)!important;margin-top:34px!important;overflow:visible!important}#childView .dino{transform:translate(-10px,-22px) scaleX(-1)!important;z-index:4!important}#childView .dino-finish,#childView .finish-flag{transform:translate(38px,-2px)!important}
+@media(max-width:600px){#childView .dino-track{padding-left:38px!important;padding-right:38px!important;transform:translateY(10px)!important;margin-top:28px!important}#childView .dino{transform:translate(-8px,-19px) scaleX(-1)!important}#childView .dino-finish,#childView .finish-flag{transform:translate(31px,-2px)!important}}
+#parentView .parent-collapsible:has(#letterStyle),#parentView .parent-collapsible:has(#letterStyle) .collapse-body,#parentView .parent-collapsible:has(#letterStyle) .panel,#parentView #letterStyle{overflow:visible!important;max-height:none!important}#parentView #styleMenu[hidden]{display:none!important}#parentView #styleMenu:not([hidden]){display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important;padding:12px 0 2px!important;position:static!important;width:100%!important;max-height:none!important;overflow:visible!important;background:transparent!important;border:0!important;box-shadow:none!important;z-index:auto!important}#parentView #styleMenu .style-option{min-height:62px!important;border:1.5px solid #cbdad6!important;border-radius:16px!important;background:#fff!important;font-size:25px!important;font-weight:750!important;color:#173b35!important;display:flex!important;align-items:center!important;justify-content:center!important}#parentView #styleMenu .style-option.selected{border-color:#2389e8!important;background:#eaf4ff!important;box-shadow:0 0 0 2px rgba(35,137,232,.12)!important}
+@media(max-width:430px){#parentView #styleMenu:not([hidden]){grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+#parentView .style-fixed,#parentView .level-fixed{background:#f3eafb!important;border:1.5px solid #ddc9ee!important;border-radius:24px!important;padding:0 0 22px!important;overflow:visible!important}#parentView .style-fixed>h2,#parentView .level-fixed>h2{background:#eee1f7!important;border-radius:22px 22px 0 0!important;padding:20px 34px!important;margin:0 0 14px!important;color:#173b35!important}#parentView .style-fixed>.intro,#parentView .style-fixed>.letter-style{margin-left:34px!important;margin-right:34px!important}#parentView .level-fixed-body{padding:0 34px!important}#parentView .level-fixed #level{margin-top:0!important;min-height:54px!important}
+@media(min-width:701px){#childView .brand-lockup .brand-home{display:none!important}#childView .brand-lockup{width:auto!important;height:auto!important;min-height:48px!important;display:flex!important}#childView .brand-lockup>span:last-child{display:block!important}}
+@media(max-width:700px){#childView .brand-lockup>span:last-child{display:none!important}#childView .brand-lockup .brand-home{display:flex!important}}
 
-/* Final desktop override: legacy layout also contains a home icon; hide every home glyph at desktop width. */
-@media(min-width:601px){
- #childView .home-icon,
- #childView .home-btn,
- #childView .home-button,
- #childView [class*="home-icon"]{display:none!important}
- #childView .brand-home{padding-left:4px!important}
-}
-
-/* Mobile header: home and parent controls are matching square buttons. */
-@media(max-width:600px){
- #childView header #childHome,
- #childView header #parentOpen{
-   width:58px!important;height:58px!important;min-width:58px!important;min-height:58px!important;
-   padding:0!important;border:2px solid #d3dfeb!important;border-radius:16px!important;
-   background:#f8fbff!important;color:#174f85!important;
-   display:flex!important;align-items:center!important;justify-content:center!important;
-   box-shadow:none!important;
- }
- #childView header #childHome .home-icon{font-size:30px!important;color:#174f85!important}
- #childView header #parentOpen{font-size:0!important}
- #childView header #parentOpen::before{content:"▥";font-size:31px;line-height:1;font-weight:700;letter-spacing:-5px}
-}
-
-/* Mobile header correction: restore the original parent-control look and match Home to it. */
-@media(max-width:600px){
- #childView header #childHome,
- #childView header #parentOpen{
-   width:56px!important;height:56px!important;min-width:56px!important;min-height:56px!important;
-   padding:0!important;border:1.5px solid #b9d0e8!important;border-radius:16px!important;
-   background:#fff!important;color:#174f85!important;
-   display:flex!important;align-items:center!important;justify-content:center!important;
-   box-shadow:none!important;
- }
- #childView header #childHome .home-icon{font-size:29px!important;color:#174f85!important}
- #childView header #parentOpen{font-size:0!important}
- #childView header #parentOpen::before{
-   content:"▥";font-size:29px;line-height:1;font-weight:700;letter-spacing:-5px;
- }
-}
-
-/* Parent button: keep only the simple ascending three-bar icon. */
-@media(max-width:600px){
- #childView header #parentOpen::before{
-   content:"▮ ▮ ▮"!important;
-   display:inline-block;
-   font-size:0!important;
-   width:30px;height:28px;
-   background:
-     linear-gradient(#174f85,#174f85) 2px 17px/6px 9px no-repeat,
-     linear-gradient(#174f85,#174f85) 12px 10px/6px 16px no-repeat,
-     linear-gradient(#174f85,#174f85) 22px 3px/6px 23px no-repeat!important;
-   letter-spacing:0!important;
- }
-}
-
-/* Mobile parent entry: icon only, matching the desktop chart glyph. */
-@media(max-width:600px){
- #childView header #parentOpen{
-   width:56px!important;min-width:56px!important;
-   overflow:hidden!important;white-space:nowrap!important;
-   text-indent:-9999px!important;
- }
- #childView header #parentOpen::before{
-   content:""!important;text-indent:0!important;
-   display:block!important;width:30px!important;height:28px!important;
-   background:
-     linear-gradient(#174f85,#174f85) 2px 17px/6px 9px no-repeat,
-     linear-gradient(#174f85,#174f85) 12px 10px/6px 16px no-repeat,
-     linear-gradient(#174f85,#174f85) 22px 3px/6px 23px no-repeat!important;
- }
-}
-
-/* Remove legacy pseudo-icon completely; mobile parent button gets exactly one 3-bar mark. */
-@media(max-width:600px){
- #childView header #parentOpen{position:relative!important;text-indent:0!important;font-size:0!important}
- #childView header #parentOpen::before{content:none!important;display:none!important;background:none!important}
- #childView header #parentOpen::after{
-   content:""!important;display:block!important;width:30px!important;height:28px!important;
-   background:
-     linear-gradient(#174f85,#174f85) 2px 17px/6px 9px no-repeat,
-     linear-gradient(#174f85,#174f85) 12px 10px/6px 16px no-repeat,
-     linear-gradient(#174f85,#174f85) 22px 3px/6px 23px no-repeat!important;
- }
-}
-
-/* Definitive mobile parent icon: hide ALL original button content; show only one 3-bar icon. */
-@media(max-width:600px){
- #childView header #parentOpen{
-   color:transparent!important;
-   text-shadow:none!important;
-   overflow:hidden!important;
- }
- #childView header #parentOpen > *{display:none!important}
- #childView header #parentOpen::before{content:none!important;display:none!important}
- #childView header #parentOpen::after{
-   content:""!important;
-   position:absolute!important;left:50%!important;top:50%!important;
-   transform:translate(-50%,-50%)!important;
-   display:block!important;width:30px!important;height:28px!important;
-   background:
-     linear-gradient(#174f85,#174f85) 2px 17px/6px 9px no-repeat,
-     linear-gradient(#174f85,#174f85) 12px 10px/6px 16px no-repeat,
-     linear-gradient(#174f85,#174f85) 22px 3px/6px 23px no-repeat!important;
- }
-}
-
-/* Parent entry: one real 3-bar icon. Desktop shows label; mobile shows icon only. */
-#childView #parentOpen{display:flex;align-items:center;justify-content:center;gap:10px}
-#childView #parentOpen .parent-chart-icon{display:inline-flex;align-items:flex-end;gap:4px;width:26px;height:25px;flex:0 0 26px}
-#childView #parentOpen .parent-chart-icon i{display:block;width:5px;background:#174f85;border-radius:1px}
-#childView #parentOpen .parent-chart-icon i:nth-child(1){height:9px}
-#childView #parentOpen .parent-chart-icon i:nth-child(2){height:16px}
-#childView #parentOpen .parent-chart-icon i:nth-child(3){height:23px}
-#childView #parentOpen::before,#childView #parentOpen::after{content:none!important;display:none!important}
-@media(max-width:600px){
- #childView header #parentOpen{color:#174f85!important;text-indent:0!important;font-size:0!important}
- #childView #parentOpen .parent-label{display:none!important}
- #childView #parentOpen .parent-chart-icon{display:inline-flex!important}
-}
-@media(min-width:601px){
- #childView #parentOpen .parent-label{display:inline!important}
-}
-
-/* Mobile navigation icons: identical color treatment for Home and Parent. */
-@media(max-width:600px){
- #childView header #childHome .home-icon,
- #childView header #parentOpen,
- #childView header #parentOpen .parent-chart-icon{color:#174f85!important}
- #childView header #parentOpen .parent-chart-icon i{background:#174f85!important}
- #childView header #childHome,
- #childView header #parentOpen{
-   background:#fff!important;
-   border-color:#b9d0e8!important;
- }
-}
-
-/* Desktop brand: home icon uses the same blue as the Phonika.ru wordmark. */
-@media(min-width:601px){
- #childView .brand-home,
- #childView .brand-home .home-icon,
- #childView .brand-home .brand-full,
- #childView .brand-home .brand-full .quiet{color:#2f67a3!important}
- #childView .brand-home svg,
- #childView .brand-home svg path{fill:#2f67a3!important;color:#2f67a3!important}
-}
-
-@media(min-width:601px){
- #childView header #childHome,
- #childView header #childHome *,
- #childView header .home-btn,
- #childView header .home-btn *,
- #childView header [aria-label*="глав"],
- #childView header [aria-label*="глав"] *{
-   color:#2f67a3!important;
-   fill:#2f67a3!important;
-   stroke:#2f67a3!important;
- }
-}
-
-/* Progress track: keep dinosaur before the first dot and finish flag after the last dot. */
-#childView .dino-track{padding-left:46px!important;padding-right:46px!important}
-#childView .dino{transform:translateX(-38px) scaleX(-1)!important}
-#childView .dino-finish,
-#childView .finish-flag{transform:translateX(38px)!important}
-@media(max-width:600px){
- #childView .dino-track{padding-left:38px!important;padding-right:38px!important}
- #childView .dino{transform:translateX(-31px) scaleX(-1)!important}
- #childView .dino-finish,
- #childView .finish-flag{transform:translateX(31px)!important}
-}
-
-/* Dinosaur rides above the progress dots instead of covering the active dot. */
-#childView .dino{transform:translate(-38px,-38px) scaleX(-1)!important;z-index:3!important}
-@media(max-width:600px){
- #childView .dino{transform:translate(-31px,-32px) scaleX(-1)!important}
-}
-
-/* Fine tune progress endpoints: dinosaur close above dots, flag aligned after track. */
-#childView .dino{transform:translate(-38px,-24px) scaleX(-1)!important}
-#childView .dino-finish,
-#childView .finish-flag{transform:translate(38px,-2px)!important}
-@media(max-width:600px){
- #childView .dino{transform:translate(-31px,-20px) scaleX(-1)!important}
- #childView .dino-finish,
- #childView .finish-flag{transform:translate(31px,-2px)!important}
-}
-
-/* Final dinosaur alignment: closer to first dot and slightly lower. */
-#childView .dino{transform:translate(-18px,-15px) scaleX(-1)!important}
-@media(max-width:600px){
- #childView .dino{transform:translate(-15px,-13px) scaleX(-1)!important}
-}
-
-/* Lower the whole progress track slightly, keeping dinosaur/dots/flag together. */
-#childView .dino-track{transform:translateY(16px)!important}
-@media(max-width:600px){
- #childView .dino-track{transform:translateY(10px)!important}
-}
-
-/* Give the progress character its own clear lane above the dots. */
-#childView .dino-track{
-  margin-top:34px!important;
-  overflow:visible!important;
-}
-#childView .dino{
-  transform:translate(-10px,-22px) scaleX(-1)!important;
-  z-index:4!important;
-}
-@media(max-width:600px){
- #childView .dino-track{margin-top:28px!important}
- #childView .dino{transform:translate(-8px,-19px) scaleX(-1)!important}
-}
-
-/* Letter-style accordion sits after Individual route and must not clip its option menu. */
-#parentView .parent-collapsible:has(#letterStyle),
-#parentView .parent-collapsible:has(#letterStyle) .collapse-body,
-#parentView .parent-collapsible:has(#letterStyle) .panel,
-#parentView #letterStyle{overflow:visible!important;max-height:none!important}
-#parentView #styleMenu:not([hidden]){
-  display:grid!important;
-  position:static!important;
-  width:100%!important;
-  max-height:none!important;
-  overflow:visible!important;
-  margin-top:10px!important;
-  z-index:auto!important;
-}
-#parentView #styleMenu[hidden]{display:none!important}
-
-/* Letter styles: explicit inline six-choice palette inside the accordion. */
-#parentView #letterStyle .style-select{
-  width:100%!important;
-  text-align:left!important;
-}
-#parentView #styleMenu:not([hidden]){
-  display:grid!important;
-  grid-template-columns:repeat(3,minmax(0,1fr))!important;
-  gap:10px!important;
-  padding:12px 0 2px!important;
-  position:static!important;
-  width:100%!important;
-  background:transparent!important;
-  border:0!important;
-  box-shadow:none!important;
-}
-#parentView #styleMenu .style-option{
-  min-height:62px!important;
-  border:1.5px solid #cbdad6!important;
-  border-radius:16px!important;
-  background:#fff!important;
-  font-size:25px!important;
-  font-weight:750!important;
-  color:#173b35!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-}
-#parentView #styleMenu .style-option.selected{
-  border-color:#2389e8!important;
-  background:#eaf4ff!important;
-  box-shadow:0 0 0 2px rgba(35,137,232,.12)!important;
+/* Find game follows the same spatial system as the reading lesson. */
+#childView #gamesView{min-height:0;flex:1;width:100%;max-width:1120px;margin:0 auto;overflow:hidden;padding-top:0}
+#childView .find-game{width:100%;max-width:1120px;height:100%;margin:0 auto;display:flex;flex-direction:column;position:relative;text-align:center;overflow:visible}
+#childView .find-header{width:100%;max-width:1120px;margin:0 auto 0;min-height:46px;display:flex;align-items:center;justify-content:space-between;flex:0 0 auto}
+#childView .find-back{min-height:44px;padding:7px 4px;background:transparent;color:#55746d;border-radius:10px;font-size:16px;font-weight:700}
+#childView .find-title{color:#123f73;font-size:20px;font-weight:800}
+/* The game mode selector occupies the same header-level slot as the normal Phonika tabs. */
+#childView .find-modes{position:fixed;z-index:12;top:34px;left:50%;transform:translateX(-50%);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:min(100%,390px);margin:0;padding:4px;background:#edf4fb;border:1px solid #d5e1ef;border-radius:24px}
+#childView .find-mode{min-height:52px;border-radius:20px;padding:6px 14px;background:transparent;color:#123f73;font-size:16px;font-weight:750}
+#childView .find-mode.active{background:#2389e8;color:#fff;box-shadow:0 3px 10px #2389e83a}
+#childView .find-game .dino-track{width:min(78%,600px);margin:10px auto 18px!important;transform:none!important;flex:0 0 82px}
+#childView .find-game .dino-track .dino{font-size:68px;top:0;transform:translate(-10px,-22px) scaleX(-1)!important}
+#childView .find-question-row{position:relative;flex:1;min-height:170px;width:100%;display:flex;align-items:center;justify-content:center;padding:8px 145px 18px;margin:0}
+#childView .find-question{display:flex;align-items:center;justify-content:center;gap:16px;margin:0;color:#123f73;font-size:clamp(42px,6vw,68px);font-weight:800;line-height:1.05}
+#childView .find-picture{width:112px;height:112px;min-width:112px;min-height:112px;padding:6px;background:transparent;border:0;border-radius:20px;box-shadow:none;font-size:82px;line-height:1;display:flex;align-items:center;justify-content:center}
+#childView .find-nav-arrow{position:absolute;top:46%;transform:translateY(-50%);width:58px;height:58px;min-height:58px;padding:0;border:1.5px solid #d2deea;border-radius:50%;background:#fff;color:#123f73;box-shadow:0 2px 8px #123f730d;display:flex;align-items:center;justify-content:center;font-size:34px;line-height:1}
+#childView .find-nav-arrow:first-child{left:34px}#childView .find-nav-arrow:last-child{right:34px}#childView .find-nav-arrow:hover:not(:disabled){border-color:#aebfd1;background:#fbfdff}#childView .find-nav-arrow:active:not(:disabled){transform:translateY(-50%) scale(.96)}#childView .find-nav-arrow:disabled{opacity:.32;cursor:default}
+#childView .find-answers{--find-cols:2;flex:0 0 auto;display:grid;grid-template-columns:repeat(var(--find-cols),minmax(0,1fr));gap:22px;width:min(100%,840px);margin:0 auto 2px}
+#childView .find-answers:has(.find-answer:nth-child(3)){--find-cols:3}
+#childView .find-answer{min-width:0;min-height:82px;padding:12px 18px;border-radius:17px;background:#f8fbff;color:#123f73;border:1px solid #cbd9ea;box-shadow:0 4px 12px #123f7315;font-size:clamp(30px,4.2vw,54px);font-weight:800;line-height:1.05;white-space:normal;overflow-wrap:anywhere;display:flex;align-items:center;justify-content:center}
+#childView .find-answer.correct{background:#35b96f;color:#fff;border-color:#35b96f}#childView .find-answer.try-again{background:#edf4fb;border-color:#cbd9ea}
+@media(max-width:700px){
+ #childView #gamesView{max-width:100%;overflow:auto}
+ #childView .find-game{max-width:100%;min-height:100%}
+ #childView .find-modes{top:17px;width:min(58%,280px);padding:4px}
+ #childView .find-mode{min-height:40px;border-radius:20px;padding:4px 8px;font-size:15px}
+ #childView .find-header{min-height:42px;margin-bottom:0}
+ #childView .find-back{font-size:15px;min-height:40px}
+ #childView .find-title{font-size:18px}
+ #childView .find-game .dino-track{width:100%;height:70px;flex-basis:70px;margin:5px auto 8px!important}
+ #childView .find-game .dino-track .dino{font-size:58px;top:0;transform:translate(-8px,-19px) scaleX(-1)!important}
+ #childView .find-question-row{min-height:150px;padding:2px 55px 10px}
+ #childView .find-question{gap:10px;font-size:clamp(34px,10vw,48px)}
+ #childView .find-picture{width:82px;height:82px;min-width:82px;min-height:82px;font-size:62px;padding:2px}
+ #childView .find-nav-arrow{width:48px;height:48px;min-height:48px;top:45%;font-size:29px}
+ #childView .find-nav-arrow:first-child{left:0}#childView .find-nav-arrow:last-child{right:0}
+ #childView .find-answers{gap:10px;width:min(100%,440px);margin:0 auto}
+ #childView .find-answer{min-height:68px;padding:9px 10px;border-radius:14px;font-size:clamp(28px,9vw,42px)}
 }
 @media(max-width:430px){
- #parentView #styleMenu:not([hidden]){grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #childView .find-answers:has(.find-answer:nth-child(3)){grid-template-columns:repeat(2,minmax(0,1fr))}
+ #childView .find-answers:has(.find-answer:nth-child(3)) .find-answer:last-child{grid-column:1/-1}
 }
-
-/* Style letters is a permanent settings card; only its six choices expand. */
-#parentView .style-fixed{overflow:visible!important}
-#parentView .style-fixed>h2{margin:0 0 14px!important;font-size:clamp(22px,3vw,28px)!important;color:#173b35!important}
-#parentView .style-fixed .intro{margin:0 0 16px!important}
-
-/* Preserve the original lavender Style letters card, without accordion controls. */
-#parentView .style-fixed{
-  background:#f3eafb!important;
-  border:1.5px solid #ddc9ee!important;
-  border-radius:24px!important;
-  overflow:visible!important;
-  padding:0 0 22px!important;
-}
-#parentView .style-fixed>h2{
-  background:#eee1f7!important;
-  border-radius:22px 22px 0 0!important;
-  padding:20px 34px!important;
-  margin:0 0 14px!important;
-  color:#173b35!important;
-}
-#parentView .style-fixed>.intro,
-#parentView .style-fixed>.letter-style{
-  margin-left:34px!important;
-  margin-right:34px!important;
-}
-@media(max-width:600px){
- #parentView .style-fixed{border-radius:24px!important}
- #parentView .style-fixed>h2{border-radius:22px 22px 0 0!important;padding:20px 34px!important}
-}
-
-/* Current reading stage follows the same permanent-card pattern as Letter style. */
-#parentView .level-fixed{
-  background:#f3eafb!important;
-  border:1.5px solid #ddc9ee!important;
-  border-radius:24px!important;
-  overflow:visible!important;
-  padding:0 0 22px!important;
-}
-#parentView .level-fixed>h2{
-  background:#eee1f7!important;
-  border-radius:22px 22px 0 0!important;
-  padding:20px 34px!important;
-  margin:0!important;
-  color:#173b35!important;
-}
-#parentView .level-fixed-body{
-  padding:20px 34px 0!important;
-}
-#parentView .level-fixed #level{
-  width:100%!important;
-  margin-top:8px!important;
-}
-
-/* Exact visual match: Current reading stage = Letter style card. */
-#parentView .style-fixed,
-#parentView .level-fixed{
-  background:#f3eafb!important;
-  border:1.5px solid #ddc9ee!important;
-  border-radius:24px!important;
-  padding:0 0 22px!important;
-}
-#parentView .style-fixed>h2,
-#parentView .level-fixed>h2{
-  background:#eee1f7!important;
-  border-radius:22px 22px 0 0!important;
-  padding:20px 34px!important;
-  margin:0 0 14px!important;
-  color:#173b35!important;
-}
-#parentView .level-fixed-body{
-  padding:0 34px!important;
-}
-#parentView .level-fixed #level{
-  margin-top:0!important;
-  min-height:54px!important;
-}
-
-/* Responsive Phonika lockup: desktop = text only, mobile = home only */
-@media(min-width:701px){
- #childView .brand-lockup .brand-home{display:none!important}
- #childView .brand-lockup{width:auto!important;height:auto!important;min-height:48px!important;display:flex!important}
- #childView .brand-lockup>span:last-child{display:block!important}
-}
-@media(max-width:700px){
- #childView .brand-lockup>span:last-child{display:none!important}
- #childView .brand-lockup .brand-home{display:flex!important}
-}
+@media(max-width:340px){#childView .find-answers{grid-template-columns:1fr!important}}
