@@ -18,8 +18,7 @@ window.PhonikaGames={};
   const configs=[
    {host:'findGame',done:'#findAnswers .find-answer.correct',next:'findNext'},
    {host:'buildWordGame',done:'#buildSlots .build-slot.success',next:'buildNext'},
-   {host:'missingWordGame',done:'#missingAnswers .missing-answer.correct',next:'missingNext'},
-   {host:'catchGame',done:'#catchArea .catch-answer.correct',next:'catchNext'}
+   {host:'missingWordGame',done:'#missingAnswers .missing-answer.correct',next:'missingNext'}
   ];
   let syncing=false;
   const sync=()=>{if(syncing)return;syncing=true;configs.forEach(config=>{const host=document.getElementById(config.host),next=document.getElementById(config.next);if(!host||!next)return;const completed=!!host.querySelector(config.done);next.classList.toggle('game-nav-success',completed);next.setAttribute('aria-label',completed?'Продолжить':'Следующее задание');});syncing=false;};
