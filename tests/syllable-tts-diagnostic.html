@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ru">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Phonika syllable TTS diagnostic</title></head>
+<body>
+<h1>Phonika syllable TTS diagnostic</h1>
+<p>Нажимайте по одному слогу. Эта страница не меняет production UI или игровую механику.</p>
+<div id="controls"></div>
+<pre id="info"></pre>
+<script>
+'use strict';
+const syllables=['ма','мо','му','ми','ка','ко','ку','ки','са','со','су','си','та','то','ту','ти','на','но','ну','ни','ла','ло','лу','ли','ра','ро','ру','ри'];
+const controls=document.getElementById('controls'),info=document.getElementById('info');
+const platformInfo=()=>({userAgent:navigator.userAgent,platform:navigator.platform||null});
+function effectiveVoice(utterance){
+  if(utterance.voice)return utterance.voice;
+  const voices=speechSynthesis.getVoices();
+  return voices.find(v=>v.default&&/^ru(?:-|$)/i.test(v.lang))||voices.find(v=>v.default)||voices.find(v=>/^ru(?:-|$)/i.test(v.lang))||null;
+}
+function speakDiagnostic(target){
+  const spoken=String(target).trim().toLocaleLowerCase('ru-RU');
+  speechSynthesis.cancel();
+  const utterance=new SpeechSynthesisUtterance(spoken);
+  utterance.lang='ru-RU';
+  utterance.rate=.72;
+  const log=()=>{
+    const voice=effectiveVoice(utterance);
+    const diagnostic={target,spoken,calls:1,lang:utterance.lang,voice:voice?{name:voice.name,lang:voice.lang,default:voice.default}:null,...platformInfo()};
+    console.log('[Phonika syllable TTS]',diagnostic);
+    info.textContent=JSON.stringify(diagnostic,null,2);
+  };
+  utterance.addEventListener('start',log,{once:true});
+  speechSynthesis.speak(utterance);
+  setTimeout(()=>{if(!info.textContent)log();},250);
+}
+syllables.forEach(s=>{const button=document.createElement('button');button.type='button';button.textContent=s.toUpperCase();button.dataset.canonical=s;button.addEventListener('click',()=>speakDiagnostic(button.dataset.canonical));controls.append(button);});
+</script>
+</body>
+</html>
