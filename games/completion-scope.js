@@ -23,6 +23,31 @@ document.addEventListener('DOMContentLoaded',()=>{
       opacity:.32;
       cursor:default;
     }
+    /* Find answers stay a symmetric responsive 2x2 grid on mobile. */
+    @media(max-width:700px){
+      #childView #findGame .find-answers{
+        display:grid;
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        grid-auto-rows:1fr;
+        gap:10px;
+        width:100%;
+        align-items:stretch;
+      }
+      #childView #findGame .find-answer{
+        width:100%;
+        min-width:0;
+        height:100%;
+        min-height:76px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        text-align:center;
+      }
+      #childView #findGame .find-answer:last-child{
+        grid-column:auto!important;
+        width:100%!important;
+      }
+    }
     #childView #gamesView .game-completion-host{display:block!important}
     #childView #gamesView .game-completion-host> :not(.find-header):not(.games-completion){display:none!important}
     #childView #gamesView .game-completion-host>.find-header{display:flex!important}
