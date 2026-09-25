@@ -63,4 +63,4 @@ mobileResponsiveLayout.textContent=`
 }
 `;
 document.head.appendChild(mobileResponsiveLayout);
-document.write('<script src="./games/games.js?v=2"><\/script><script src="./games/find.js?v=2"><\/script><script src="./games/build-word.js?v=2"><\/script><script src="./games/missing-word.js?v=2"><\/script><script src="./games/catch.js?v=1"><\/script><script src="./games/branding.js?v=1"><\/script>');
+document.write('<script src="./games/games.js?v=2"><\/script><script src="./games/find.js?v=2"><\/script><script src="./games/build-word.js?v=2"><\/script><script src="./games/missing-word.js?v=2"><\/script><script src="./games/catch.js?v=1"><\/script><script src="./games/branding.js?v=1"><\/script><script src="./games/completion-scope.js?v=1"><\/script>');
