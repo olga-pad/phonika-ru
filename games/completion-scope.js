@@ -7,6 +7,22 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   const style=document.createElement('style');
   style.textContent=`
+    /* Navigation has only disabled/enabled states. Reward/success must never recolor arrows. */
+    #childView #gamesView .find-nav-arrow.game-nav-success{
+      background:#fff!important;
+      color:#123f73!important;
+      border-color:#d2deea!important;
+      box-shadow:0 2px 8px #123f730d!important;
+    }
+    #childView #gamesView .find-nav-arrow.game-nav-success:hover{
+      background:#fff!important;
+      color:#123f73!important;
+      border-color:#d2deea!important;
+    }
+    #childView #gamesView .find-nav-arrow.game-nav-success:disabled{
+      opacity:.32;
+      cursor:default;
+    }
     #childView #gamesView .game-completion-host{display:block!important}
     #childView #gamesView .game-completion-host> :not(.find-header):not(.games-completion){display:none!important}
     #childView #gamesView .game-completion-host>.find-header{display:flex!important}
