@@ -4,6 +4,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   const G=window.PhonikaGames;
   const childTabs=document.getElementById('childTabs');
   const gamesGrid=document.getElementById('gamesGrid');
+  const completionTimers=new WeakMap();
+  const gameCardIds={findGame:'findGameCard',catchGame:'catchGameCard',buildWordGame:'buildWordGameCard',missingWordGame:'missingWordGameCard'};
 
   const style=document.createElement('style');
   style.textContent=`
@@ -90,6 +92,40 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(gamesGrid?.hidden&&childTabs)childTabs.hidden=true;
   };
 
+  const progressIsComplete=game=>{
+    const steps=[...game.querySelectorAll('.dino-steps .dino-step')];
+    return steps.length>0&&steps.every(step=>step.classList.contains('done'));
+  };
+
+  const showProgressCompletion=game=>{
+    if(!game||game.hidden||!progressIsComplete(game))return;
+    let completion=game.querySelector('.games-completion');
+    if(!completion){
+      completion=document.createElement('section');
+      completion.className='finish dino-celebration games-completion progress-completion';
+      completion.innerHTML=G.completionHtml;
+      game.appendChild(completion);
+      completion.querySelector('.dino-again')?.addEventListener('click',()=>{
+        completion.hidden=true;
+        game.classList.remove('game-completion-host');
+        const card=document.getElementById(gameCardIds[game.id]);
+        card?.click();
+      });
+    }
+    completion.hidden=false;
+    activate(completion);
+  };
+
+  const scheduleProgressCompletion=game=>{
+    if(!game||completionTimers.has(game)||!progressIsComplete(game))return;
+    /* Let the final green state, dinosaur step and existing confetti finish before replacing the game area. */
+    const timer=setTimeout(()=>{
+      completionTimers.delete(game);
+      showProgressCompletion(game);
+    },850);
+    completionTimers.set(game,timer);
+  };
+
   const sync=()=>document.querySelectorAll('#gamesView .games-completion').forEach(completion=>completion.hidden?deactivate(completion):activate(completion));
   const observer=new MutationObserver(records=>{
     records.forEach(record=>{
@@ -101,15 +137,19 @@ document.addEventListener('DOMContentLoaded',()=>{
       if(record.type==='attributes'&&record.target.classList?.contains('games-completion')){
         record.target.hidden?deactivate(record.target):activate(record.target);
       }
+      if(record.type==='attributes'&&record.attributeName==='class'&&record.target.classList?.contains('dino-step')&&record.target.classList.contains('done')){
+        scheduleProgressCompletion(record.target.closest('.find-game'));
+      }
     });
   });
-  observer.observe(document.getElementById('gamesView')||document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden']});
+  observer.observe(document.getElementById('gamesView')||document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','class']});
   sync();
 
   /* Shared list navigation must also clear the scoped completion state. */
   const originalShowGamesList=G?.showGamesList;
   if(G&&originalShowGamesList)G.showGamesList=()=>{
     document.querySelectorAll('#gamesView .game-completion-host').forEach(game=>game.classList.remove('game-completion-host'));
+    document.querySelectorAll('#gamesView .progress-completion').forEach(completion=>completion.hidden=true);
     originalShowGamesList();
   };
 });
