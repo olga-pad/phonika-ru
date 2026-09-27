@@ -5,57 +5,75 @@ const {MissingWordGame,GameSession,GameTask,Attempt,SessionStatus}=require('../g
 
 const identity=items=>[...items];
 const makeGame=()=>new MissingWordGame({shuffle:identity,arrangeTasks:identity,random:()=>0});
+const start=(game,words=['кот','дом'],size=2)=>game.createSession(words,size);
 
-test('domain model is browser-independent and starts with NOT_STARTED session',()=>{
+test('game owns rules, not a mutable session',()=>{
  const game=makeGame();
- assert.ok(game.session instanceof GameSession);
- assert.equal(game.session.status,SessionStatus.NOT_STARTED);
+ assert.equal('session' in game,false);
  assert.equal(typeof document,'undefined');
  assert.equal(typeof window,'undefined');
 });
 
-test('MissingWordGame creates two tasks per selected word without DOM state',()=>{
- const game=makeGame();
- game.createSession(['кот','дом','мак'],2);
- assert.equal(game.session.status,SessionStatus.PLAYING);
- assert.equal(game.session.originalTasks.length,4);
- assert.ok(game.session.currentTask instanceof GameTask);
- assert.equal('element' in game.session.currentTask,false);
+test('createSession returns a new playing session with explicit domain ids',()=>{
+ const game=makeGame(),session=start(game,['кот','дом','мак'],2);
+ assert.ok(session instanceof GameSession);assert.equal(session.status,SessionStatus.PLAYING);assert.match(session.id,/^session-/);
+ assert.equal(session.originalTasks.length,4);assert.ok(session.currentTask instanceof GameTask);assert.match(session.currentTask.id,/^task-/);
+ assert.equal('element' in session.currentTask,false);
 });
 
-test('wrong then correct answer completes task but does not reward it',()=>{
- const game=makeGame();game.createSession(['кот','дом'],2);game.reveal();
- const task=game.session.currentTask;
- const wrong=task.answers.find(answer=>answer!==task.missingWord);
- const first=game.answer(wrong);
- assert.ok(first.attempt instanceof Attempt);assert.equal(first.attempt.correct,false);assert.equal(first.attempt.firstAttempt,true);
- const second=game.answer(task.missingWord);
- assert.equal(second.attempt.correct,true);assert.equal(second.attempt.firstAttempt,false);assert.equal(task.completed,true);assert.equal(task.rewarded,false);
+test('two sessions from one game are independent',()=>{
+ const game=makeGame(),a=start(game),b=start(game);
+ assert.notEqual(a,b);assert.notEqual(a.id,b.id);assert.notEqual(a.currentTask.id,b.currentTask.id);
+ game.reveal(a);game.answer(a,a.currentTask.missingWord);game.advance(a);
+ assert.equal(a.currentIndex,1);assert.equal(a.rewardedCount,1);
+ assert.equal(b.currentIndex,0);assert.equal(b.rewardedCount,0);assert.equal(b.currentTask.phase,'memorize');assert.equal(b.currentTask.attempts.length,0);
 });
 
-test('first-attempt correct answer rewards task',()=>{
- const game=makeGame();game.createSession(['кот','дом'],2);game.reveal();
- const result=game.answer(game.session.currentTask.missingWord);
- assert.equal(result.attempt.firstAttempt,true);assert.equal(result.rewarded,true);assert.equal(game.session.rewardedCount,1);
+test('wrong then correct completes task without reward and records identified attempts',()=>{
+ const game=makeGame(),session=start(game);game.reveal(session);const task=session.currentTask;
+ const wrong=task.answers.find(answer=>answer!==task.missingWord);const first=game.answer(session,wrong);const second=game.answer(session,task.missingWord);
+ assert.ok(first.attempt instanceof Attempt);assert.match(first.attempt.id,/^attempt-/);assert.equal(first.attempt.taskId,task.id);assert.equal(first.attempt.sessionId,session.id);
+ assert.equal(first.attempt.correct,false);assert.equal(first.attempt.firstAttempt,true);assert.equal(second.attempt.firstAttempt,false);assert.equal(task.completed,true);assert.equal(task.rewarded,false);
 });
 
-test('unfinished rewards return as retry tasks and can then be rewarded',()=>{
- const game=makeGame();game.createSession(['кот'],1);
+test('cannot answer an already completed task',()=>{
+ const game=makeGame(),session=start(game);game.reveal(session);const task=session.currentTask;
+ game.answer(session,task.missingWord);const count=task.attempts.length;
+ assert.equal(game.answer(session,task.missingWord),null);assert.equal(task.attempts.length,count);
+});
+
+test('session cannot be completed prematurely',()=>{
+ const session=new GameSession().start([new GameTask({targetWord:'кот',firstWord:'кот',secondWord:'дом',missingWord:'кот',distractor:'дом',answers:['кот','дом']})]);
+ assert.throws(()=>session.complete(),/cannot complete/);assert.equal(session.status,SessionStatus.PLAYING);
+});
+
+test('retry preserves earlier attempt history and starts a new pass state',()=>{
+ const game=makeGame(),session=start(game,['кот'],1);
  for(let i=0;i<2;i++){
-  game.reveal();const task=game.session.currentTask;game.answer('неверно');game.answer(task.missingWord);
-  const transition=game.advance();
-  if(i===0)assert.equal(transition.type,'NEXT');else assert.equal(transition.type,'RETRY');
+  game.reveal(session);const task=session.currentTask;game.answer(session,'неверно');game.answer(session,task.missingWord);
+  const transition=game.advance(session);if(i===0)assert.equal(transition.type,'NEXT');else assert.equal(transition.type,'RETRY');
  }
- assert.equal(game.session.currentIndex,0);assert.equal(game.session.currentTask.hadWrongAttempt,false);
- game.reveal();game.answer(game.session.currentTask.missingWord);assert.equal(game.session.rewardedCount,1);
+ const retried=session.currentTask;
+ assert.equal(retried.passNumber,2);assert.equal(retried.attempted,false);assert.equal(retried.completed,false);assert.equal(retried.hadWrongAttempt,false);
+ assert.equal(retried.attempts.length,2);assert.equal(retried.attempts[0].correct,false);assert.equal(retried.attempts[1].correct,true);assert.equal(retried.attempts[0].passNumber,1);
+ game.reveal(session);const retryAttempt=game.answer(session,retried.missingWord).attempt;
+ assert.equal(retryAttempt.passNumber,2);assert.equal(retryAttempt.firstAttempt,true);assert.equal(retried.attempts.length,3);
 });
 
-test('session becomes COMPLETED only when all original tasks are rewarded',()=>{
- const game=makeGame();game.createSession(['кот'],1);
- for(let i=0;i<2;i++){
-  game.reveal();game.answer(game.session.currentTask.missingWord);
-  const transition=game.advance();
-  if(i===0)assert.equal(transition.type,'NEXT');else assert.equal(transition.type,'COMPLETED');
- }
- assert.equal(game.session.status,SessionStatus.COMPLETED);assert.equal(game.session.isRewardComplete,true);
+test('advance cannot complete until every original task is rewarded',()=>{
+ const game=makeGame(),session=start(game,['кот'],1);game.reveal(session);game.answer(session,session.currentTask.missingWord);
+ const transition=game.advance(session);
+ assert.equal(transition.type,'NEXT');assert.equal(session.status,SessionStatus.PLAYING);assert.equal(session.rewardedCount,1);assert.equal(session.originalTasks.length,2);
+});
+
+test('session becomes completed only when all original tasks are rewarded',()=>{
+ const game=makeGame(),session=start(game,['кот'],1);
+ for(let i=0;i<2;i++){game.reveal(session);game.answer(session,session.currentTask.missingWord);const transition=game.advance(session);if(i===0)assert.equal(transition.type,'NEXT');else assert.equal(transition.type,'COMPLETED');}
+ assert.equal(session.status,SessionStatus.COMPLETED);assert.equal(session.isRewardComplete,true);assert.equal(game.answer(session,'кот'),null);
+});
+
+test('a new session starts clean after a previous session changed',()=>{
+ const game=makeGame(),oldSession=start(game);game.reveal(oldSession);game.answer(oldSession,oldSession.currentTask.missingWord);
+ const fresh=start(game);
+ assert.equal(fresh.status,SessionStatus.PLAYING);assert.equal(fresh.currentIndex,0);assert.equal(fresh.rewardedCount,0);assert.ok(fresh.originalTasks.every(task=>task.attempts.length===0&&!task.completed&&!task.rewarded&&task.passNumber===1));
 });
