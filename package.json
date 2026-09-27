@@ -2,6 +2,7 @@
   "name": "phonika-ru",
   "private": true,
   "scripts": {
+    "test:unit": "node --test tests/*.unit.test.js",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },
