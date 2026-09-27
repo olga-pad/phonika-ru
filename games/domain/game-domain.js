@@ -9,12 +9,59 @@
   let idSequence=0;
   const nextId=prefix=>`${prefix}-${++idSequence}`;
 
-  class Game {
-    constructor({shuffle,arrangeTasks,random=Math.random}={}){
-      this.shuffle=shuffle||((items)=>[...items]);
-      this.arrangeTasks=arrangeTasks||((tasks)=>[...tasks]);
-      this.random=random;
+  class GameTask {
+    constructor({id=nextId('task')}={}){
+      this.id=id;
+      this.attempted=false;
+      this.completed=false;
+      this.hadWrongAttempt=false;
+      this.rewarded=false;
+      this.closed=false;
+      this.passNumber=1;
+      this.attempts=[];
     }
+    beginRetryPass(){
+      if(this.rewarded) throw new Error('Rewarded task cannot be retried');
+      this.passNumber++;
+      this.attempted=false;
+      this.completed=false;
+      this.hadWrongAttempt=false;
+      this.resetPassState();
+      return this;
+    }
+    resetPassState(){}
+  }
+
+  class MissingWordTask extends GameTask {
+    constructor({id,targetWord,firstWord,secondWord,missingWord,distractor,answers}){
+      super({id});
+      if(typeof targetWord!=='string'||typeof firstWord!=='string'||typeof secondWord!=='string'||typeof missingWord!=='string') throw new TypeError('MissingWordTask word fields must be strings');
+      if(!Array.isArray(answers)||!answers.includes(missingWord)) throw new TypeError('MissingWordTask answers must include missingWord');
+      this.targetWord=targetWord;
+      this.firstWord=firstWord;
+      this.secondWord=secondWord;
+      this.missingWord=missingWord;
+      this.distractor=distractor??null;
+      this.answers=[...answers];
+      this.phase='memorize';
+    }
+    resetPassState(){this.phase='memorize';}
+  }
+
+  class FindTask extends GameTask {
+    constructor({id,mode,targetWord=null,targetSyllable=null,picture='',answers}){
+      super({id});
+      if(mode!=='words'&&mode!=='syllables') throw new TypeError('FindTask mode must be words or syllables');
+      const target=mode==='words'?targetWord:targetSyllable;
+      if(typeof target!=='string'||!target) throw new TypeError('FindTask target must be a non-empty string');
+      if(!Array.isArray(answers)||!answers.includes(target)) throw new TypeError('FindTask answers must include target');
+      this.mode=mode;
+      this.targetWord=mode==='words'?target:null;
+      this.targetSyllable=mode==='syllables'?target:null;
+      this.picture=picture||'';
+      this.answers=[...answers];
+    }
+    get target(){return this.mode==='words'?this.targetWord:this.targetSyllable;}
   }
 
   class Attempt {
@@ -27,37 +74,6 @@
       this.sessionId=sessionId;
       this.passNumber=passNumber;
       this.taskIndex=taskIndex;
-    }
-  }
-
-  class GameTask {
-    constructor({id=nextId('task'),targetWord,firstWord,secondWord,missingWord,distractor,answers}){
-      if(typeof targetWord!=='string'||typeof firstWord!=='string'||typeof secondWord!=='string'||typeof missingWord!=='string') throw new TypeError('GameTask word fields must be strings');
-      if(!Array.isArray(answers)||!answers.includes(missingWord)) throw new TypeError('GameTask answers must include missingWord');
-      this.id=id;
-      this.targetWord=targetWord;
-      this.firstWord=firstWord;
-      this.secondWord=secondWord;
-      this.missingWord=missingWord;
-      this.distractor=distractor??null;
-      this.answers=[...answers];
-      this.attempted=false;
-      this.completed=false;
-      this.hadWrongAttempt=false;
-      this.rewarded=false;
-      this.closed=false;
-      this.phase='memorize';
-      this.passNumber=1;
-      this.attempts=[];
-    }
-    beginRetryPass(){
-      if(this.rewarded) throw new Error('Rewarded task cannot be retried');
-      this.passNumber++;
-      this.attempted=false;
-      this.completed=false;
-      this.hadWrongAttempt=false;
-      this.phase='memorize';
-      return this;
     }
   }
 
@@ -83,42 +99,20 @@
     get isRewardComplete(){return this.originalTasks.length>0&&this.rewardedCount===this.originalTasks.length;}
     previous(){if(this.status===SessionStatus.PLAYING&&this.currentIndex>0)this.currentIndex--;return this.currentTask;}
     next(){if(this.status!==SessionStatus.PLAYING)return null;if(this.currentIndex<this.tasks.length-1){this.currentIndex++;return this.currentTask;}return null;}
-    replaceTasks(tasks){
-      if(this.status!==SessionStatus.PLAYING) throw new Error('Only a playing session can replace tasks');
-      this.tasks=[...tasks];this.currentIndex=0;return this;
-    }
-    complete(){
-      if(!this.isRewardComplete) throw new Error('Session cannot complete before all original tasks are rewarded');
-      this.status=SessionStatus.COMPLETED;
-      return this;
-    }
+    replaceTasks(tasks){if(this.status!==SessionStatus.PLAYING)throw new Error('Only a playing session can replace tasks');this.tasks=[...tasks];this.currentIndex=0;return this;}
+    complete(){if(!this.isRewardComplete)throw new Error('Session cannot complete before all original tasks are rewarded');this.status=SessionStatus.COMPLETED;return this;}
   }
 
-  class MissingWordGame extends Game {
-    createSession(wordPool,sessionSize){
-      const pool=[...new Set(wordPool)];
-      const count=Math.min(pool.length,Math.max(1,Number(sessionSize)||5));
-      const words=this.shuffle(pool).slice(0,count);
-      const tasks=[];
-      words.forEach(target=>{
-        for(let exposure=0;exposure<2;exposure++){
-          const remaining=this.shuffle(words.filter(word=>word!==target))[0]||target;
-          const distractor=this.shuffle(words.filter(word=>word!==target&&word!==remaining))[0]||remaining;
-          const hideFirst=this.random()<.5;
-          tasks.push(new GameTask({targetWord:target,firstWord:hideFirst?target:remaining,secondWord:hideFirst?remaining:target,missingWord:target,distractor,answers:distractor===target?[target]:this.shuffle([target,distractor])}));
-        }
-      });
-      return new GameSession().start(this.arrangeTasks(tasks));
+  class Game {
+    constructor({shuffle,arrangeTasks,random=Math.random}={}){
+      this.shuffle=shuffle||((items)=>[...items]);
+      this.arrangeTasks=arrangeTasks||((tasks)=>[...tasks]);
+      this.random=random;
     }
-    reveal(session){
-      const task=this.#playingTask(session);
-      if(task&&!task.completed)task.phase='answer';
-      return task;
-    }
-    answer(session,selected){
-      const task=this.#playingTask(session);
+    answerTask(session,selected,isCorrect){
+      const task=this.playingTask(session);
       if(!task||task.completed)return null;
-      const correct=selected===task.missingWord;
+      const correct=Boolean(isCorrect);
       const attempt=new Attempt({answer:selected,correct,firstAttempt:!task.attempted,taskId:task.id,sessionId:session.id,passNumber:task.passNumber,taskIndex:session.currentIndex});
       task.attempts.push(attempt);
       task.attempted=true;
@@ -131,11 +125,10 @@
       task.hadWrongAttempt=true;
       return {attempt,task,rewarded:false};
     }
-    previous(session){return this.#requireSession(session).previous();}
-    advance(session){
-      this.#requireSession(session);
-      if(session.status!==SessionStatus.PLAYING)return {type:'BLOCKED',task:session.currentTask};
-      if(!session.currentTask?.completed)return {type:'BLOCKED',task:session.currentTask};
+    previous(session){return this.requireSession(session).previous();}
+    advanceSession(session){
+      this.requireSession(session);
+      if(session.status!==SessionStatus.PLAYING||!session.currentTask?.completed)return {type:'BLOCKED',task:session.currentTask};
       const next=session.next();
       if(next)return {type:'NEXT',task:next};
       if(session.isRewardComplete){session.complete();return {type:'COMPLETED'};}
@@ -143,9 +136,61 @@
       session.replaceTasks(this.shuffle(pending));
       return {type:'RETRY',task:session.currentTask};
     }
-    #requireSession(session){if(!(session instanceof GameSession))throw new TypeError('GameSession is required');return session;}
-    #playingTask(session){this.#requireSession(session);return session.status===SessionStatus.PLAYING?session.currentTask:null;}
+    requireSession(session){if(!(session instanceof GameSession))throw new TypeError('GameSession is required');return session;}
+    playingTask(session){this.requireSession(session);return session.status===SessionStatus.PLAYING?session.currentTask:null;}
   }
 
-  return {Game,MissingWordGame,GameSession,GameTask,Attempt,SessionStatus};
+  class MissingWordGame extends Game {
+    createSession(wordPool,sessionSize){
+      const pool=[...new Set(wordPool)],count=Math.min(pool.length,Math.max(1,Number(sessionSize)||5)),words=this.shuffle(pool).slice(0,count),tasks=[];
+      words.forEach(target=>{for(let exposure=0;exposure<2;exposure++){
+        const remaining=this.shuffle(words.filter(word=>word!==target))[0]||target;
+        const distractor=this.shuffle(words.filter(word=>word!==target&&word!==remaining))[0]||remaining;
+        const hideFirst=this.random()<.5;
+        tasks.push(new MissingWordTask({targetWord:target,firstWord:hideFirst?target:remaining,secondWord:hideFirst?remaining:target,missingWord:target,distractor,answers:distractor===target?[target]:this.shuffle([target,distractor])}));
+      }});
+      return new GameSession().start(this.arrangeTasks(tasks));
+    }
+    reveal(session){const task=this.playingTask(session);if(task&&!task.completed)task.phase='answer';return task;}
+    answer(session,selected){const task=this.playingTask(session);return task?this.answerTask(session,selected,selected===task.missingWord):null;}
+    advance(session){return this.advanceSession(session);}
+  }
+
+  class FindGame extends Game {
+    createWordSession(wordEntries,sessionSize){
+      const entries=this.uniqueWordEntries(wordEntries),count=Math.min(entries.length,Math.max(1,Number(sessionSize)||5));
+      const selected=this.shuffle(entries.map(item=>item.word)).slice(0,count),byWord=new Map(entries.map(item=>[item.word,item])),tasks=[];
+      selected.forEach(target=>{
+        const primary=this.shuffle(selected.filter(word=>word!==target));
+        const extra=this.shuffle(entries.map(item=>item.word).filter(word=>word!==target&&!primary.includes(word)));
+        const pool=[...primary,...extra],distractors=pool.slice(0,2);
+        if(!distractors.length){tasks.push(this.makeWordTask(target,null,byWord));return;}
+        if(distractors.length===1)distractors.push(distractors[0]);
+        distractors.forEach(distractor=>tasks.push(this.makeWordTask(target,distractor,byWord)));
+      });
+      return new GameSession().start(this.arrangeTasks(tasks));
+    }
+    createSyllableSession(syllablePool,sessionSize){
+      const syllables=[...new Set(syllablePool.map(value=>String(value||'').trim().toLocaleLowerCase('ru-RU')).filter(Boolean))];
+      const count=Math.min(syllables.length,Math.max(1,Number(sessionSize)||5));
+      const targets=this.shuffle(syllables).slice(0,count);
+      return new GameSession().start(targets.map(target=>new FindTask({mode:'syllables',targetSyllable:target,answers:this.syllableAnswers(target,syllables)})));
+    }
+    answer(session,selected){const task=this.playingTask(session);return task?this.answerTask(session,selected,selected===task.target):null;}
+    advance(session){return this.advanceSession(session);}
+    uniqueWordEntries(entries){
+      const seen=new Set(),result=[];
+      entries.forEach(entry=>{const word=Array.isArray(entry)?entry[0]:entry?.word,picture=Array.isArray(entry)?entry[1]:entry?.picture;if(typeof word==='string'&&word&&!seen.has(word)){seen.add(word);result.push({word,picture:picture||''});}});
+      return result;
+    }
+    makeWordTask(target,distractor,byWord){return new FindTask({mode:'words',targetWord:target,picture:byWord.get(target)?.picture||'',answers:distractor?this.shuffle([target,distractor]):[target]});}
+    syllableAnswers(target,syllables){
+      const consonant=target[0],vowel=target[1],sameConsonant=syllables.filter(x=>x!==target&&x[0]===consonant),sameVowel=syllables.filter(x=>x!==target&&x[1]===vowel&&x[0]!==consonant),used=new Set([target]);
+      const pick=pool=>{const choices=this.shuffle(pool.filter(x=>!used.has(x)));if(!choices.length)return null;used.add(choices[0]);return choices[0];};
+      const result=[target,pick(sameConsonant),pick(sameVowel)],different=syllables.filter(x=>x[0]!==consonant&&x[1]!==vowel);result.push(pick(different)||pick(syllables));
+      return this.shuffle(result.filter(Boolean));
+    }
+  }
+
+  return {Game,MissingWordGame,FindGame,GameSession,GameTask,MissingWordTask,FindTask,Attempt,SessionStatus};
 });
