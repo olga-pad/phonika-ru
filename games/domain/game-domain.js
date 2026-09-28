@@ -29,6 +29,13 @@
     constructor({id,targetWord,distractor=null,answers}){super({id});if(typeof targetWord!=='string'||!targetWord)throw new TypeError('CatchTask targetWord must be a non-empty string');if(!Array.isArray(answers)||!answers.includes(targetWord))throw new TypeError('CatchTask answers must include targetWord');this.targetWord=targetWord;this.distractor=distractor;this.answers=[...answers];}
   }
 
+  class BuildWordTask extends GameTask {
+    constructor({id,targetWord,picture='',shuffledLetters}){super({id});if(typeof targetWord!=='string'||!targetWord)throw new TypeError('BuildWordTask targetWord must be a non-empty string');if(!Array.isArray(shuffledLetters)||!shuffledLetters.length)throw new TypeError('BuildWordTask shuffledLetters are required');this.targetWord=targetWord;this.picture=picture||'';this.shuffledLetters=shuffledLetters.map((tile,index)=>({id:tile.id??index,letter:String(tile.letter)}));this.placedLetters=Array(this.shuffledLetters.length).fill(null);}
+    get isFull(){return this.placedLetters.every(Boolean);}
+    get assembledWord(){return this.placedLetters.map(tile=>tile?.letter||'').join('').toLowerCase();}
+    resetPassState(){this.placedLetters=Array(this.shuffledLetters.length).fill(null);}
+  }
+
   class Attempt {
     constructor({id=nextId('attempt'),answer,correct,firstAttempt,taskId,sessionId,passNumber,taskIndex}){this.id=id;this.answer=answer;this.correct=Boolean(correct);this.firstAttempt=Boolean(firstAttempt);this.taskId=taskId;this.sessionId=sessionId;this.passNumber=passNumber;this.taskIndex=taskIndex;}
   }
@@ -79,5 +86,14 @@
     advance(session){return this.advanceSession(session);}
   }
 
-  return {Game,MissingWordGame,FindGame,CatchGame,GameSession,GameTask,MissingWordTask,FindTask,CatchTask,Attempt,SessionStatus};
+  class BuildWordGame extends Game {
+    createSession(wordEntries,sessionSize){const entries=this.uniqueWordEntries(wordEntries),count=Math.min(entries.length,Math.max(1,Number(sessionSize)||5)),selected=this.shuffle(entries).slice(0,count),tasks=[];selected.forEach(entry=>{const first=this.shuffledLetters(entry.word),second=this.shuffledLetters(entry.word,[first.map(x=>x.letter).join('')]);tasks.push(new BuildWordTask({targetWord:entry.word,picture:entry.picture,shuffledLetters:first}));tasks.push(new BuildWordTask({targetWord:entry.word,picture:entry.picture,shuffledLetters:second}));});return new GameSession().start(this.arrangeTasks(tasks));}
+    placeLetter(session,tileId){const task=this.playingTask(session);if(!(task instanceof BuildWordTask)||task.completed)return{type:'BLOCKED',task};const tile=task.shuffledLetters.find(item=>item.id===tileId),slot=task.placedLetters.findIndex(item=>item===null);if(!tile||slot<0||task.placedLetters.some(item=>item?.id===tileId))return{type:'BLOCKED',task};task.placedLetters[slot]=tile;if(!task.isFull)return{type:'PLACED',task};const result=this.answerTask(session,task.assembledWord,task.assembledWord===task.targetWord.toLowerCase());return{type:result?.attempt.correct?'CORRECT':'WRONG',...result};}
+    returnLetter(session,tileId){const task=this.playingTask(session);if(!(task instanceof BuildWordTask)||task.completed)return{type:'BLOCKED',task};const slot=task.placedLetters.findIndex(item=>item?.id===tileId);if(slot<0)return{type:'BLOCKED',task};task.placedLetters[slot]=null;return{type:'RETURNED',task};}
+    advance(session){return this.advanceSession(session);}
+    uniqueWordEntries(entries){const seen=new Set(),result=[];entries.forEach(entry=>{const word=Array.isArray(entry)?entry[0]:entry?.word,picture=Array.isArray(entry)?entry[1]:entry?.picture;if(typeof word==='string'&&word&&!seen.has(word)){seen.add(word);result.push({word,picture:picture||''});}});return result;}
+    shuffledLetters(word,avoid=[]){const src=[...word.toUpperCase()],blocked=[src.join(''),...avoid];for(let i=0;i<8;i++){const candidate=this.shuffle(src);if(!blocked.includes(candidate.join('')))return candidate.map((letter,id)=>({id,letter}));}return [...src].reverse().map((letter,id)=>({id,letter}));}
+  }
+
+  return {Game,MissingWordGame,FindGame,CatchGame,BuildWordGame,GameSession,GameTask,MissingWordTask,FindTask,CatchTask,BuildWordTask,Attempt,SessionStatus};
 });
