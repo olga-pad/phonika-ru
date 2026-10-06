@@ -22,7 +22,9 @@ window.addEventListener('DOMContentLoaded',()=>{
     box.replaceChildren(...sounds.map(sound=>{const b=document.createElement('button');b.type='button';b.className='known-letter '+(vowels.has(sound)?'vowel-choice':'consonant-choice')+(p[sound]?' selected':'');b.dataset.sound=sound;b.setAttribute('aria-pressed',String(!!p[sound]));b.textContent=isFr?sound.toUpperCase():sound.replace('_','');b.onclick=()=>{p[sound]=!p[sound];saveLanguageProgress(progressLang,p);renderLanguageKnownSounds();};return b;}));
     const all=sounds.length>0&&sounds.every(x=>p[x]);toggle.textContent=all?(isFr?'Tout effacer':'Clear all'):(isFr?'Tout sélectionner':'Select all');toggle.onclick=()=>{sounds.forEach(x=>p[x]=!all);saveLanguageProgress(progressLang,p);renderLanguageKnownSounds();};
   };
-  window.addEventListener('phonika:ui-language',()=>requestAnimationFrame(renderLanguageKnownSounds));
+  const renderLanguageLetterStyle=()=>{const lang=learningLanguage();if(lang==='ru')return;const labels={normal:'abc',title:'Abc',upper:'ABC',handLower:'abc',handTitle:'Abc',handUpper:'ABC'},select=document.getElementById('styleSelect');if(select)select.textContent=labels[style]||'abc';document.querySelectorAll('.style-option').forEach(b=>{b.textContent=labels[b.dataset.style]||'abc';b.classList.toggle('selected',b.dataset.style===style);});};
+  const renderLanguageParent=()=>{renderLanguageKnownSounds();renderLanguageLetterStyle();};
+  window.addEventListener('phonika:ui-language',()=>requestAnimationFrame(renderLanguageParent));
   const card=document.getElementById('letterCard'),letterPictureBtn=document.getElementById('letterShowPicture'),letterPicture=document.getElementById('letterPicture'),letterMastery=document.getElementById('letterKnown'),word=document.getElementById('word'),wordPictureBtn=document.getElementById('showPicture'),wordPicture=document.getElementById('pic'),wordMastery=document.getElementById('readOk'),help=document.getElementById('help');
   const letterActions=document.querySelector('#lettersView .actions'),letterHelp=document.createElement('button');letterHelp.type='button';letterHelp.id='letterHelp';letterHelp.className='help';if(letterActions)letterActions.insertBefore(letterHelp,letterPictureBtn);
   const pictureLabel=(btn,picture,isExample=false)=>{const hidden=picture.hidden;btn.innerHTML=hidden?`<span>${isExample?'Показать пример':'Показать картинку'}</span>`:`${icon('eyeOff')}<span>${isExample?'Скрыть пример':'Скрыть картинку'}</span>`;};
@@ -167,7 +169,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   });
   finishGuard.observe(document.body,{subtree:true,attributes:true,attributeFilter:['hidden']});
   const refreshCurrentNav=()=>{ensureSoundCards();navRefreshers[section==='letters'?'letters':'words']?.();};
-  document.getElementById('parentOpen')?.addEventListener('click',()=>requestAnimationFrame(renderLanguageKnownSounds));
+  document.getElementById('parentOpen')?.addEventListener('click',()=>requestAnimationFrame(renderLanguageParent));
     $('lettersTab').addEventListener('click',()=>requestAnimationFrame(()=>{celebration.hidden=true;readingView.hidden=true;document.getElementById('lettersView')?.insertBefore(dinoTrack,document.getElementById('lettersView')?.querySelector('.stage'));dinoProgress=0;buildDinoSteps();updateDino();ensureSoundCards();resetLessonGoal('letters');refreshCurrentNav();}));
   $('wordsTab').addEventListener('click',()=>requestAnimationFrame(()=>{celebration.hidden=true;document.getElementById('readingView')?.insertBefore(dinoTrack,document.getElementById('readingView')?.querySelector('.stage'));dinoProgress=0;buildDinoSteps();updateDino();resetLessonGoal('words');refreshCurrentNav();}));
   switchSection(section==='letters'?'letters':'words');
