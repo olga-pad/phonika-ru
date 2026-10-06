@@ -8,6 +8,22 @@ window.addEventListener('DOMContentLoaded',()=>{
   if(stylePanel&&summary)summary.insertAdjacentElement('afterend',stylePanel);
   const icon=(name)=>({home:'<svg viewBox="0 0 24 24"><path d="M3 11.2 12 3l9 8.2v9.3a.5.5 0 0 1-.5.5H15v-6H9v6H3.5a.5.5 0 0 1-.5-.5z"/></svg>',chart:'<svg viewBox="0 0 24 24"><rect x="3" y="13" width="4" height="8" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>',sound:'<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.2a5 5 0 0 1 0 7.6M18.7 5.5a9 9 0 0 1 0 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',eyeOff:'<svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z" fill="currentColor"/><circle cx="12" cy="12" r="3" fill="white"/><path d="M4 4 20 20" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>',check:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="white"/><path d="m7.5 12 3 3 6-7" fill="none" stroke="#35b96f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',left:'<svg viewBox="0 0 24 24"><path d="M14.5 5 7.5 12l7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',right:'<svg viewBox="0 0 24 24"><path d="m9.5 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'})[name];
   const brand=document.querySelector('#childView .brand');if(brand){brand.className='brand brand-lockup';brand.innerHTML=`<span class="brand-home">${icon('home')}</span><span><strong>Phonika.ru</strong><small>Читаем вместе!</small></span>`;}const parentOpen=document.getElementById('parentOpen');if(parentOpen)parentOpen.innerHTML=`${icon('chart')}<span>Кабинет родителя</span>`;
+  // Parent Mode known-sounds grid follows the selected learning language only.
+  const EN_LEVEL_SOUNDS=[['s','a','t','p','n','c','b','h','m','f'],['i','l'],['o','d','g'],['e','r'],['u'],[],['sh','ch','th','ck','ng'],['st','sp','sw','fl','cl','tr','gr','fr'],['a_e','i_e','o_e','u_e'],['ee','ai','ay','oa','oo']];
+  const EN_VOWELS=new Set(['a','e','i','o','u','a_e','i_e','o_e','u_e','ee','ai','ay','oa','oo']);
+  const learningLanguage=()=>window.PhonikaI18n?.language||localStorage.getItem('uiLanguage')||'ru';
+  const languageProgress=lang=>{const key='phonika-'+lang+'-known-sounds';try{return JSON.parse(localStorage.getItem(key)||'{}')}catch{return {}}};
+  const saveLanguageProgress=(lang,p)=>localStorage.setItem('phonika-'+lang+'-known-sounds',JSON.stringify(p));
+  const renderLanguageKnownSounds=()=>{
+    const box=document.getElementById('knownSounds'),toggle=document.getElementById('toggleAllSounds');if(!box)return;
+    const lang=learningLanguage();if(lang==='ru'){parentRender();return;}
+    if(lang==='fr'){box.innerHTML='<p class="empty" style="grid-column:1/-1">French course sounds are not configured yet.</p>';if(toggle)toggle.hidden=true;return;}
+    if(toggle)toggle.hidden=false;
+    const sounds=[...new Set(EN_LEVEL_SOUNDS.flat())],p=languageProgress('en');
+    box.replaceChildren(...sounds.map(sound=>{const b=document.createElement('button');b.type='button';b.className='known-letter '+(EN_VOWELS.has(sound)?'vowel-choice':'consonant-choice')+(p[sound]?' selected':'');b.dataset.sound=sound;b.setAttribute('aria-pressed',String(!!p[sound]));b.textContent=sound.replace('_','');b.onclick=()=>{p[sound]=!p[sound];saveLanguageProgress('en',p);renderLanguageKnownSounds();};return b;}));
+    const all=sounds.length>0&&sounds.every(x=>p[x]);toggle.textContent=all?'Clear all':'Select all';toggle.onclick=()=>{sounds.forEach(x=>p[x]=!all);saveLanguageProgress('en',p);renderLanguageKnownSounds();};
+  };
+  window.addEventListener('phonika:ui-language',()=>requestAnimationFrame(renderLanguageKnownSounds));
   const card=document.getElementById('letterCard'),letterPictureBtn=document.getElementById('letterShowPicture'),letterPicture=document.getElementById('letterPicture'),letterMastery=document.getElementById('letterKnown'),word=document.getElementById('word'),wordPictureBtn=document.getElementById('showPicture'),wordPicture=document.getElementById('pic'),wordMastery=document.getElementById('readOk'),help=document.getElementById('help');
   const letterActions=document.querySelector('#lettersView .actions'),letterHelp=document.createElement('button');letterHelp.type='button';letterHelp.id='letterHelp';letterHelp.className='help';if(letterActions)letterActions.insertBefore(letterHelp,letterPictureBtn);
   const pictureLabel=(btn,picture,isExample=false)=>{const hidden=picture.hidden;btn.innerHTML=hidden?`<span>${isExample?'Показать пример':'Показать картинку'}</span>`:`${icon('eyeOff')}<span>${isExample?'Скрыть пример':'Скрыть картинку'}</span>`;};
@@ -152,7 +168,8 @@ window.addEventListener('DOMContentLoaded',()=>{
   });
   finishGuard.observe(document.body,{subtree:true,attributes:true,attributeFilter:['hidden']});
   const refreshCurrentNav=()=>{ensureSoundCards();navRefreshers[section==='letters'?'letters':'words']?.();};
-  $('lettersTab').addEventListener('click',()=>requestAnimationFrame(()=>{celebration.hidden=true;readingView.hidden=true;document.getElementById('lettersView')?.insertBefore(dinoTrack,document.getElementById('lettersView')?.querySelector('.stage'));dinoProgress=0;buildDinoSteps();updateDino();ensureSoundCards();resetLessonGoal('letters');refreshCurrentNav();}));
+  document.getElementById('parentOpen')?.addEventListener('click',()=>requestAnimationFrame(renderLanguageKnownSounds));
+    $('lettersTab').addEventListener('click',()=>requestAnimationFrame(()=>{celebration.hidden=true;readingView.hidden=true;document.getElementById('lettersView')?.insertBefore(dinoTrack,document.getElementById('lettersView')?.querySelector('.stage'));dinoProgress=0;buildDinoSteps();updateDino();ensureSoundCards();resetLessonGoal('letters');refreshCurrentNav();}));
   $('wordsTab').addEventListener('click',()=>requestAnimationFrame(()=>{celebration.hidden=true;document.getElementById('readingView')?.insertBefore(dinoTrack,document.getElementById('readingView')?.querySelector('.stage'));dinoProgress=0;buildDinoSteps();updateDino();resetLessonGoal('words');refreshCurrentNav();}));
   switchSection(section==='letters'?'letters':'words');
   // Put the shared progress track into the initially active section as well.
