@@ -25,7 +25,7 @@ function tr(v){const k=ruToKey.get(v);if(k)return I18N[lang()][k];const x=EXTRA[
 function node(n){if(n.nodeType===3){if(!original.has(n)&&n.nodeValue.trim())original.set(n,n.nodeValue);const o=original.get(n);if(o){const core=o.trim(),lead=o.match(/^\s*/)[0],tail=o.match(/\s*$/)[0];n.nodeValue=lead+tr(core)+tail}return}if(n.nodeType!==1&&n.nodeType!==9)return;const w=document.createTreeWalker(n,NodeFilter.SHOW_TEXT);let x;while(x=w.nextNode())node(x)}
 function active(){document.querySelectorAll('.parent-language-option').forEach(x=>{const on=x.textContent.trim().toLowerCase()===lang();x.classList.toggle('active',on);on?x.setAttribute('aria-current','true'):x.removeAttribute('aria-current')})}
 function apply(){document.documentElement.lang=lang();node(document.body);active()}
-function set(l){if(!['ru','en','fr'].includes(l))return;localStorage.setItem('uiLanguage',l);apply()}
+function set(l){if(!['ru','en','fr'].includes(l))return;localStorage.setItem('uiLanguage',l);apply();window.dispatchEvent(new CustomEvent('phonika:ui-language',{detail:{language:l}}))}
 document.addEventListener('click',e=>{const x=e.target.closest?.('.parent-language-option');if(x)set(x.textContent.trim().toLowerCase())});
 document.addEventListener('DOMContentLoaded',()=>{apply();new MutationObserver(rs=>{rs.forEach(r=>r.addedNodes.forEach(node));active()}).observe(document.body,{subtree:true,childList:true,characterData:true})});
 window.PhonikaI18n={messages:I18N,get language(){return lang()},setLanguage:set,apply};
