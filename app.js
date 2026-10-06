@@ -17,11 +17,10 @@ window.addEventListener('DOMContentLoaded',()=>{
   const renderLanguageKnownSounds=()=>{
     const box=document.getElementById('knownSounds'),toggle=document.getElementById('toggleAllSounds');if(!box)return;
     const lang=learningLanguage();if(lang==='ru'){parentRender();return;}
-    if(lang==='fr'){box.innerHTML='<p class="empty" style="grid-column:1/-1">French course sounds are not configured yet.</p>';if(toggle)toggle.hidden=true;return;}
     if(toggle)toggle.hidden=false;
-    const sounds=[...new Set(EN_LEVEL_SOUNDS.flat())],p=languageProgress('en');
-    box.replaceChildren(...sounds.map(sound=>{const b=document.createElement('button');b.type='button';b.className='known-letter '+(EN_VOWELS.has(sound)?'vowel-choice':'consonant-choice')+(p[sound]?' selected':'');b.dataset.sound=sound;b.setAttribute('aria-pressed',String(!!p[sound]));b.textContent=sound.replace('_','');b.onclick=()=>{p[sound]=!p[sound];saveLanguageProgress('en',p);renderLanguageKnownSounds();};return b;}));
-    const all=sounds.length>0&&sounds.every(x=>p[x]);toggle.textContent=all?'Clear all':'Select all';toggle.onclick=()=>{sounds.forEach(x=>p[x]=!all);saveLanguageProgress('en',p);renderLanguageKnownSounds();};
+    const isFr=lang==='fr',sounds=isFr?'abcdefghijklmnopqrstuvwxyz'.split(''):[...new Set(EN_LEVEL_SOUNDS.flat())],progressLang=isFr?'fr':'en',p=languageProgress(progressLang),vowels=isFr?new Set(['a','e','i','o','u','y']):EN_VOWELS;
+    box.replaceChildren(...sounds.map(sound=>{const b=document.createElement('button');b.type='button';b.className='known-letter '+(vowels.has(sound)?'vowel-choice':'consonant-choice')+(p[sound]?' selected':'');b.dataset.sound=sound;b.setAttribute('aria-pressed',String(!!p[sound]));b.textContent=isFr?sound.toUpperCase():sound.replace('_','');b.onclick=()=>{p[sound]=!p[sound];saveLanguageProgress(progressLang,p);renderLanguageKnownSounds();};return b;}));
+    const all=sounds.length>0&&sounds.every(x=>p[x]);toggle.textContent=all?(isFr?'Tout effacer':'Clear all'):(isFr?'Tout sélectionner':'Select all');toggle.onclick=()=>{sounds.forEach(x=>p[x]=!all);saveLanguageProgress(progressLang,p);renderLanguageKnownSounds();};
   };
   window.addEventListener('phonika:ui-language',()=>requestAnimationFrame(renderLanguageKnownSounds));
   const card=document.getElementById('letterCard'),letterPictureBtn=document.getElementById('letterShowPicture'),letterPicture=document.getElementById('letterPicture'),letterMastery=document.getElementById('letterKnown'),word=document.getElementById('word'),wordPictureBtn=document.getElementById('showPicture'),wordPicture=document.getElementById('pic'),wordMastery=document.getElementById('readOk'),help=document.getElementById('help');
