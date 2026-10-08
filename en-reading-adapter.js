@@ -36,26 +36,54 @@ const shown=w=>{const s=window.style||'upper';return s==='upper'||s==='handUpper
 const renderWord=w=>{const el=$('word');el.replaceChildren(...[...shown(w)].map(ch=>{const span=document.createElement('span');span.textContent=ch;span.className='aeiou'.includes(ch.toLowerCase())?'vowel':'consonant';return span}));el.classList.toggle('hand',String(window.style||'').startsWith('hand'))};
 const notice=document.createElement('div');notice.id='languageReadingNotice';notice.className='panel';notice.hidden=true;
 $('readingView').insertAdjacentElement('afterend',notice);
+let lastLang='ru',ruSnapshot=null,done=false,step=0;
+const track=()=>document.querySelector('#readingView .dino-track');
+const snapshotRU=()=>{if(ruSnapshot)return;const ids=['word','pic','reward','confirmation','readOk'];ruSnapshot={nodes:Object.fromEntries(ids.map(id=>[id,$(id)?.innerHTML])),track:track()?.innerHTML,readHidden:$('readingView').hidden,finishHidden:$('finishView').hidden};};
+const restoreRU=()=>{if(!ruSnapshot)return;for(const [id,html] of Object.entries(ruSnapshot.nodes)){if($(id)&&html!==undefined)$(id).innerHTML=html}if(track()&&ruSnapshot.track!==undefined)track().innerHTML=ruSnapshot.track;$('readingView').hidden=ruSnapshot.readHidden;$('finishView').hidden=ruSnapshot.finishHidden;ruSnapshot=null;};
+const goal=()=>queue.length*2;
+const updateTrack=()=>{const t=track();if(!t)return;const steps=t.querySelector('.dino-steps');if(steps){steps.replaceChildren(...Array.from({length:goal()},(_,i)=>{const el=document.createElement('span');el.className='dino-step'+(i<step?' done':'');if(i<step)el.innerHTML='<span class="step-check">✓</span>';return el}))}const d=t.querySelector('.dino');if(d)d.style.left='calc('+Math.min(100,step/Math.max(1,goal())*100)+'% - '+Math.min(46,step/Math.max(1,goal())*46)+'px)'};
+const finishEN=()=>{done=true;$('readingView').hidden=true;notice.hidden=false;notice.replaceChildren();const h=document.createElement('h1');h.textContent='Great!';const p=document.createElement('p');p.textContent=queue.length+' words read!';const again=document.createElement('button');again.className='primary';again.textContent='Again';again.onclick=()=>{queue=[];reads={};step=0;done=false;show()};notice.append(h,p,again)};
 const show=()=>{
  const l=lang(),reading=$('readingView'),finish=$('finishView');
- if(l==='ru'){notice.hidden=true;return}
- finish.hidden=true;const available= l==='en'?availableWords():[];
- queue=queue.filter(w=>available.some(x=>x.word===w));if(!queue.length&&available.length){queue=available.slice(0,Math.max(1,Number($('wordSessionSize')?.value)||5)).map(x=>x.word);index=0;reads={}}
- if(l==='fr'||!queue.length){reading.hidden=true;notice.hidden=false;notice.replaceChildren();const p=document.createElement('p');p.textContent=l==='fr'?'Le parcours de lecture en français sera bientôt disponible.':'Not enough sounds learned yet. Learn a few more sounds to unlock new words.';notice.append(p);if(l==='en'){const b=document.createElement('button');b.className='primary';b.textContent='Go to Sounds';b.onclick=()=>{$('parentOpen')?.click();document.getElementById('knownSounds')?.scrollIntoView({block:'center'})};notice.append(b)}return}
+ if(l==='ru'){notice.hidden=true;restoreRU();lastLang='ru';return}
+ if(lastLang==='ru')snapshotRU();lastLang=l;
+ finish.hidden=true;
+ if(l==='fr'){reading.hidden=true;notice.hidden=false;notice.textContent='Le parcours de lecture en français sera bientôt disponible.';return}
+ const available=availableWords();
+ const previous=queue.length;
+ queue=queue.filter(w=>available.some(x=>x.word===w));
+ if(!queue.length&&available.length){queue=available.slice(0,Math.max(1,Number($('wordSessionSize')?.value)||5)).map(x=>x.word);index=0;reads={};step=0;done=false}
+ if(previous!==queue.length)step=Math.min(step,goal());
+ if(!queue.length){reading.hidden=true;notice.hidden=false;notice.replaceChildren();const p=document.createElement('p');p.textContent='Not enough sounds learned yet. Learn a few more sounds to unlock new words.';const b=document.createElement('button');b.className='primary';b.textContent='Go to Sounds';b.onclick=()=>{$('parentOpen')?.click();$('knownSounds')?.scrollIntoView({block:'center'})};notice.append(p,b);return}
+ if(done){finishEN();return}
  notice.hidden=true;reading.hidden=false;index=Math.min(index,queue.length-1);
- const w=queue[index],obj=available.find(x=>x.word===w);if(!obj||!wordAvailable(obj)){queue=queue.filter(x=>x!==w);show();return}
- renderWord(w);$('pic').textContent=obj.picture;$('pic').hidden=true;$('reward').textContent='';$('confirmation').textContent='';$('readOk').disabled=false;$('readOk').classList.remove('done');marked=false;assisted=false;
+ const w=queue[index],obj=available.find(x=>x.word===w);
+ if(!obj||!wordAvailable(obj)){queue=queue.filter(x=>x!==w);show();return}
+ renderWord(w);$('pic').textContent=obj.picture;$('pic').hidden=true;$('reward').textContent='';$('confirmation').textContent='';$('readOk').disabled=false;$('readOk').classList.remove('done');$('readOk').textContent='✓ I read it myself';$('readOk').dataset.continueNext='';marked=false;assisted=false;updateTrack();
 };
-const advance=()=>{if(!queue.length)return;index=(index+1)%queue.length;show()};
+const advance=(delta=1)=>{if(!queue.length)return;if(delta>0&&index===queue.length-1){if(queue.every(w=>(reads[w]||0)>=2)){finishEN();return}index=queue.findIndex(w=>(reads[w]||0)<2);if(index<0)index=0}else index=(index+delta+queue.length)%queue.length;show()};
 document.addEventListener('click',e=>{
- if(!isEN()||$('parentView')?.hidden===false)return;
+ if(lang()==='ru'||$('parentView')?.hidden===false)return;
  const b=e.target.closest('button');if(!b)return;
- if(b.id==='readOk'){e.stopImmediatePropagation();e.preventDefault();if(marked||assisted||!queue.length)return;const w=queue[index],obj=availableWords().find(x=>x.word===w);if(!obj||!wordAvailable(obj)){show();return}const p=state(readProgress,w);p.self=Math.min(3,p.self+1);if(p.self>=3){p.mastered=true;p.at=Date.now()}save();reads[w]=(reads[w]||0)+1;marked=true;b.disabled=true;b.classList.add('done');$('confirmation').textContent=p.mastered?'Mastered!':'Counted';}
- else if(b.id==='help'||b.id==='showPicture'){e.stopImmediatePropagation();e.preventDefault();assisted=true;if(b.id==='showPicture')$('pic').hidden=false;else if('speechSynthesis'in window){const u=new SpeechSynthesisUtterance(queue[index]||'');u.lang='en-GB';speechSynthesis.speak(u)}}
- else if(b.id==='wordsTab'){requestAnimationFrame(show)}
+ const nav=b.closest('#readingView .lesson-nav');
+ const target=nav?(b.classList.contains('nav-prev')?'prev':'next'):b.id;
+ if(!['prev','next','readOk','help','showPicture'].includes(target))return;
+ e.stopImmediatePropagation();e.preventDefault();
+ if(lang()!=='en'||!queue.length)return;
+ if(target==='prev'){advance(-1);return}
+ if(target==='next'){advance();return}
+ if(target==='readOk'){
+   if(b.dataset.continueNext==='1'){advance();return}
+   if(marked||assisted)return;
+   const w=queue[index],obj=availableWords().find(x=>x.word===w);if(!obj||!wordAvailable(obj)){show();return}
+   const p=state(readProgress,w);p.self=Math.min(3,p.self+1);if(p.self>=3){p.mastered=true;p.at=Date.now()}save();
+   reads[w]=Math.min(2,(reads[w]||0)+1);step=Math.min(goal(),step+1);marked=true;
+   b.dataset.continueNext='1';b.textContent='Continue →';$('confirmation').textContent=p.mastered?'Mastered!':'Counted';updateTrack();if(queue.every(x=>(reads[x]||0)>=2))setTimeout(()=>{if(lang()==='en')finishEN()},500);
+   return
+ }
+ assisted=true;if(target==='showPicture')$('pic').hidden=false;else if('speechSynthesis'in window){const u=new SpeechSynthesisUtterance(queue[index]||'');u.lang='en-GB';speechSynthesis.speak(u)}
 },true);
-window.addEventListener('phonika:ui-language',()=>{if(lang()==='ru'){notice.hidden=true;locationReadingRestore();}else requestAnimationFrame(show)});
-const locationReadingRestore=()=>{if($('wordsTab')?.classList.contains('on')){$('readingView').hidden=false;$('word').replaceChildren();if(typeof window.render==='function'&&typeof window.current!=='undefined'&&window.current)window.render(window.current[0]);}};
+window.addEventListener('phonika:ui-language',()=>requestAnimationFrame(show));
 document.addEventListener('DOMContentLoaded',()=>{if(lang()!=='ru')requestAnimationFrame(show);$('parentBack')?.addEventListener('click',()=>requestAnimationFrame(show));$('wordsTab')?.addEventListener('click',()=>requestAnimationFrame(show));$('wordSessionSize')?.addEventListener('change',()=>{queue=[];requestAnimationFrame(show)});});
 window.PhonikaENReading={availableWords,wordAvailable,refresh:show};
 })();
