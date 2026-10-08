@@ -58,7 +58,7 @@ const show=()=>{
  if(previous!==queue.length)step=Math.min(step,goal());
  if(!queue.length){reading.hidden=true;notice.hidden=false;notice.replaceChildren();const p=document.createElement('p');p.textContent='Not enough sounds learned yet. Learn a few more sounds to unlock new words.';const b=document.createElement('button');b.className='primary';b.textContent='Go to Sounds';b.onclick=()=>{$('parentOpen')?.click();$('knownSounds')?.scrollIntoView({block:'center'})};notice.append(p,b);return}
  if(done){finishEN();return}
- notice.hidden=true;reading.hidden=false;index=Math.min(index,queue.length-1);
+ notice.hidden=true;reading.hidden=false;reading.querySelectorAll('.lesson-nav .nav-arrow').forEach(b=>{b.hidden=false;b.disabled=false});index=Math.min(index,queue.length-1);
  const w=queue[index],obj=available.find(x=>x.word===w);
  if(!obj||!wordAvailable(obj)){queue=queue.filter(x=>x!==w);show();return}
  renderWord(w);$('pic').textContent=obj.picture;$('pic').hidden=true;$('reward').textContent='';$('confirmation').textContent='';$('readOk').disabled=false;$('readOk').classList.remove('done');$('readOk').textContent='✓ I read it myself';$('readOk').dataset.continueNext='';marked=false;assisted=false;updateTrack();
@@ -81,7 +81,7 @@ document.addEventListener('click',e=>{
    const w=queue[index],obj=availableWords().find(x=>x.word===w);if(!obj||!wordAvailable(obj)){show();return}
    const p=state(readProgress,w);p.self=Math.min(3,p.self+1);if(p.self>=3){p.mastered=true;p.at=Date.now()}save();
    reads[w]=Math.min(2,(reads[w]||0)+1);step=Math.min(goal(),step+1);marked=true;
-   b.dataset.continueNext='1';b.textContent='Continue →';$('confirmation').textContent=p.mastered?'Mastered!':'Counted';updateTrack();if(queue.every(x=>(reads[x]||0)>=2))setTimeout(()=>{if(lang()==='en'&&typeof section!=='undefined'&&section==='words'&&queue.every(x=>(reads[x]||0)>=2))finishEN()},500);
+   b.dataset.continueNext='1';b.textContent='Continue →';$('confirmation').textContent=p.mastered?'Mastered!':'Counted';updateTrack();if(queue.every(x=>(reads[x]||0)>=2)&&lang()==='en'&&typeof section!=='undefined'&&section==='words')finishEN();
    return
  }
  assisted=true;$('readOk').textContent='Next word →';$('readOk').dataset.continueNext='1';if(target==='showPicture')$('pic').hidden=false;else if('speechSynthesis'in window){const u=new SpeechSynthesisUtterance(queue[index]||'');u.lang='en-GB';speechSynthesis.speak(u)}
