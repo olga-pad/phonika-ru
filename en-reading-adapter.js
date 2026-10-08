@@ -76,7 +76,8 @@ document.addEventListener('click',e=>{
  if(target==='next'){advance();return}
  if(target==='readOk'){
    if(b.dataset.continueNext==='1'){advance();return}
-   if(marked||assisted)return;
+   if(assisted){advance();return}
+   if(marked)return;
    const w=queue[index],obj=availableWords().find(x=>x.word===w);if(!obj||!wordAvailable(obj)){show();return}
    const p=state(readProgress,w);p.self=Math.min(3,p.self+1);if(p.self>=3){p.mastered=true;p.at=Date.now()}save();
    reads[w]=Math.min(2,(reads[w]||0)+1);step=Math.min(goal(),step+1);marked=true;
