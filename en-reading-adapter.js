@@ -81,10 +81,10 @@ document.addEventListener('click',e=>{
    const w=queue[index],obj=availableWords().find(x=>x.word===w);if(!obj||!wordAvailable(obj)){show();return}
    const p=state(readProgress,w);p.self=Math.min(3,p.self+1);if(p.self>=3){p.mastered=true;p.at=Date.now()}save();
    reads[w]=Math.min(2,(reads[w]||0)+1);step=Math.min(goal(),step+1);marked=true;
-   b.dataset.continueNext='1';b.textContent='Continue →';$('confirmation').textContent=p.mastered?'Mastered!':'Counted';updateTrack();if(queue.every(x=>(reads[x]||0)>=2))setTimeout(()=>{if(lang()==='en')finishEN()},500);
+   b.dataset.continueNext='1';b.textContent='Continue →';$('confirmation').textContent=p.mastered?'Mastered!':'Counted';updateTrack();if(queue.every(x=>(reads[x]||0)>=2))setTimeout(()=>{if(lang()==='en'&&typeof section!=='undefined'&&section==='words'&&queue.every(x=>(reads[x]||0)>=2))finishEN()},500);
    return
  }
- assisted=true;if(target==='showPicture')$('pic').hidden=false;else if('speechSynthesis'in window){const u=new SpeechSynthesisUtterance(queue[index]||'');u.lang='en-GB';speechSynthesis.speak(u)}
+ assisted=true;$('readOk').textContent='Next word →';$('readOk').dataset.continueNext='1';if(target==='showPicture')$('pic').hidden=false;else if('speechSynthesis'in window){const u=new SpeechSynthesisUtterance(queue[index]||'');u.lang='en-GB';speechSynthesis.speak(u)}
 },true);
 window.addEventListener('phonika:ui-language',()=>requestAnimationFrame(show));
 document.addEventListener('DOMContentLoaded',()=>{if(lang()!=='ru')requestAnimationFrame(show);$('parentBack')?.addEventListener('click',()=>requestAnimationFrame(show));$('wordsTab')?.addEventListener('click',()=>requestAnimationFrame(show));$('wordSessionSize')?.addEventListener('change',()=>{queue=[];requestAnimationFrame(show)});});
