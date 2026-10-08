@@ -27,10 +27,13 @@ test('EN independent progress, reading controls and navigation',async({page})=>{
  const ruBefore=await page.evaluate(()=>localStorage.getItem('soundsteps-profile-v1'));
  await page.locator('#showPicture').click();
  await expect(page.locator('#pic')).toBeVisible();
+ const beforeWord=await page.locator('#word').innerText();
+ await page.locator('#readOk').click();
+ await expect(page.locator('#word')).not.toHaveText(beforeWord);
+ expect(await page.evaluate(()=>localStorage.getItem('phonika-en-word-progress'))).toBeNull();
+ expect(await page.evaluate(()=>localStorage.getItem('soundsteps-profile-v1'))).toBe(ruBefore);
  await page.locator('#readOk').click();
  await expect(page.locator('#readOk')).toContainText('Continue');
- await expect.poll(()=>page.evaluate(()=>localStorage.getItem('phonika-en-word-progress'))).not.toBeNull();
- expect(await page.evaluate(()=>localStorage.getItem('soundsteps-profile-v1'))).toBe(ruBefore);
  await page.locator('#readOk').click();
  await expect(page.locator('#word')).not.toBeEmpty();
  await page.evaluate(()=>window.PhonikaI18n.setLanguage('ru'));
