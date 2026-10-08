@@ -36,4 +36,4 @@ document.addEventListener('DOMContentLoaded',()=>{
  if(home) home.addEventListener('click',()=>{document.getElementById('parentView').hidden=true;document.getElementById('childView').hidden=false;document.getElementById('wordsTab')?.click();window.scrollTo({top:0,behavior:'smooth'});});
  document.querySelectorAll('.collapse-toggle').forEach(btn=>{btn.addEventListener('click',()=>{const body=btn.closest('.parent-collapsible')?.querySelector('.collapse-body');if(!body)return;const open=body.hidden;body.hidden=!open;btn.setAttribute('aria-expanded',String(open));const t=btn.querySelector('.collapse-action-text');if(t)t.textContent=open?'Закрыть':'Открыть';});});
 });
-</script><script src="./games.js?v=1"></script><script src="./app.js?v=79"></script><script src="./en-reading-adapter.js?v=1"></script></body></html>
+</script><script src="./games.js?v=1"></script><script src="./app.js?v=79"></script><script src="./en-reading-adapter.js?v=2"></script></body></html>
