@@ -38,7 +38,7 @@ const notice=document.createElement('div');notice.id='languageReadingNotice';not
 $('readingView').insertAdjacentElement('afterend',notice);
 const show=()=>{
  const l=lang(),reading=$('readingView'),finish=$('finishView');
- if(l==='ru'){notice.hidden=true;if(window.section==='words'){reading.hidden=false}return}
+ if(l==='ru'){notice.hidden=true;return}
  finish.hidden=true;const available= l==='en'?availableWords():[];
  queue=queue.filter(w=>available.some(x=>x.word===w));if(!queue.length&&available.length){queue=available.slice(0,Math.max(1,Number($('wordSessionSize')?.value)||5)).map(x=>x.word);index=0;reads={}}
  if(l==='fr'||!queue.length){reading.hidden=true;notice.hidden=false;notice.replaceChildren();const p=document.createElement('p');p.textContent=l==='fr'?'Le parcours de lecture en français sera bientôt disponible.':'Not enough sounds learned yet. Learn a few more sounds to unlock new words.';notice.append(p);if(l==='en'){const b=document.createElement('button');b.className='primary';b.textContent='Go to Sounds';b.onclick=()=>{$('parentOpen')?.click();document.getElementById('knownSounds')?.scrollIntoView({block:'center'})};notice.append(b)}return}
@@ -54,7 +54,8 @@ document.addEventListener('click',e=>{
  else if(b.id==='help'||b.id==='showPicture'){e.stopImmediatePropagation();e.preventDefault();assisted=true;if(b.id==='showPicture')$('pic').hidden=false;else if('speechSynthesis'in window){const u=new SpeechSynthesisUtterance(queue[index]||'');u.lang='en-GB';speechSynthesis.speak(u)}}
  else if(b.id==='wordsTab'){requestAnimationFrame(show)}
 },true);
-window.addEventListener('phonika:ui-language',()=>requestAnimationFrame(show));
+window.addEventListener('phonika:ui-language',()=>{if(lang()==='ru'){notice.hidden=true;locationReadingRestore();}else requestAnimationFrame(show)});
+const locationReadingRestore=()=>{if($('wordsTab')?.classList.contains('on')){$('readingView').hidden=false;$('word').replaceChildren();if(typeof window.render==='function'&&typeof window.current!=='undefined'&&window.current)window.render(window.current[0]);}};
 document.addEventListener('DOMContentLoaded',()=>{if(lang()!=='ru')requestAnimationFrame(show);$('parentBack')?.addEventListener('click',()=>requestAnimationFrame(show));$('wordsTab')?.addEventListener('click',()=>requestAnimationFrame(show));$('wordSessionSize')?.addEventListener('change',()=>{queue=[];requestAnimationFrame(show)});});
 window.PhonikaENReading={availableWords,wordAvailable,refresh:show};
 })();
