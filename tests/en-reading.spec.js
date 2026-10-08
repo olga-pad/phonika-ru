@@ -68,12 +68,12 @@ test('EN navigation and dinosaur advance only after independent reading',async({
 });
 test('EN full session completes and Again restarts',async({page})=>{
  await setup(page,{s:true,a:true,t:true,p:true,n:true});
- await page.evaluate(()=>{document.getElementById('wordSessionSize').value='2';document.getElementById('wordSessionSize').dispatchEvent(new Event('change',{bubbles:true}))});
+ await page.evaluate(()=>{document.getElementById('wordSessionSize').value='3';document.getElementById('wordSessionSize').dispatchEvent(new Event('change',{bubbles:true}))});
  await expect(page.locator('#readingView')).toBeVisible();
- for(let i=0;i<4;i++){
+ for(let i=0;i<6;i++){
   await page.locator('#readOk').click();
   await expect(page.locator('#readOk')).toHaveText('Continue →');
-  if(i<3)await page.locator('#readOk').click();
+  if(i<5)await page.locator('#readOk').click();
  }
  await expect(page.locator('#languageReadingNotice')).toContainText('Great!');
  await page.getByRole('button',{name:'Again'}).click();
