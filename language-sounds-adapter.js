@@ -23,8 +23,8 @@ const save=(k)=>{const progress=soundState(),old=progress[k]||{},self=Math.min(3
 const ruSnapshot=()=>{if(ruView)return;ruView={card:card.innerHTML,cardClass:card.className,picture:picture.innerHTML,pictureHidden:picture.hidden,known:known.innerHTML,knownDisabled:known.disabled,viewHidden:view.hidden,finishHidden:$('letterFinishView').hidden};};
 const restoreRU=()=>{if(!ruView)return;card.innerHTML=ruView.card;card.className=ruView.cardClass;picture.innerHTML=ruView.picture;picture.hidden=ruView.pictureHidden;known.innerHTML=ruView.known;known.disabled=ruView.knownDisabled;view.hidden=ruView.viewHidden;$('letterFinishView').hidden=ruView.finishHidden;ruView=null;};
 const render=()=>{
- if(lang()==='ru'){notice.hidden=true;restoreRU();active='ru';return}
- if(active==='ru')ruSnapshot();active=lang();
+ if(lang()==='ru'){notice.hidden=true;$('letterHelp').disabled=false;$('letterShowPicture').disabled=false;restoreRU();active='ru';return}
+ if(active==='ru')ruSnapshot();if(active!==lang()){queue=[];index=0;reads={};finished=false}active=lang();
  if(section!=='letters')return;
  view.hidden=false;$('letterFinishView').hidden=true;
  if(!queue.length||!inventory().includes(current())){queue=inventory().slice(0,Math.max(1,Number($('letterSessionSize')?.value)||5));index=0;reads={};finished=false}
