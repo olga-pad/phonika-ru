@@ -22,7 +22,7 @@ const parentSounds=()=>getJson('phonika-en-known-sounds',{});
 function soundsThroughLevel(){return LEVELS.slice(0,level).flatMap(x=>x.sounds)}
 function wordsThroughLevel(){return LEVELS.slice(0,level).flatMap(x=>x.words.map(w=>({word:w[0],picture:w[1],tricky:!!w[2]})))}
 function state(obj,k){if(typeof obj[k]==='number')obj[k]={self:obj[k],mastered:obj[k]>=3,at:0};return obj[k]||(obj[k]={self:0,mastered:false,at:0})}
-function soundMastered(s){return !!parentSounds()[s]||state(soundProgress,s).mastered}
+function soundMastered(s){return !!parentSounds()[s]||!!state(getJson('phonika-en-sound-progress',{}),s).mastered}
 function graphemes(word){const all=soundsThroughLevel(),known=[...all].sort((a,b)=>b.length-a.length).filter(x=>!x.includes('_'));let out=[],magicIndex=-1,magicKey=null;if(word.endsWith('e')&&word.length>=4){for(let i=0;i<word.length-1;i++){const key=word[i]+'_e';if(all.includes(key)){magicIndex=i;magicKey=key;break}}}for(let i=0;i<word.length;){if(i===magicIndex){out.push(magicKey);i++;continue}if(magicKey&&i===word.length-1&&word[i]==='e'){i++;continue}const g=known.find(x=>word.startsWith(x,i));out.push(g||word[i]);i+=(g||word[i]).length}return [...new Set(out)]}function wordAvailable(w){return graphemes(w.word).every(soundMastered)}
 
 function availableWords(){return wordsThroughLevel().filter(wordAvailable)}
