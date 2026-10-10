@@ -13,5 +13,5 @@
  const close=()=>{open=false;$('buildWordGame').hidden=true;completion&&(completion.hidden=true);G().showGamesList()};
  document.addEventListener('click',e=>{if(!en()||typeof section==='undefined'||section!=='games')return;const b=e.target.closest('button,#buildWordGameCard');if(!b)return;if(b.id==='buildWordGameCard'){e.preventDefault();e.stopImmediatePropagation();start();return}if(!open)return;if(['buildNext','buildPrev','buildAllGames','buildPicture'].includes(b.id)){e.preventDefault();e.stopImmediatePropagation();if(b.id==='buildNext')next();if(b.id==='buildPrev'&&index>0){index--;render()}if(b.id==='buildAllGames')close();if(b.id==='buildPicture'&&task()&&'speechSynthesis'in window){const u=new SpeechSynthesisUtterance(task().targetWord);u.lang='en-GB';speechSynthesis.speak(u)}}},true);
  window.addEventListener('phonika:ui-language',()=>requestAnimationFrame(()=>{if(open&&!en())close()}));
- window.PhonikaENBuild={eligible:pool,start,getTasks:()=>session.map(t=>({...t,placed:[...t.placed]})),isOpen:()=>open};
+ window.PhonikaENBuild={eligible:pool,start,getTasks:()=>session.map(t=>({...t,placed:[...t.placed]})),getCurrent:()=>task()?({...task(),placed:[...task().placed]}):null,isOpen:()=>open};
 })();
