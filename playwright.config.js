@@ -6,7 +6,7 @@ module.exports = defineConfig({
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? 'github' : 'list',
   use: {
-    baseURL: 'https://olga-pad.github.io/phonika-ru/',
+    baseURL: process.env.PHONIKA_TEST_BASE_URL || 'https://olga-pad.github.io/phonika-ru/',
     trace: 'on-first-retry'
   },
   projects: [
