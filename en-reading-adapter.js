@@ -27,7 +27,40 @@ function graphemes(word){const all=soundsThroughLevel(),known=[...all].sort((a,b
 
 function availableWords(){return wordsThroughLevel().filter(wordAvailable)}
 const readProgress=getJson('phonika-en-word-progress',{});
-let queue=[],index=0,reads={},marked=false,assisted=false;
+// Selection history stores usage metadata only, never a cached list of eligible words.
+const selectionKey='phonika-en-reading-selection-v1';
+let selection=getJson(selectionKey,{usage:{},previous:[],round:0});
+if(!selection||typeof selection!=='object')selection={usage:{},previous:[],round:0};
+selection.usage=selection.usage||{};selection.previous=Array.isArray(selection.previous)?selection.previous:[];
+const eligibleSignature=words=>words.map(w=>w.word).sort().join('|');
+const diagnostic=()=>{const eligible=availableWords();const mastered=[...new Set(LEVELS.flatMap(x=>x.sounds))].filter(soundMastered);const beyond=LEVELS.slice(level).flatMap((part,i)=>part.words.map(([word])=>({word,level:level+i+1}))).filter(x=>{const all=LEVELS.slice(0,x.level).flatMap(y=>y.sounds);const keys=[...all].filter(k=>!k.includes('_')).sort((a,b)=>b.length-a.length);let graphemes=[],magic=null;if(x.word.endsWith('e')){for(let j=0;j<x.word.length-1;j++){const key=x.word[j]+'_e';if(all.includes(key)){magic={key,index:j};break}}}for(let j=0;j<x.word.length;){if(magic&&j===magic.index){graphemes.push(magic.key);j++;continue}if(magic&&j===x.word.length-1){j++;continue}const k=keys.find(k=>x.word.startsWith(k,j))||x.word[j];graphemes.push(k);j+=k.length}return graphemes.every(soundMastered)});
+return {level,mastered,eligible:eligible.map(x=>x.word),blockedByLevel:beyond};};
+const chooseSession=(available,size)=>{
+ const words=[...new Map(available.map(w=>[w.word,w.word])).values()];
+ const count=Math.min(size,words.length),previous=new Set(selection.previous);
+ const usage=w=>Number(selection.usage[w]?.count||0);
+ const last=w=>Number(selection.usage[w]?.last||0);
+ const order=(a,b)=>Number(previous.has(a))-Number(previous.has(b))||usage(a)-usage(b)||last(a)-last(b)||a.localeCompare(b);
+ const ranked=words.sort(order);
+ const fresh=ranked.filter(w=>usage(w)===0),review=ranked.filter(w=>usage(w)>0);
+ const picked=[];
+ const add=(arr,limit)=>{for(const w of arr){if(picked.length>=limit)break;if(!picked.includes(w))picked.push(w)}};
+ const freshGoal=Math.ceil(count*.6);
+ add(fresh,freshGoal);
+ add(review,count);
+ add(ranked,count);
+ // If there are enough eligible words, never repeat the complete previous session.
+ if(words.length>count&&picked.length===count&&picked.every(w=>previous.has(w))){
+  const alternative=ranked.find(w=>!previous.has(w)&&!picked.includes(w));
+  if(alternative)picked[picked.length-1]=alternative;
+ }
+ selection.round=Number(selection.round||0)+1;
+ for(const w of picked)selection.usage[w]={count:usage(w)+1,last:selection.round};
+ selection.previous=[...picked];
+ localStorage.setItem(selectionKey,JSON.stringify(selection));
+ return picked;
+};
+let queue=[],index=0,reads={},marked=false,assisted=false,sessionSignature='';
 const $=id=>document.getElementById(id);
 const lang=()=>window.PhonikaI18n?.language||localStorage.getItem('uiLanguage')||'ru';
 const isEN=()=>lang()==='en';
@@ -51,11 +84,13 @@ const show=()=>{
  if(typeof section!=='undefined'&&section!=='words'){notice.hidden=true;reading.hidden=true;finish.hidden=true;return}
  finish.hidden=true;
  if(l==='fr'){reading.hidden=true;notice.hidden=false;notice.textContent='Le parcours de lecture en français sera bientôt disponible.';return}
- const available=availableWords();
+ const available=availableWords(),signature=eligibleSignature(available);
+ const changed=signature!==sessionSignature;
+ if(changed){queue=[];sessionSignature=signature;done=false}
  const previous=queue.length;
  queue=queue.filter(w=>available.some(x=>x.word===w));
- if(!queue.length&&available.length){queue=available.slice(0,Math.max(1,Number($('wordSessionSize')?.value)||5)).map(x=>x.word);index=0;reads={};step=0;done=false}
- if(previous!==queue.length)step=Math.min(step,goal());
+ if(!queue.length&&available.length){queue=chooseSession(available,Math.max(1,Number($('wordSessionSize')?.value)||5));index=0;reads={};step=0;done=false}
+ if(changed||previous!==queue.length)step=Math.min(step,goal());
  if(!queue.length){reading.hidden=true;notice.hidden=false;notice.replaceChildren();const p=document.createElement('p');p.textContent='Not enough sounds learned yet. Learn a few more sounds to unlock new words.';const b=document.createElement('button');b.className='primary';b.textContent='Go to Sounds';b.onclick=()=>{$('parentOpen')?.click();$('knownSounds')?.scrollIntoView({block:'center'})};notice.append(p,b);return}
  if(done){finishEN();return}
  notice.hidden=true;reading.hidden=false;reading.querySelectorAll('.lesson-nav .nav-arrow').forEach(b=>{b.hidden=false;b.disabled=false});index=Math.min(index,queue.length-1);
@@ -88,5 +123,5 @@ document.addEventListener('click',e=>{
 },true);
 window.addEventListener('phonika:ui-language',()=>requestAnimationFrame(show));
 document.addEventListener('DOMContentLoaded',()=>{if(lang()!=='ru')requestAnimationFrame(show);$('parentBack')?.addEventListener('click',()=>requestAnimationFrame(show));$('wordsTab')?.addEventListener('click',()=>requestAnimationFrame(show));$('wordSessionSize')?.addEventListener('change',()=>{queue=[];requestAnimationFrame(show)});});
-window.PhonikaENReading={availableWords,wordAvailable,refresh:show};
+window.PhonikaENReading={availableWords,wordAvailable,refresh:show,diagnostic,beginNewSession:()=>{queue=[];reads={};step=0;done=false;show()},currentSession:()=>[...queue]};
 })();
