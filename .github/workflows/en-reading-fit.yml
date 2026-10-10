@@ -1,0 +1,29 @@
+name: EN Reading responsive word
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'en-reading-adapter.js'
+      - 'tests/en-reading-fit.spec.js'
+      - '.github/workflows/en-reading-fit.yml'
+  workflow_dispatch:
+jobs:
+  fit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npx playwright install --with-deps chromium webkit
+      - run: python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/phonika-http.log 2>&1 &
+      - name: Chromium widths
+        run: npx playwright test tests/en-reading-fit.spec.js --project=chromium --reporter=line --retries=0
+        env:
+          PHONIKA_TEST_BASE_URL: http://127.0.0.1:8765/
+      - name: WebKit mobile widths
+        run: npx playwright test tests/en-reading-fit.spec.js --config=playwright.webkit.config.js --project=webkit-mobile --reporter=line --retries=0
+        env:
+          PHONIKA_TEST_BASE_URL: http://127.0.0.1:8765/
