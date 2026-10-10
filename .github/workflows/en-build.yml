@@ -1,0 +1,28 @@
+name: EN Build targeted Playwright
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'en-build-adapter.js'
+      - 'tests/en-build.spec.js'
+      - '.github/workflows/en-build.yml'
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npx playwright install --with-deps chromium webkit
+      - run: python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/phonika-http.log 2>&1 &
+      - run: npx playwright test tests/en-build.spec.js --reporter=line --retries=0
+        env:
+          PHONIKA_TEST_BASE_URL: http://127.0.0.1:8765/
+      - run: npx playwright test tests/en-build.spec.js --config=playwright.webkit.config.js --reporter=line --retries=0
+        if: success() || failure()
+        env:
+          PHONIKA_TEST_BASE_URL: http://127.0.0.1:8765/
