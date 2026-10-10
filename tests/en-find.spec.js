@@ -32,7 +32,11 @@ test('EN Find eligible answers, wrong/correct, completion, Again, RU isolation',
 test('EN Find insufficient words never uses unknown distractors',async({page})=>{
  await init(page,{s:true});await page.locator('#findGameCard').click();
  await expect(page.locator('#findAnswers')).toContainText('Learn a few more sounds to unlock this game!');
- await page.getByRole('button',{name:'Go to Sounds'}).click();
+ const button=page.locator('#enFindGoSounds');
+ await expect(button).toHaveText('Go to Sounds');
+ await expect(button).toBeVisible();
+ await expect(button).toBeEnabled();
+ await button.click();
  await expect(page.locator('#lettersView')).toBeVisible();
 });
 test('EN Find switching to RU restores Russian Games cards',async({page})=>{
