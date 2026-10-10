@@ -26,5 +26,5 @@ test('EN level 1 → 2 → 3 → 1 preserves language and mastered sounds; RU re
  expect((await page.locator('#knownSounds .known-letter').allTextContents()).join('')).toMatch(/[А-Яа-яЁё]/);
  await page.evaluate(()=>PhonikaI18n.setLanguage('en'));
  await expect(page.locator('#level')).toHaveValue('1');
- expect((await page.locator('#knownSounds .known-letter').allTextContents()).join('')).not.toMatch(/[А-Яа-яЁё]/);
+ await expect.poll(async()=> (await page.locator('#knownSounds .known-letter').allTextContents()).join('')).not.toMatch(/[А-Яа-яЁё]/);
 });
