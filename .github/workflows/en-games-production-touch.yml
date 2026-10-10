@@ -1,0 +1,53 @@
+name: EN Build Missing production touch
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'en-build-adapter.js'
+      - 'en-missing-adapter.js'
+      - 'tests/en-games-production-touch.spec.js'
+      - '.github/workflows/en-games-production-touch.yml'
+  workflow_dispatch:
+jobs:
+  mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npx playwright install --with-deps chromium webkit
+      - run: python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/phonika-http.log 2>&1 &
+      - name: Local Chromium mobile
+        run: npx playwright test tests/en-games-production-touch.spec.js --project=mobile --reporter=line --retries=0
+        env:
+          PHONIKA_TEST_BASE_URL: http://127.0.0.1:8765/
+      - name: Local WebKit mobile
+        if: success() || failure()
+        run: npx playwright test tests/en-games-production-touch.spec.js --config=playwright.webkit.config.js --project=webkit-mobile --reporter=line --retries=0
+        env:
+          PHONIKA_TEST_BASE_URL: http://127.0.0.1:8765/
+      - name: Wait for exact SHA on GitHub Pages
+        if: success() || failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for i in $(seq 1 60); do
+            result=$(curl -fsSL -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${{ github.repository }}/actions/runs?per_page=50")
+            if echo "$result" | python3 -c 'import json,sys; d=json.load(sys.stdin); sha=sys.argv[1]; matches=[r for r in d["workflow_runs"] if r["name"]=="Deploy Phonika to GitHub Pages" and r["head_sha"]==sha]; sys.exit(0 if matches and matches[0]["conclusion"]=="success" else 1)' "${{ github.sha }}"; then exit 0; fi
+            sleep 10
+          done
+          echo "Exact SHA not deployed"; exit 1
+      - name: Production Chromium mobile
+        if: success() || failure()
+        run: npx playwright test tests/en-games-production-touch.spec.js --project=mobile --reporter=line --retries=0
+        env:
+          PHONIKA_TEST_BASE_URL: https://olga-pad.github.io/phonika-ru/
+      - name: Production WebKit mobile
+        if: success() || failure()
+        run: npx playwright test tests/en-games-production-touch.spec.js --config=playwright.webkit.config.js --project=webkit-mobile --reporter=line --retries=0
+        env:
+          PHONIKA_TEST_BASE_URL: https://olga-pad.github.io/phonika-ru/
