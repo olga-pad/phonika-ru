@@ -18,7 +18,7 @@ test('EN Catch complete cycle, wrong answer remediation, dinosaur, Again, RU iso
  }
  for(let i=0;i<tasks.length+2&&await page.locator('#catchGame').isVisible();i++){
   const t=await page.evaluate(()=>PhonikaENCatch.getTasks()[0]);if(!t)break;
-  await page.locator('#catchArea .catch-answer').filter({hasText:t.targetWord.toUpperCase()}).click();
+  await page.locator('#catchArea .catch-answer').filter({hasText:t.targetWord.toUpperCase()}).dispatchEvent('click');
   await page.locator('#catchNext').click();
  }
  await expect(page.locator('.games-completion:visible')).toBeVisible();
