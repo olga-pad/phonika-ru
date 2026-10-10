@@ -10,8 +10,8 @@ test('EN Catch complete cycle, wrong answer remediation, dinosaur, Again, RU iso
  for(const t of tasks){expect(pool).toContain(t.targetWord);for(const w of t.answers)expect(pool).toContain(w)}
  for(let i=0;i<tasks.length;i++){
   const t=tasks[i],wrong=t.answers.find(w=>w!==t.targetWord);
-  if(i===0){await page.locator('#catchArea .catch-answer').filter({hasText:wrong.toUpperCase()}).click({force:true});await expect(page.locator('#catchDinoSteps .done')).toHaveCount(0)}
-  await page.locator('#catchArea .catch-answer').filter({hasText:t.targetWord.toUpperCase()}).click({force:true});
+  if(i===0){await page.locator('#catchArea .catch-answer').filter({hasText:wrong.toUpperCase()}).dispatchEvent('click');await expect(page.locator('#catchDinoSteps .done')).toHaveCount(0)}
+  await page.locator('#catchArea .catch-answer').filter({hasText:t.targetWord.toUpperCase()}).dispatchEvent('click');
   await expect(page.locator('#catchNext')).toBeEnabled();
   await expect(page.locator('#catchDinoSteps .done')).toHaveCount(i);
   await page.locator('#catchNext').click();
