@@ -1,6 +1,6 @@
 const {test,expect}=require('@playwright/test');
 async function init(page,sounds){await page.goto('./');await page.evaluate(s=>{localStorage.clear();localStorage.setItem('phonika-en-known-sounds',JSON.stringify(s))},sounds);await page.reload();await page.evaluate(()=>PhonikaI18n.setLanguage('en'));await page.locator('#gamesTab').click()}
-async function assemble(page,word){const t=await page.evaluate(()=>PhonikaENBuild.getTasks().find(x=>!x.completed));const used=new Set();for(const ch of word.toUpperCase()){const id=t.tiles.findIndex((x,i)=>x===ch&&!used.has(i));expect(id).toBeGreaterThanOrEqual(0);used.add(id);await page.locator('#buildLetters .build-letter').nth(id).dispatchEvent('click')}}
+async function assemble(page,word){const t=await page.evaluate(()=>PhonikaENBuild.getTasks()[0]);const used=new Set();for(const ch of word.toUpperCase()){const id=t.tiles.findIndex((x,i)=>x===ch&&!used.has(i));expect(id).toBeGreaterThanOrEqual(0);used.add(id);await page.locator('#buildLetters .build-letter').nth(id).dispatchEvent('click')}}
 test('EN Build Word wrong attempt, correct assembly, dinosaur, remediation, Again',async({page})=>{
  await init(page,{s:true,a:true,t:true,p:true,n:true,i:true,b:true});
  const ru=await page.evaluate(()=>localStorage.getItem('soundsteps-profile-v1'));
