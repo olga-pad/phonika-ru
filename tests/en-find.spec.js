@@ -34,6 +34,8 @@ test('EN Find insufficient words never uses unknown distractors',async({page})=>
  await expect(page.locator('#findAnswers')).toContainText('Learn a few more sounds to unlock this game!');
  const button=page.locator('#enFindGoSounds');
  await expect(button).toHaveText('Go to Sounds');
+ const visibility=await button.evaluate(el=>{const nodes=[];for(let n=el;n;n=n.parentElement){const st=getComputedStyle(n);nodes.push({id:n.id,tag:n.tagName,hidden:n.hidden,display:st.display,visibility:st.visibility,rect:n.getBoundingClientRect().toJSON()});if(n.id==='childView')break}return nodes});
+ expect(visibility,JSON.stringify(visibility)).toEqual(expect.arrayContaining([expect.objectContaining({id:'findGame',hidden:false})]));
  await expect(button).toBeVisible();
  await expect(button).toBeEnabled();
  await button.click();
