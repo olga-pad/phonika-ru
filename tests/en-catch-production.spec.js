@@ -24,7 +24,4 @@ test('production-style EN Games touch opens Catch without RU views or JS errors'
  await expect(page.locator('#gamesGrid')).toBeHidden();
  expect(errors).toEqual([]);
 });
-test('EN unfinished cards display Coming soon and cannot be activated',async({page})=>{
- await page.goto('./');await page.evaluate(()=>PhonikaI18n.setLanguage('en'));await page.locator('#gamesTab').click();
- for(const i of [2]){const card=page.locator('#gamesGrid .game-card').nth(i);await expect(card).toContainText('Coming soon');await expect(card).toHaveAttribute('aria-disabled','true');await expect(card).toHaveCSS('pointer-events','none')}
-});
+test('EN Games displays four enabled game cards',async({page})=>{await page.goto('./');await page.evaluate(()=>PhonikaI18n.setLanguage('en'));await page.locator('#gamesTab').click();for(const card of await page.locator('#gamesGrid .game-card').all()){await expect(card).toHaveAttribute('aria-disabled','false')}});
