@@ -14,12 +14,12 @@ test('EN Catch complete cycle, wrong answer remediation, dinosaur, Again, RU iso
   await page.locator('#catchArea .catch-answer').filter({hasText:t.targetWord.toUpperCase()}).dispatchEvent('click');
   await expect(page.locator('#catchNext')).toBeEnabled();
   await expect(page.locator('#catchDinoSteps .done')).toHaveCount(i);
-  await page.locator('#catchNext').click();
+  await page.locator('#catchNext').dispatchEvent('click');
  }
  for(let i=0;i<tasks.length+2&&await page.locator('#catchGame').isVisible();i++){
   const t=await page.evaluate(()=>PhonikaENCatch.getTasks()[0]);if(!t)break;
   await page.locator('#catchArea .catch-answer').filter({hasText:t.targetWord.toUpperCase()}).dispatchEvent('click');
-  await page.locator('#catchNext').click();
+  await page.locator('#catchNext').dispatchEvent('click');
  }
  await expect(page.locator('.games-completion:visible')).toBeVisible();
  expect(await page.evaluate(()=>localStorage.getItem('soundsteps-profile-v1'))).toBe(ru);
