@@ -4,6 +4,7 @@ test('EN level 1 → 2 → 3 → 1 preserves language and mastered sounds; RU re
  await page.evaluate(()=>{localStorage.clear();PhonikaI18n.setLanguage('en')});
  await page.locator('#parentOpen').click();
  await expect(page.locator('#parentView')).toBeVisible();
+ await page.locator('.tone-known .collapse-toggle').click();
  await expect(page.locator('#knownSounds button[data-sound="s"]')).toBeVisible();
  await page.locator('#knownSounds button[data-sound="s"]').click();
  for(const value of ['1','2','3','1']){
