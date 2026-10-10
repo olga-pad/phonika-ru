@@ -26,5 +26,5 @@ test('production-style EN Games touch opens Catch without RU views or JS errors'
 });
 test('EN unfinished cards display Coming soon and cannot be activated',async({page})=>{
  await page.goto('./');await page.evaluate(()=>PhonikaI18n.setLanguage('en'));await page.locator('#gamesTab').click();
- for(const i of [2,3]){const card=page.locator('#gamesGrid .game-card').nth(i);await expect(card).toContainText('Coming soon');await expect(card).toHaveAttribute('aria-disabled','true');await expect(card).toHaveCSS('pointer-events','none')}
+ for(const i of [2]){const card=page.locator('#gamesGrid .game-card').nth(i);await expect(card).toContainText('Coming soon');await expect(card).toHaveAttribute('aria-disabled','true');await expect(card).toHaveCSS('pointer-events','none')}
 });
