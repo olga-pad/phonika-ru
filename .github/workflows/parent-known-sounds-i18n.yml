@@ -1,0 +1,29 @@
+name: Parent known sounds translations
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'tests/parent-known-sounds-i18n.spec.js'
+      - '.github/workflows/parent-known-sounds-i18n.yml'
+  workflow_dispatch:
+jobs:
+  translations:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npx playwright install --with-deps chromium webkit
+      - run: python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/phonika-http.log 2>&1 &
+      - name: Chromium desktop and mobile
+        run: npx playwright test tests/parent-known-sounds-i18n.spec.js --project=chromium --project=mobile --reporter=line --retries=0
+        env:
+          PHONIKA_TEST_BASE_URL: http://127.0.0.1:8765/
+      - name: WebKit desktop and mobile
+        run: npx playwright test tests/parent-known-sounds-i18n.spec.js --config=playwright.webkit.config.js --reporter=line --retries=0
+        env:
+          PHONIKA_TEST_BASE_URL: http://127.0.0.1:8765/
