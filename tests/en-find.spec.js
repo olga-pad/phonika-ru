@@ -4,7 +4,7 @@ test('EN Find eligible answers, wrong/correct, completion, Again, RU isolation',
  await init(page,{s:true,a:true,t:true,p:true,n:true});
  const ru=await page.evaluate(()=>localStorage.getItem('soundsteps-profile-v1'));
  await page.locator('#findGameCard').click();await expect(page.locator('#findGame')).toBeVisible();
- const tasks=await page.evaluate(()=>PhonikaENFind.getTasks());expect(tasks.length).toBeGreaterThan(1);
+ const diagnostic=await page.evaluate(()=>({pool:PhonikaENReading.availableWords().map(x=>x.word),eligible:PhonikaENFind.eligible().map(x=>x.word),tasks:PhonikaENFind.getTasks()}));expect(diagnostic.eligible.length,JSON.stringify(diagnostic)).toBeGreaterThan(1);const tasks=diagnostic.tasks;expect(tasks.length,JSON.stringify(diagnostic)).toBeGreaterThan(1);
  const valid=await page.evaluate(()=>PhonikaENReading.availableWords().filter(w=>PhonikaENReading.wordAvailable(w)).map(w=>w.word));
  for(const t of tasks){expect(valid).toContain(t.target);for(const w of t.choices)expect(valid).toContain(w)}
  for(let i=0;i<tasks.length;i++){
@@ -15,7 +15,7 @@ test('EN Find eligible answers, wrong/correct, completion, Again, RU isolation',
  }
  // Wrong attempts enter remediation; solve remaining tasks.
  for(let k=0;k<tasks.length+2&&await page.locator('#findGame').isVisible();k++){
-  const current=await page.evaluate(()=>PhonikaENFind.getTasks()[0]);const target=current?.target;
+  const current=await page.evaluate(()=>PhonikaENFind.getTasks().find(t=>!t.completed));const target=current?.target;
   if(!target)break;
   await page.locator('#findAnswers .find-answer').filter({hasText:target.toUpperCase()}).click();
   await page.locator('#findNext').click();
