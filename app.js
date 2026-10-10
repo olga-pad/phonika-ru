@@ -23,7 +23,21 @@ window.addEventListener('DOMContentLoaded',()=>{
     const all=sounds.length>0&&sounds.every(x=>p[x]);toggle.textContent=all?(isFr?'Tout effacer':'Clear all'):(isFr?'Tout sélectionner':'Select all');toggle.onclick=()=>{sounds.forEach(x=>p[x]=!all);saveLanguageProgress(progressLang,p);renderLanguageKnownSounds();};
   };
   const renderLanguageLetterStyle=()=>{const lang=learningLanguage();if(lang==='ru')return;const labels={normal:'abc',title:'Abc',upper:'ABC',handLower:'abc',handTitle:'Abc',handUpper:'ABC'},select=document.getElementById('styleSelect');if(select)select.textContent=labels[style]||'abc';document.querySelectorAll('.style-option').forEach(b=>{b.textContent=labels[b.dataset.style]||'abc';b.classList.toggle('selected',b.dataset.style===style);});};
-  const renderLanguageParent=()=>{renderLanguageKnownSounds();renderLanguageLetterStyle();};
+  // RU owns #level for its own curriculum. EN/FR selections must not invoke RU's onchange.
+  const levelSelect=document.getElementById('level');
+  const selectedLanguageLevel=()=>{const lang=learningLanguage();return lang==='ru'?Number(level):Math.min(10,Math.max(1,Number(localStorage.getItem('phonika-'+lang+'-level')||1)))};
+  const syncLanguageLevel=()=>{if(levelSelect)levelSelect.value=String(selectedLanguageLevel())};
+  levelSelect?.addEventListener('change',event=>{
+    const lang=learningLanguage();if(lang==='ru')return;
+    event.stopImmediatePropagation();
+    localStorage.setItem('phonika-'+lang+'-level',String(Math.min(10,Math.max(1,Number(levelSelect.value)||1))));
+    renderLanguageKnownSounds();
+    window.PhonikaSounds?.refresh?.();
+    window.dispatchEvent(new CustomEvent('phonika:learning-level',{detail:{language:lang,level:Number(levelSelect.value)}}));
+  },true);
+  const renderLanguageParent=()=>{syncLanguageLevel();renderLanguageKnownSounds();renderLanguageLetterStyle();};
+  document.getElementById('parentOpen')?.addEventListener('click',()=>requestAnimationFrame(renderLanguageParent));
+
   window.addEventListener('phonika:ui-language',()=>requestAnimationFrame(renderLanguageParent));
   const card=document.getElementById('letterCard'),letterPictureBtn=document.getElementById('letterShowPicture'),letterPicture=document.getElementById('letterPicture'),letterMastery=document.getElementById('letterKnown'),word=document.getElementById('word'),wordPictureBtn=document.getElementById('showPicture'),wordPicture=document.getElementById('pic'),wordMastery=document.getElementById('readOk'),help=document.getElementById('help');
   const letterActions=document.querySelector('#lettersView .actions'),letterHelp=document.createElement('button');letterHelp.type='button';letterHelp.id='letterHelp';letterHelp.className='help';if(letterActions)letterActions.insertBefore(letterHelp,letterPictureBtn);
