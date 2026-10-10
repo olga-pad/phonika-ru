@@ -19,8 +19,8 @@ const getJson=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key)||
 let level=Math.min(10,Math.max(1,Number(localStorage.getItem('phonika-level')||1)));
 const soundProgress=getJson('phonika-en-sound-progress',{});
 const parentSounds=()=>getJson('phonika-en-known-sounds',{});
-function soundsThroughLevel(){return LEVELS.slice(0,level).flatMap(x=>x.sounds)}
-function wordsThroughLevel(){return LEVELS.slice(0,level).flatMap(x=>x.words.map(w=>({word:w[0],picture:w[1],tricky:!!w[2]})))}
+function soundsThroughLevel(){return LEVELS.flatMap(x=>x.sounds)}
+function wordsThroughLevel(){return LEVELS.flatMap(x=>x.words.map(w=>({word:w[0],picture:w[1],tricky:!!w[2]})))}
 function state(obj,k){if(typeof obj[k]==='number')obj[k]={self:obj[k],mastered:obj[k]>=3,at:0};return obj[k]||(obj[k]={self:0,mastered:false,at:0})}
 function soundMastered(s){return !!parentSounds()[s]||!!state(getJson('phonika-en-sound-progress',{}),s).mastered}
 function graphemes(word){const all=soundsThroughLevel(),known=[...all].sort((a,b)=>b.length-a.length).filter(x=>!x.includes('_'));let out=[],magicIndex=-1,magicKey=null;if(word.endsWith('e')&&word.length>=4){for(let i=0;i<word.length-1;i++){const key=word[i]+'_e';if(all.includes(key)){magicIndex=i;magicKey=key;break}}}for(let i=0;i<word.length;){if(i===magicIndex){out.push(magicKey);i++;continue}if(magicKey&&i===word.length-1&&word[i]==='e'){i++;continue}const g=known.find(x=>word.startsWith(x,i));out.push(g||word[i]);i+=(g||word[i]).length}return [...new Set(out)]}function wordAvailable(w){return graphemes(w.word).every(soundMastered)}
@@ -33,8 +33,7 @@ let selection=getJson(selectionKey,{usage:{},previous:[],round:0});
 if(!selection||typeof selection!=='object')selection={usage:{},previous:[],round:0};
 selection.usage=selection.usage||{};selection.previous=Array.isArray(selection.previous)?selection.previous:[];
 const eligibleSignature=words=>words.map(w=>w.word).sort().join('|');
-const diagnostic=()=>{const eligible=availableWords();const mastered=[...new Set(LEVELS.flatMap(x=>x.sounds))].filter(soundMastered);const beyond=LEVELS.slice(level).flatMap((part,i)=>part.words.map(([word])=>({word,level:level+i+1}))).filter(x=>{const all=LEVELS.slice(0,x.level).flatMap(y=>y.sounds);const keys=[...all].filter(k=>!k.includes('_')).sort((a,b)=>b.length-a.length);let graphemes=[],magic=null;if(x.word.endsWith('e')){for(let j=0;j<x.word.length-1;j++){const key=x.word[j]+'_e';if(all.includes(key)){magic={key,index:j};break}}}for(let j=0;j<x.word.length;){if(magic&&j===magic.index){graphemes.push(magic.key);j++;continue}if(magic&&j===x.word.length-1){j++;continue}const k=keys.find(k=>x.word.startsWith(k,j))||x.word[j];graphemes.push(k);j+=k.length}return graphemes.every(soundMastered)});
-return {level,mastered,eligible:eligible.map(x=>x.word),blockedByLevel:beyond};};
+const diagnostic=()=>{const eligible=availableWords();const mastered=[...new Set(LEVELS.flatMap(x=>x.sounds))].filter(soundMastered);const unlockedBeyondLevel=LEVELS.slice(level).flatMap((part,i)=>part.words.map(([word])=>({word,level:level+i+1}))).filter(x=>wordAvailable(x));return {level,mastered,eligible:eligible.map(x=>x.word),unlockedBeyondLevel,blockedByLevel:[]};};
 const chooseSession=(available,size)=>{
  const words=[...new Map(available.map(w=>[w.word,w.word])).values()];
  const count=Math.min(size,words.length),previous=new Set(selection.previous);
