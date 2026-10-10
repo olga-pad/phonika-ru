@@ -5,6 +5,8 @@ test('EN Find eligible answers, wrong/correct, completion, Again, RU isolation',
  const ru=await page.evaluate(()=>localStorage.getItem('soundsteps-profile-v1'));
  await page.locator('#findGameCard').click();await expect(page.locator('#findGame')).toBeVisible();
  const diagnostic=await page.evaluate(()=>({pool:PhonikaENReading.availableWords().map(x=>x.word),eligible:PhonikaENFind.eligible().map(x=>x.word),tasks:PhonikaENFind.getTasks()}));expect(diagnostic.eligible.length,JSON.stringify(diagnostic)).toBeGreaterThan(1);const tasks=diagnostic.tasks;expect(tasks.length,JSON.stringify(diagnostic)).toBeGreaterThan(1);
+ expect(tasks.every(t=>t.targetWord===t.target)).toBeTruthy();
+ for(let i=1;i<tasks.length;i++)expect(tasks[i].target).not.toBe(tasks[i-1].target);
  const valid=await page.evaluate(()=>PhonikaENReading.availableWords().filter(w=>PhonikaENReading.wordAvailable(w)).map(w=>w.word));
  for(const t of tasks){expect(valid).toContain(t.target);for(const w of t.choices)expect(valid).toContain(w)}
  for(let i=0;i<tasks.length;i++){
