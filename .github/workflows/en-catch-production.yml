@@ -30,6 +30,14 @@ jobs:
         if: success() || failure()
         env:
           PHONIKA_TEST_BASE_URL: http://127.0.0.1:8765/
+      - name: Wait for GitHub Pages to publish this commit
+        if: success() || failure()
+        run: |
+          for i in $(seq 1 36); do
+            deployed=$(curl -fsSL -H 'Accept: application/vnd.github+json' https://api.github.com/repos/olga-pad/phonika-ru/actions/workflows/pages.yml/runs?per_page=10 || true)
+            if echo "$deployed" | grep -q '"conclusion": "success"'; then break; fi
+            sleep 10
+          done
       - name: Test published GitHub Pages on WebKit mobile
         run: npx playwright test tests/en-catch-production.spec.js --config=playwright.webkit.config.js --project=webkit-mobile --reporter=line --retries=0
         if: success() || failure()
