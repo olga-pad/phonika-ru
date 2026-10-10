@@ -13,7 +13,9 @@ test('EN Find eligible answers, wrong/correct, completion, Again, RU isolation',
   const t=tasks[i],wrong=t.choices.find(w=>w!==t.target);
   if(i===0&&wrong){await page.locator('#findAnswers .find-answer').filter({hasText:wrong.toUpperCase()}).click();await expect(page.locator('#findAnswers .try-again')).toHaveCount(1)}
   await page.locator('#findAnswers .find-answer').filter({hasText:t.target.toUpperCase()}).click();
-  await expect(page.locator('#findNext')).toBeEnabled();await page.locator('#findNext').click();
+  await expect(page.locator('#findNext')).toBeEnabled();
+  const completed=await page.locator('#findDinoSteps .dino-step.done').count();
+  expect(completed).toBe(tasks.slice(0,i+1).filter((task,j)=>!(j===0&&task.choices.some(w=>w!==task.target))).length);await page.locator('#findNext').click();
  }
  // Wrong attempts enter remediation; solve remaining tasks.
  for(let k=0;k<tasks.length+2&&await page.locator('#findGame').isVisible();k++){
