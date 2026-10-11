@@ -65,37 +65,7 @@ const lang=()=>window.PhonikaI18n?.language||localStorage.getItem('uiLanguage')|
 const isEN=()=>lang()==='en';
 const save=()=>localStorage.setItem('phonika-en-word-progress',JSON.stringify(readProgress));
 const shown=w=>{const s=window.style||'upper';return s==='upper'||s==='handUpper'?w.toUpperCase():s==='title'||s==='handTitle'?w[0].toUpperCase()+w.slice(1):w};
-// Width fitting is presentation-only and never changes eligibility or reading progress.
-const fitENWord=()=>{
- if(!isEN()||$('readingView').hidden)return;
- const el=$('word'),stage=el.closest('.stage');if(!stage)return;
- const box=stage.getBoundingClientRect(),mid=box.left+box.width/2;
- let left=box.left+8,right=box.right-8;
- // Keep the actual navigation hit areas clear, including their side padding.
- $('readingView').querySelectorAll('.lesson-nav .nav-arrow').forEach(arrow=>{
-  if(arrow.hidden||getComputedStyle(arrow).display==='none')return;
-  const r=arrow.getBoundingClientRect();
-  if(r.width===0||r.height===0)return;
-  if(r.left<mid&&r.right>left)left=Math.max(left,r.right+8);
-  if(r.right>mid&&r.left<right)right=Math.min(right,r.left-8);
- });
- const width=Math.max(1,2*Math.min(mid-left,right-mid));
- el.style.maxWidth=width+'px';
- el.style.fontSize='116px';
- // scrollWidth measures rendered spans, including font metrics and letter spacing.
- let size=116,measured=el.scrollWidth;
- if(measured>width){
-  size=Math.max(12,Math.floor(size*width/measured));
-  el.style.fontSize=size+'px';
-  while(el.scrollWidth>width&&size>12){size--;el.style.fontSize=size+'px'}
- }
-};
-let fitFrame=0;
-const scheduleWordFit=()=>{cancelAnimationFrame(fitFrame);fitFrame=requestAnimationFrame(fitENWord)};
-window.addEventListener('resize',scheduleWordFit);
-window.addEventListener('orientationchange',scheduleWordFit);
-document.fonts?.ready.then(scheduleWordFit);
-const renderWord=w=>{const el=$('word');el.replaceChildren(...[...shown(w)].map(ch=>{const span=document.createElement('span');span.textContent=ch;span.className='aeiou'.includes(ch.toLowerCase())?'vowel':'consonant';return span}));el.classList.toggle('hand',String(window.style||'').startsWith('hand'));scheduleWordFit()};
+const renderWord=w=>{const el=$('word');el.replaceChildren(...[...shown(w)].map(ch=>{const span=document.createElement('span');span.textContent=ch;span.className='aeiou'.includes(ch.toLowerCase())?'vowel':'consonant';return span}));el.classList.toggle('hand',String(window.style||'').startsWith('hand'));window.PhonikaWordFit?.schedule()};
 const notice=document.createElement('div');notice.id='languageReadingNotice';notice.className='panel';notice.hidden=true;
 $('readingView').insertAdjacentElement('afterend',notice);
 let lastLang='ru',ruSnapshot=null,done=false,step=0;
