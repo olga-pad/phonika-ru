@@ -4,7 +4,10 @@ for(const width of [320,375,430]){
  test('EN Reading word fit at '+width+'px',async({page})=>{
   await page.setViewportSize({width,height:760});
   await page.goto('./');
+  await page.evaluate(()=>localStorage.setItem('phonika-en-known-sounds',JSON.stringify({s:true,a:true,t:true,p:true,n:true,c:true,h:true,i:true,b:true,sh:true,ee:true,tr:true,r:true,g:true})));
+  await page.reload();
   await page.evaluate(()=>PhonikaI18n.setLanguage('en'));
+  await page.locator('#wordsTab').click();
   await expect(page.locator('#readingView')).toBeVisible();
   for(const word of words){
    await page.evaluate(w=>{
