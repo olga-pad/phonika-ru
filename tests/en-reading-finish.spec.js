@@ -44,6 +44,7 @@ for(const width of [375,1024]){
   expect(await page.evaluate(()=>localStorage.getItem('phonika-en-word-progress'))).toBe(before);
   await page.evaluate(()=>PhonikaI18n.setLanguage('ru'));
   await expect(page.locator('#finishView h1')).toHaveText('Отлично!');
+  await expect(page.locator('#finishView #continue')).toHaveText('Продолжить');
   await expect(page.locator('#languageReadingNotice')).toBeHidden();
  });
 }
