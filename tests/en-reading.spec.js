@@ -75,8 +75,14 @@ test('EN full session completes and Again restarts',async({page})=>{
   await expect(page.locator('#readOk')).toHaveText('Continue →');
   if(i<5)await page.locator('#readOk').click();
  }
- await expect(page.locator('#languageReadingNotice')).toContainText('Great!');
- await page.getByRole('button',{name:'Again'}).click();
+ await expect(page.locator('#finishView')).toBeVisible();
+ await expect(page.locator('#finishView h1')).toHaveText('Hooray!');
+ await expect(page.locator('#finishView')).toContainText('You read all the words!');
+ await expect(page.locator('#finishView')).toContainText('3 words read!');
+ await expect(page.locator('#languageReadingNotice')).toBeHidden();
+ const progressBefore=await page.evaluate(()=>localStorage.getItem('phonika-en-word-progress'));
+ await page.getByRole('button',{name:'Read again'}).click();
+ expect(await page.evaluate(()=>localStorage.getItem('phonika-en-word-progress'))).toBe(progressBefore);
  await expect(page.locator('#readingView')).toBeVisible();
  await expect(page.locator('#readOk')).toContainText('I read it myself');
 });
