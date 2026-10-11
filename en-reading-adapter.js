@@ -70,11 +70,27 @@ const notice=document.createElement('div');notice.id='languageReadingNotice';not
 $('readingView').insertAdjacentElement('afterend',notice);
 let lastLang='ru',ruSnapshot=null,done=false,step=0;
 const track=()=>document.querySelector('#readingView .dino-track');
-const snapshotRU=()=>{if(ruSnapshot)return;const ids=['word','pic','reward','confirmation','readOk'];ruSnapshot={nodes:Object.fromEntries(ids.map(id=>[id,$(id)?.innerHTML])),track:track()?.innerHTML,readHidden:$('readingView').hidden,finishHidden:$('finishView').hidden};};
-const restoreRU=()=>{if(!ruSnapshot)return;for(const [id,html] of Object.entries(ruSnapshot.nodes)){if($(id)&&html!==undefined)$(id).innerHTML=html}if(track()&&ruSnapshot.track!==undefined)track().innerHTML=ruSnapshot.track;$('readingView').hidden=ruSnapshot.readHidden;$('finishView').hidden=ruSnapshot.finishHidden;ruSnapshot=null;};
+const snapshotRU=()=>{if(ruSnapshot)return;const ids=['word','pic','reward','confirmation','readOk'];ruSnapshot={nodes:Object.fromEntries(ids.map(id=>[id,$(id)?.innerHTML])),track:track()?.innerHTML,readHidden:$('readingView').hidden,finishHidden:$('finishView').hidden,finishMarkup:$('finishView').innerHTML};};
+const restoreRU=()=>{if(!ruSnapshot)return;for(const [id,html] of Object.entries(ruSnapshot.nodes)){if($(id)&&html!==undefined)$(id).innerHTML=html}if(track()&&ruSnapshot.track!==undefined)track().innerHTML=ruSnapshot.track;if(ruSnapshot.finishMarkup!==undefined)$('finishView').innerHTML=ruSnapshot.finishMarkup;$('readingView').hidden=ruSnapshot.readHidden;$('finishView').hidden=ruSnapshot.finishHidden;ruSnapshot=null;};
 const goal=()=>queue.length*2;
 const updateTrack=()=>{const t=track();if(!t)return;const steps=t.querySelector('.dino-steps');if(steps){steps.replaceChildren(...Array.from({length:goal()},(_,i)=>{const el=document.createElement('span');el.className='dino-step'+(i<step?' done':'');if(i<step)el.innerHTML='<span class="step-check">✓</span>';return el}))}const d=t.querySelector('.dino');if(d)d.style.left='calc('+Math.min(100,step/Math.max(1,goal())*100)+'% - '+Math.min(46,step/Math.max(1,goal())*46)+'px)'};
-const finishEN=()=>{done=true;$('readingView').hidden=true;notice.hidden=false;notice.replaceChildren();const h=document.createElement('h1');h.textContent='Great!';const p=document.createElement('p');p.textContent=queue.length+' words read!';const again=document.createElement('button');again.className='primary';again.textContent='Again';again.onclick=()=>{queue=[];reads={};step=0;done=false;show()};notice.append(h,p,again)};
+const finishEN=()=>{
+ done=true;
+ $('readingView').hidden=true;
+ notice.hidden=true;
+ const finish=$('finishView');
+ // Reuse the actual RU Reading finish layout, star, button and styles.
+ // Its RU markup is restored from ruSnapshot on language change.
+ finish.replaceChildren();
+ const star=document.createElement('div');star.className='star';star.textContent='⭐';
+ const title=document.createElement('h1');title.textContent='Hooray!';
+ const message=document.createElement('p');message.className='intro';message.textContent='You read all the words!';
+ const count=document.createElement('p');count.className='intro';count.textContent=queue.length+' '+(queue.length===1?'word':'words')+' read!';
+ const again=document.createElement('button');again.id='continue';again.className='primary continue';again.textContent='Read again';
+ finish.append(star,title,message,count,again);
+ finish.hidden=false;
+};
+
 const show=()=>{
  const l=lang(),reading=$('readingView'),finish=$('finishView');
  if(l==='ru'){notice.hidden=true;restoreRU();lastLang='ru';return}
@@ -101,6 +117,12 @@ const advance=(delta=1)=>{if(!queue.length)return;if(delta>0&&index===queue.leng
 document.addEventListener('click',e=>{
  if(lang()==='ru'||$('parentView')?.hidden===false)return;
  const b=e.target.closest('button');if(!b)return;
+ if(b.id==='continue'&&lang()==='en'){
+  e.preventDefault();e.stopImmediatePropagation();
+  queue=[];reads={};step=0;done=false;index=0;
+  show();
+  return;
+ }
  const nav=b.closest('#readingView .lesson-nav');
  const target=nav?(b.classList.contains('nav-prev')?'prev':'next'):b.id;
  if(!['prev','next','readOk','help','showPicture'].includes(target))return;
