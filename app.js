@@ -188,6 +188,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   $('wordsTab').addEventListener('click',()=>requestAnimationFrame(()=>{celebration.hidden=true;document.getElementById('readingView')?.insertBefore(dinoTrack,document.getElementById('readingView')?.querySelector('.stage'));dinoProgress=0;buildDinoSteps();updateDino();resetLessonGoal('words');refreshCurrentNav();}));
   switchSection(section==='letters'?'letters':'words');
   // Put the shared progress track into the initially active section as well.
+  window.addEventListener('phonika:ru-reading-restored',()=>{if(section==='words'){startSession();resetLessonGoal('words');}setActionLabels();refreshCurrentNav();});
   const initialTrackHost=section==='letters'?document.getElementById('lettersView'):document.getElementById('readingView');
   initialTrackHost?.insertBefore(dinoTrack,initialTrackHost.querySelector('.stage'));
   dinoProgress=0;buildDinoSteps();updateDino();
