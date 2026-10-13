@@ -27,6 +27,35 @@ test('в режиме звуков можно показать и скрыть �
   await expect(picture).toBeHidden();
 });
 
+test('RU → EN → RU восстанавливает кнопку, чтение и живой прогресс динозавра', async ({ page }) => {
+  await resetApp(page);
+  await page.locator('#parentOpen').click();
+  await page.locator('.tone-known .collapse-toggle').click();
+  await page.locator('#toggleAllSounds').click();
+  await page.locator('#parentBack').click();
+  await expect(page.locator('#word')).not.toBeEmpty();
+  await expect(page.locator('#readOk')).toContainText('Прочитал сам');
+
+  await page.locator('#parentOpen').click();
+  await page.locator('.parent-language-option').filter({ hasText: /^EN$/ }).click();
+  await page.locator('#parentBack').click();
+  await page.locator('#parentOpen').click();
+  await page.locator('.parent-language-option').filter({ hasText: /^RU$/ }).click();
+  await page.locator('#parentBack').click();
+  await expect(page.locator('#readOk')).toContainText('Прочитал сам');
+  const before = await page.locator('#readingView .dino').evaluate(el => el.style.left);
+  await page.locator('#readOk').click();
+  await expect(page.locator('#confirmation')).toContainText('Засчитано');
+  const after = await page.locator('#readingView .dino').evaluate(el => el.style.left);
+  expect(after).not.toBe(before);
+  const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('soundsteps-profile-v1')));
+  expect(Object.values(stored.words).some(w => w.self > 0)).toBeTruthy();
+  await page.reload();
+  await expect(page.locator('#readOk')).toContainText('Прочитал сам');
+  const restored = await page.evaluate(() => JSON.parse(localStorage.getItem('soundsteps-profile-v1')));
+  expect(Object.values(restored.words).some(w => w.self > 0)).toBeTruthy();
+});
+
 test('подсказка блокирует отметку «Прочитал сам»', async ({ page }) => {
   await resetApp(page);
   await page.getByRole('button', { name: 'Звуки' }).click();
