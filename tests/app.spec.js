@@ -43,6 +43,27 @@ test('родитель может отметить все звуки как зн
   await expect(page.locator('#knownSounds .known-letter.selected')).toHaveCount(33);
 });
 
+test('массовая отметка RU сохраняется, обновляет Parent Mode и не осваивает слова', async ({ page }) => {
+  await resetApp(page);
+  await page.locator('#parentOpen').click();
+  await page.locator('.tone-known .collapse-toggle').click();
+  await page.locator('#toggleAllSounds').click();
+
+  await expect(page.locator('#knownSounds .known-letter.selected')).toHaveCount(33);
+  await expect(page.locator('#masteredLetters .mastered-row')).toHaveCount(33);
+  await expect(page.locator('#toggleAllSounds')).toHaveText('Снять все');
+  const profile = await page.evaluate(() => JSON.parse(localStorage.getItem('soundsteps-profile-v1')));
+  expect(Object.values(profile.sounds).filter(s => s.mastered)).toHaveLength(33);
+  expect(Object.values(profile.words).filter(w => w.mastered)).toHaveLength(0);
+
+  await page.reload();
+  await page.locator('#parentOpen').click();
+  await page.locator('.tone-known .collapse-toggle').click();
+  await expect(page.locator('#knownSounds .known-letter.selected')).toHaveCount(33);
+  await expect(page.locator('#masteredLetters .mastered-row')).toHaveCount(33);
+  await expect(page.locator('#toggleAllSounds')).toHaveText('Снять все');
+});
+
 test('после освоения нужных звуков становятся доступны слова', async ({ page }) => {
   const mastered = (chars) => Object.fromEntries(
     chars.map(ch => [ch, { self: 3, mastered: true, masteredAt: 1, dueRound: 0, lastSeenRound: 0 }])
