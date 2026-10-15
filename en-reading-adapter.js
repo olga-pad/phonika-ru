@@ -115,7 +115,7 @@ const show=()=>{
 };
 const advance=(delta=1)=>{if(!queue.length)return;if(delta>0&&index===queue.length-1){if(queue.every(w=>(reads[w]||0)>=2)){finishEN();return}index=queue.findIndex(w=>(reads[w]||0)<2);if(index<0)index=0}else index=(index+delta+queue.length)%queue.length;show()};
 document.addEventListener('click',e=>{
- if(lang()==='ru'||$('parentView')?.hidden===false)return;
+ if(lang()!=='en'||$('parentView')?.hidden===false)return;
  const b=e.target.closest('button');if(!b)return;
  if(b.id==='continue'&&lang()==='en'){
   e.preventDefault();e.stopImmediatePropagation();
