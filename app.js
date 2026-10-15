@@ -179,6 +179,7 @@ window.addEventListener('DOMContentLoaded',()=>{
     }
   };
   const finishGuard=new MutationObserver(()=>{
+    if((window.PhonikaI18n?.language||localStorage.getItem('uiLanguage')||'ru')!=='ru')return;
     if(!$('finishView').hidden&&!allLessonItemsMastered('words')){$('finishView').hidden=true;$('readingView').hidden=false;restartPendingCycle('words');}
     if(!$('letterFinishView').hidden&&!allLessonItemsMastered('letters')){$('letterFinishView').hidden=true;$('lettersView').hidden=false;restartPendingCycle('letters');}
   });
