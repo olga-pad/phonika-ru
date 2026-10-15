@@ -71,7 +71,7 @@ $('readingView').insertAdjacentElement('afterend',notice);
 let lastLang='ru',ruSnapshot=null,done=false,step=0;
 const track=()=>document.querySelector('#readingView .dino-track');
 const snapshotRU=()=>{if(ruSnapshot)return;const ids=['word','pic','reward','confirmation','readOk'];ruSnapshot={nodes:Object.fromEntries(ids.map(id=>[id,$(id)?.innerHTML])),track:track()?.innerHTML,readHidden:$('readingView').hidden,finishHidden:$('finishView').hidden,finishNodes:[...$('finishView').childNodes]};};
-const restoreRU=()=>{if(!ruSnapshot)return;for(const [id,html] of Object.entries(ruSnapshot.nodes)){if($(id)&&html!==undefined)$(id).innerHTML=html}if(track()&&ruSnapshot.track!==undefined)track().innerHTML=ruSnapshot.track;if(ruSnapshot.finishNodes)$('finishView').replaceChildren(...ruSnapshot.finishNodes);$('readingView').hidden=ruSnapshot.readHidden;$('finishView').hidden=ruSnapshot.finishHidden;ruSnapshot=null;};
+const restoreRU=()=>{if(!ruSnapshot)return;for(const [id,html] of Object.entries(ruSnapshot.nodes)){if($(id)&&html!==undefined)$(id).innerHTML=html}if(ruSnapshot.finishNodes)$('finishView').replaceChildren(...ruSnapshot.finishNodes);$('readingView').hidden=ruSnapshot.readHidden;$('finishView').hidden=ruSnapshot.finishHidden;ruSnapshot=null;};
 const goal=()=>queue.length*2;
 const updateTrack=()=>{const t=track();if(!t)return;const steps=t.querySelector('.dino-steps');if(steps){steps.replaceChildren(...Array.from({length:goal()},(_,i)=>{const el=document.createElement('span');el.className='dino-step'+(i<step?' done':'');if(i<step)el.innerHTML='<span class="step-check">✓</span>';return el}))}const d=t.querySelector('.dino');if(d)d.style.left='calc('+Math.min(100,step/Math.max(1,goal())*100)+'% - '+Math.min(46,step/Math.max(1,goal())*46)+'px)'};
 const finishEN=()=>{
@@ -93,7 +93,7 @@ const finishEN=()=>{
 
 const show=()=>{
  const l=lang(),reading=$('readingView'),finish=$('finishView');
- if(l==='ru'){notice.hidden=true;restoreRU();lastLang='ru';return}
+ if(l==='ru'){notice.hidden=true;const returning=lastLang!=='ru';restoreRU();lastLang='ru';if(returning)window.dispatchEvent(new Event('phonika:ru-reading-restored'));return}
  if(lastLang==='ru')snapshotRU();lastLang=l;
  // Sounds owns the child view while the Sounds tab is active.
  if(typeof section!=='undefined'&&section!=='words'){notice.hidden=true;reading.hidden=true;finish.hidden=true;return}
