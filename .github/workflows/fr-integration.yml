@@ -1,0 +1,38 @@
+name: FR V1 integration Playwright
+on:
+  push:
+    branches: [integration/fr-v1-ru-fixes]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  playwright:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Serve checked-out application
+        run: |
+          python3 -m http.server 8000 > /tmp/phonika-http.log 2>&1 &
+          echo $! > /tmp/phonika-http.pid
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8000/ >/dev/null && exit 0; sleep 1; done
+          exit 1
+      - name: Playwright desktop and mobile
+        env:
+          PHONIKA_TEST_BASE_URL: http://127.0.0.1:8000/
+        run: npx playwright test --project=chromium --project=mobile --reporter=line
+      - name: Upload Playwright report and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phonika-integration-playwright
+          path: |
+            test-results/
+            playwright-report/
+            /tmp/phonika-http.log
+          if-no-files-found: ignore
