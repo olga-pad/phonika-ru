@@ -23,6 +23,7 @@ const save=(k)=>{const progress=soundState(),old=progress[k]||{},self=Math.min(3
 const ruSnapshot=()=>{if(ruView)return;ruView={card:card.innerHTML,cardClass:card.className,picture:picture.innerHTML,pictureHidden:picture.hidden,known:known.innerHTML,knownDisabled:known.disabled,viewHidden:view.hidden,finishHidden:$('letterFinishView').hidden};};
 const restoreRU=()=>{if(!ruView)return;card.innerHTML=ruView.card;card.className=ruView.cardClass;picture.innerHTML=ruView.picture;picture.hidden=ruView.pictureHidden;known.innerHTML=ruView.known;known.disabled=ruView.knownDisabled;view.hidden=ruView.viewHidden;$('letterFinishView').hidden=ruView.finishHidden;ruView=null;};
 const render=()=>{
+ if(lang()==='fr'){window.PhonikaFRUI?.soundCards?.();active='fr';return}
  if(lang()==='ru'){notice.hidden=true;$('letterHelp').disabled=false;$('letterShowPicture').disabled=false;restoreRU();active='ru';return}
  if(active==='ru')ruSnapshot();if(active!==lang()){queue=[];index=0;reads={};finished=false}active=lang();
  if(section!=='letters')return;
@@ -41,6 +42,7 @@ const next=(delta=1)=>{if(!queue.length)return;index=(index+delta+queue.length)%
 const speakExample=()=>{const k=current(),text=ASSOC[k]?.[0];if(!text||!('speechSynthesis'in window))return;speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(text);utterance.lang='en-GB';utterance.rate=.7;speechSynthesis.speak(utterance)};
 document.addEventListener('click',e=>{
  if(lang()==='ru'||section!=='letters'||$('parentView')?.hidden===false)return;
+ if(lang()==='fr'){const b=e.target.closest('button');if(!b)return;const nav=b.closest('#lettersView .lesson-nav');const action=nav?(b.classList.contains('nav-prev')?'prev':'next'):b.id;if(['prev','next','letterKnown'].includes(action)){e.preventDefault();e.stopImmediatePropagation();if(action==='letterKnown')window.PhonikaFRUI?.soundMark?.();else window.PhonikaFRUI?.soundNext?.(action==='prev'?-1:1)}return}
  const b=e.target.closest('button');if(!b)return;
  const nav=b.closest('#lettersView .lesson-nav');
  const action=nav?(b.classList.contains('nav-prev')?'prev':'next'):b.id;
