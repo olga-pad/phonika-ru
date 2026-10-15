@@ -18,6 +18,7 @@ window.addEventListener('DOMContentLoaded',()=>{
     const box=document.getElementById('knownSounds'),toggle=document.getElementById('toggleAllSounds');if(!box)return;
     const lang=learningLanguage();if(lang==='ru'){parentRender();return;}
     if(toggle)toggle.hidden=false;
+    if(lang==='fr'&&window.PhonikaFR){window.PhonikaFRUI?.renderParent?.();return;}
     const isFr=lang==='fr',sounds=isFr?'abcdefghijklmnopqrstuvwxyz'.split(''):[...new Set(EN_LEVEL_SOUNDS.flat())],progressLang=isFr?'fr':'en',p=languageProgress(progressLang),vowels=isFr?new Set(['a','e','i','o','u','y']):EN_VOWELS;
     box.replaceChildren(...sounds.map(sound=>{const b=document.createElement('button');b.type='button';b.className='known-letter '+(vowels.has(sound)?'vowel-choice':'consonant-choice')+(p[sound]?' selected':'');b.dataset.sound=sound;b.setAttribute('aria-pressed',String(!!p[sound]));b.textContent=isFr?sound.toUpperCase():sound.replace('_','');b.onclick=()=>{p[sound]=!p[sound];saveLanguageProgress(progressLang,p);renderLanguageKnownSounds();};return b;}));
     const all=sounds.length>0&&sounds.every(x=>p[x]);toggle.textContent=all?(isFr?'Tout effacer':'Clear all'):(isFr?'Tout sélectionner':'Select all');toggle.onclick=()=>{sounds.forEach(x=>p[x]=!all);saveLanguageProgress(progressLang,p);renderLanguageKnownSounds();};
