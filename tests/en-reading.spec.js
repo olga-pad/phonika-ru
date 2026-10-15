@@ -14,11 +14,12 @@ test('EN excludes words requiring unmastered sounds and refreshes parent mastery
  await page.evaluate(()=>{localStorage.setItem('phonika-en-known-sounds',JSON.stringify({s:true,a:true,t:true,p:true,n:true,b:true}));window.PhonikaENReading.refresh()});
  expect(await page.evaluate(()=>window.PhonikaENReading.availableWords().map(w=>w.word))).toContain('bat');
 });
-test('EN empty state and FR placeholder without RU words',async({page})=>{
+test('EN empty state and functional FR empty state without RU words',async({page})=>{
  await setup(page,{});
  await expect(page.locator('#languageReadingNotice')).toContainText('Not enough sounds learned yet');
  await page.evaluate(()=>window.PhonikaI18n.setLanguage('fr'));
- await expect(page.locator('#languageReadingNotice')).toContainText('Le parcours de lecture en français sera bientôt disponible.');
+ await expect(page.locator('#frReadingNotice')).toContainText('Apprenez davantage de sons');
+ await expect(page.locator('#frReadingNotice button')).toHaveText('Aller aux sons');
  await page.evaluate(()=>window.PhonikaI18n.setLanguage('ru'));
  await expect(page.locator('#languageReadingNotice')).toBeHidden();
 });
@@ -93,7 +94,7 @@ test('RU EN FR RU preserves RU stored progress and English mastery',async({page}
  const enBefore=await page.evaluate(()=>localStorage.getItem('phonika-en-word-progress'));
  expect(enBefore).not.toBeNull();
  await page.evaluate(()=>PhonikaI18n.setLanguage('fr'));
- await expect(page.locator('#languageReadingNotice')).toContainText('français');
+ await expect(page.locator('#frReadingNotice')).toContainText('Apprenez davantage de sons');
  await page.evaluate(()=>PhonikaI18n.setLanguage('ru'));
  expect(await page.evaluate(()=>localStorage.getItem('soundsteps-profile-v1'))).toBe(ruBefore);
  await page.evaluate(()=>PhonikaI18n.setLanguage('en'));
