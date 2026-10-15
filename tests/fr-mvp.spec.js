@@ -31,3 +31,24 @@ test('FR Parent Mode saves correspondence mastery after reload',async({page})=>{
  await page.reload();await page.locator('#parentOpen').click();
  await expect(page.locator('#knownSounds [data-sound="o|o"]')).toHaveAttribute('aria-pressed','true');
 });
+
+test('FR Parent Mode to independent Reading session completion persists',async({page})=>{
+ await page.goto('./');
+ await page.evaluate(()=>{localStorage.clear();PhonikaI18n.setLanguage('fr')});
+ await page.reload();
+ await page.locator('#parentOpen').click();
+ await page.locator('.tone-known .collapse-toggle').click();
+ await page.locator('#toggleAllSounds').click();
+ await page.locator('#parentBack').click();
+ await page.locator('#wordsTab').click();
+ await expect(page.locator('#readingView')).toBeVisible();
+ await expect(page.locator('#word')).not.toBeEmpty();
+ await expect(page.locator('#readOk')).toContainText('J’ai lu tout seul');
+ const before=await page.evaluate(()=>JSON.parse(localStorage.getItem('phonika-fr-word-progress')||'{}'));
+ await page.locator('#readOk').click();
+ const after=await page.evaluate(()=>JSON.parse(localStorage.getItem('phonika-fr-word-progress')||'{}'));
+ expect(Object.values(after).reduce((s,x)=>s+x.self,0)).toBe(Object.values(before).reduce((s,x)=>s+x.self,0)+1);
+ await page.reload();
+ const restored=await page.evaluate(()=>JSON.parse(localStorage.getItem('phonika-fr-word-progress')||'{}'));
+ expect(restored).toEqual(after);
+});
