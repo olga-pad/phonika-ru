@@ -98,7 +98,7 @@ const show=()=>{
  // Sounds owns the child view while the Sounds tab is active.
  if(typeof section!=='undefined'&&section!=='words'){notice.hidden=true;reading.hidden=true;finish.hidden=true;return}
  finish.hidden=true;
- if(l==='fr'){reading.hidden=true;notice.hidden=false;notice.textContent='Le parcours de lecture en français sera bientôt disponible.';return}
+ if(l==='fr'){notice.hidden=true;window.PhonikaFRUI?.showReading?.();return}
  const available=availableWords(),signature=eligibleSignature(available);
  const changed=signature!==sessionSignature;
  if(changed){queue=[];sessionSignature=signature;done=false}
