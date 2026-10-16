@@ -1,4 +1,5 @@
 const {test,expect}=require('@playwright/test');
+test.beforeEach(async({page})=>{page.on('pageerror',e=>console.log('FR SCRIPT ERROR:',e.message));page.on('response',r=>{if(r.url().includes('/fr-')&&r.status()>=400)console.log('FR RESOURCE ERROR:',r.status(),r.url())})});
 test('FR curriculum has 23/20/12 words and NEZ uses EZ',async({page})=>{
  await page.goto('./');
  const data=await page.evaluate(()=>({words:PhonikaFR.words.map(w=>w.word),counts:[1,2,3].map(l=>PhonikaFR.words.filter(w=>w.level===l).length),nez:PhonikaFR.words.find(w=>w.word==='NEZ')}));
