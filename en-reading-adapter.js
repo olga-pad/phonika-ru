@@ -59,7 +59,7 @@ const chooseSession=(available,size)=>{
  localStorage.setItem(selectionKey,JSON.stringify(selection));
  return picked;
 };
-let queue=[],index=0,reads={},marked=false,assisted=false,sessionSignature='';
+let queue=[],index=0,reads={},marked=false,assisted=false,sessionSignature='',forceNewSession=false;
 const $=id=>document.getElementById(id);
 const lang=()=>window.PhonikaI18n?.language||localStorage.getItem('uiLanguage')||'ru';
 const isEN=()=>lang()==='en';
@@ -104,7 +104,7 @@ const show=()=>{
  if(changed){queue=[];sessionSignature=signature;done=false}
  const previous=queue.length;
  queue=queue.filter(w=>available.some(x=>x.word===w));
- if(!queue.length&&available.length){const size=Math.max(1,Number($('wordSessionSize')?.value)||5);const prior=selection.previous.filter(w=>available.some(x=>x.word===w));queue=prior.length===Math.min(size,available.length)&&!changed?prior:chooseSession(available,size);index=0;reads={};step=0;done=false}
+ if(!queue.length&&available.length){const size=Math.max(1,Number($('wordSessionSize')?.value)||5);const prior=selection.previous.filter(w=>available.some(x=>x.word===w));queue=prior.length===Math.min(size,available.length)&&!changed&&!forceNewSession?prior:chooseSession(available,size);index=0;reads={};step=0;done=false;forceNewSession=false}
  if(changed||previous!==queue.length)step=Math.min(step,goal());
  if(!queue.length){reading.hidden=true;notice.hidden=false;notice.replaceChildren();const p=document.createElement('p');p.textContent='Not enough sounds learned yet. Learn a few more sounds to unlock new words.';const b=document.createElement('button');b.className='primary';b.textContent='Go to Sounds';b.onclick=()=>{$('parentOpen')?.click();$('knownSounds')?.scrollIntoView({block:'center'})};notice.append(p,b);return}
  if(done){finishEN();return}
@@ -144,5 +144,5 @@ document.addEventListener('click',e=>{
 },true);
 window.addEventListener('phonika:ui-language',()=>requestAnimationFrame(show));
 document.addEventListener('DOMContentLoaded',()=>{if(lang()!=='ru')requestAnimationFrame(show);$('parentBack')?.addEventListener('click',()=>requestAnimationFrame(show));$('wordsTab')?.addEventListener('click',()=>requestAnimationFrame(show));$('wordSessionSize')?.addEventListener('change',()=>{queue=[];requestAnimationFrame(show)});});
-window.PhonikaENReading={availableWords,wordAvailable,refresh:show,diagnostic,beginNewSession:()=>{queue=[];reads={};step=0;done=false;show()},currentSession:()=>[...queue]};
+window.PhonikaENReading={availableWords,wordAvailable,refresh:show,diagnostic,beginNewSession:()=>{queue=[];reads={};step=0;done=false;forceNewSession=true;show()},currentSession:()=>[...queue]};
 })();
