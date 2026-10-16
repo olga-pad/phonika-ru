@@ -17,8 +17,9 @@ async function exclusive(page,tab,view){
 test('RU Games -> Parent EN -> Games only; EN Games -> RU restores RU cards',async({page})=>{
  await init(page);await page.locator('#gamesTab').click();await exclusive(page,'gamesTab','gamesView');
  await language(page,'en');await exclusive(page,'gamesTab','gamesView');
- await expect(page.locator('#englishGamesNotice')).toHaveText('English games coming soon');
- await expect(page.locator('#gamesGrid')).toBeHidden();
+ await expect(page.locator('#englishGamesNotice')).toBeHidden();
+ await expect(page.locator('#gamesGrid')).toBeVisible();
+ await expect(page.locator('#gamesGrid .game-card')).toHaveCount(4);
  await language(page,'ru');await exclusive(page,'gamesTab','gamesView');
  await expect(page.locator('#gamesGrid')).toBeVisible();
  await expect(page.locator('#englishGamesNotice')).toBeHidden();
