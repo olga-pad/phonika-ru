@@ -43,6 +43,11 @@ for(const width of [320,375,430])for(const lang of ['ru','en']){
 }
 test('RU Reading independent progress, hint, navigation and finish remain intact',async({page})=>{
  await boot(page,'ru',375);
+ await page.locator('#parentOpen').click();
+ await page.locator('.tone-known .collapse-toggle').click();
+ await page.locator('#toggleAllSounds').click();
+ await page.locator('#parentBack').click();
+ await expect(page.locator('#word')).not.toBeEmpty();
  const initial=await page.evaluate(()=>localStorage.getItem('soundsteps-profile-v1'));
  await page.locator('#showPicture').click();
  await expect(page.locator('#pic')).toBeVisible();

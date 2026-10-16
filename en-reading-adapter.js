@@ -59,7 +59,7 @@ const chooseSession=(available,size)=>{
  localStorage.setItem(selectionKey,JSON.stringify(selection));
  return picked;
 };
-let queue=[],index=0,reads={},marked=false,assisted=false,sessionSignature='';
+let queue=[],index=0,reads={},marked=false,assisted=false,sessionSignature='',forceNewSession=false;
 const $=id=>document.getElementById(id);
 const lang=()=>window.PhonikaI18n?.language||localStorage.getItem('uiLanguage')||'ru';
 const isEN=()=>lang()==='en';
@@ -71,7 +71,7 @@ $('readingView').insertAdjacentElement('afterend',notice);
 let lastLang='ru',ruSnapshot=null,done=false,step=0;
 const track=()=>document.querySelector('#readingView .dino-track');
 const snapshotRU=()=>{if(ruSnapshot)return;const ids=['word','pic','reward','confirmation','readOk'];ruSnapshot={nodes:Object.fromEntries(ids.map(id=>[id,$(id)?.innerHTML])),track:track()?.innerHTML,readHidden:$('readingView').hidden,finishHidden:$('finishView').hidden,finishNodes:[...$('finishView').childNodes]};};
-const restoreRU=()=>{if(!ruSnapshot)return;for(const [id,html] of Object.entries(ruSnapshot.nodes)){if($(id)&&html!==undefined)$(id).innerHTML=html}if(track()&&ruSnapshot.track!==undefined)track().innerHTML=ruSnapshot.track;if(ruSnapshot.finishNodes)$('finishView').replaceChildren(...ruSnapshot.finishNodes);$('readingView').hidden=ruSnapshot.readHidden;$('finishView').hidden=ruSnapshot.finishHidden;ruSnapshot=null;};
+const restoreRU=()=>{if(!ruSnapshot)return;for(const [id,html] of Object.entries(ruSnapshot.nodes)){if($(id)&&html!==undefined)$(id).innerHTML=html}if(ruSnapshot.finishNodes)$('finishView').replaceChildren(...ruSnapshot.finishNodes);$('readingView').hidden=ruSnapshot.readHidden;$('finishView').hidden=ruSnapshot.finishHidden;ruSnapshot=null;};
 const goal=()=>queue.length*2;
 const updateTrack=()=>{const t=track();if(!t)return;const steps=t.querySelector('.dino-steps');if(steps){steps.replaceChildren(...Array.from({length:goal()},(_,i)=>{const el=document.createElement('span');el.className='dino-step'+(i<step?' done':'');if(i<step)el.innerHTML='<span class="step-check">✓</span>';return el}))}const d=t.querySelector('.dino');if(d)d.style.left='calc('+Math.min(100,step/Math.max(1,goal())*100)+'% - '+Math.min(46,step/Math.max(1,goal())*46)+'px)'};
 const finishEN=()=>{
@@ -93,18 +93,19 @@ const finishEN=()=>{
 
 const show=()=>{
  const l=lang(),reading=$('readingView'),finish=$('finishView');
- if(l==='ru'){notice.hidden=true;restoreRU();lastLang='ru';return}
+ if(l==='ru'){notice.hidden=true;const returning=lastLang!=='ru';restoreRU();lastLang='ru';if(returning)window.dispatchEvent(new Event('phonika:ru-reading-restored'));return}
  if(lastLang==='ru')snapshotRU();lastLang=l;
  // Sounds owns the child view while the Sounds tab is active.
  if(typeof section!=='undefined'&&section!=='words'){notice.hidden=true;reading.hidden=true;finish.hidden=true;return}
  finish.hidden=true;
- if(l==='fr'){reading.hidden=true;notice.hidden=false;notice.textContent='Le parcours de lecture en français sera bientôt disponible.';return}
+ if(l==='fr'){notice.hidden=true;window.PhonikaFRUI?.showReading?.();return}
  const available=availableWords(),signature=eligibleSignature(available);
+ const initial=!sessionSignature;
  const changed=signature!==sessionSignature;
  if(changed){queue=[];sessionSignature=signature;done=false}
  const previous=queue.length;
  queue=queue.filter(w=>available.some(x=>x.word===w));
- if(!queue.length&&available.length){queue=chooseSession(available,Math.max(1,Number($('wordSessionSize')?.value)||5));index=0;reads={};step=0;done=false}
+ if(!queue.length&&available.length){const size=Math.max(1,Number($('wordSessionSize')?.value)||5);const prior=selection.previous.filter(w=>available.some(x=>x.word===w));queue=prior.length===Math.min(size,available.length)&&(!changed||initial)&&!forceNewSession?prior:chooseSession(available,size);index=0;reads={};step=0;done=false;forceNewSession=false}
  if(changed||previous!==queue.length)step=Math.min(step,goal());
  if(!queue.length){reading.hidden=true;notice.hidden=false;notice.replaceChildren();const p=document.createElement('p');p.textContent='Not enough sounds learned yet. Learn a few more sounds to unlock new words.';const b=document.createElement('button');b.className='primary';b.textContent='Go to Sounds';b.onclick=()=>{$('parentOpen')?.click();$('knownSounds')?.scrollIntoView({block:'center'})};notice.append(p,b);return}
  if(done){finishEN();return}
@@ -115,7 +116,7 @@ const show=()=>{
 };
 const advance=(delta=1)=>{if(!queue.length)return;if(delta>0&&index===queue.length-1){if(queue.every(w=>(reads[w]||0)>=2)){finishEN();return}index=queue.findIndex(w=>(reads[w]||0)<2);if(index<0)index=0}else index=(index+delta+queue.length)%queue.length;show()};
 document.addEventListener('click',e=>{
- if(lang()==='ru'||$('parentView')?.hidden===false)return;
+ if(lang()!=='en'||$('parentView')?.hidden===false)return;
  const b=e.target.closest('button');if(!b)return;
  if(b.id==='continue'&&lang()==='en'){
   e.preventDefault();e.stopImmediatePropagation();
@@ -144,5 +145,5 @@ document.addEventListener('click',e=>{
 },true);
 window.addEventListener('phonika:ui-language',()=>requestAnimationFrame(show));
 document.addEventListener('DOMContentLoaded',()=>{if(lang()!=='ru')requestAnimationFrame(show);$('parentBack')?.addEventListener('click',()=>requestAnimationFrame(show));$('wordsTab')?.addEventListener('click',()=>requestAnimationFrame(show));$('wordSessionSize')?.addEventListener('change',()=>{queue=[];requestAnimationFrame(show)});});
-window.PhonikaENReading={availableWords,wordAvailable,refresh:show,diagnostic,beginNewSession:()=>{queue=[];reads={};step=0;done=false;show()},currentSession:()=>[...queue]};
+window.PhonikaENReading={availableWords,wordAvailable,refresh:show,diagnostic,beginNewSession:()=>{queue=[];reads={};step=0;done=false;forceNewSession=true;show()},currentSession:()=>[...queue]};
 })();

@@ -19,6 +19,7 @@ async function fingerTap(page,locator){
  expect(top).toBe(await locator.getAttribute('id'));
  await page.touchscreen.tap(p.x+p.width/2,p.y+p.height/2);
 }
+test.use({hasTouch:true});
 test('EN Games touchscreen opens Build Word then What’s Missing without RU views or errors',async({page})=>{
  const errors=await launch(page);
  const build=page.locator('#buildWordGameCard');

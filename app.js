@@ -18,6 +18,7 @@ window.addEventListener('DOMContentLoaded',()=>{
     const box=document.getElementById('knownSounds'),toggle=document.getElementById('toggleAllSounds');if(!box)return;
     const lang=learningLanguage();if(lang==='ru'){parentRender();return;}
     if(toggle)toggle.hidden=false;
+    if(lang==='fr'&&window.PhonikaFR){window.PhonikaFRUI?.renderParent?.();return;}
     const isFr=lang==='fr',sounds=isFr?'abcdefghijklmnopqrstuvwxyz'.split(''):[...new Set(EN_LEVEL_SOUNDS.flat())],progressLang=isFr?'fr':'en',p=languageProgress(progressLang),vowels=isFr?new Set(['a','e','i','o','u','y']):EN_VOWELS;
     box.replaceChildren(...sounds.map(sound=>{const b=document.createElement('button');b.type='button';b.className='known-letter '+(vowels.has(sound)?'vowel-choice':'consonant-choice')+(p[sound]?' selected':'');b.dataset.sound=sound;b.setAttribute('aria-pressed',String(!!p[sound]));b.textContent=isFr?sound.toUpperCase():sound.replace('_','');b.onclick=()=>{p[sound]=!p[sound];saveLanguageProgress(progressLang,p);renderLanguageKnownSounds();};return b;}));
     const all=sounds.length>0&&sounds.every(x=>p[x]);toggle.textContent=all?(isFr?'Tout effacer':'Clear all'):(isFr?'Tout sélectionner':'Select all');toggle.onclick=()=>{sounds.forEach(x=>p[x]=!all);saveLanguageProgress(progressLang,p);renderLanguageKnownSounds();};
@@ -36,6 +37,9 @@ window.addEventListener('DOMContentLoaded',()=>{
     window.dispatchEvent(new CustomEvent('phonika:learning-level',{detail:{language:lang,level:Number(levelSelect.value)}}));
   },true);
   const renderLanguageParent=()=>{syncLanguageLevel();renderLanguageKnownSounds();renderLanguageLetterStyle();};
+  // Preserve the active Games task when returning from Parent Mode.
+  const parentBackButton=document.getElementById('parentBack');
+  if(parentBackButton){const originalParentBack=parentBackButton.onclick;parentBackButton.onclick=function(e){if(section==='games'){document.getElementById('parentView').hidden=true;document.getElementById('childView').hidden=false;document.getElementById('gamesView').hidden=false;return;}return originalParentBack?.call(this,e);};}
   document.getElementById('parentOpen')?.addEventListener('click',()=>requestAnimationFrame(renderLanguageParent));
 
   window.addEventListener('phonika:ui-language',()=>requestAnimationFrame(renderLanguageParent));
@@ -178,6 +182,7 @@ window.addEventListener('DOMContentLoaded',()=>{
     }
   };
   const finishGuard=new MutationObserver(()=>{
+    if((window.PhonikaI18n?.language||localStorage.getItem('uiLanguage')||'ru')!=='ru')return;
     if(!$('finishView').hidden&&!allLessonItemsMastered('words')){$('finishView').hidden=true;$('readingView').hidden=false;restartPendingCycle('words');}
     if(!$('letterFinishView').hidden&&!allLessonItemsMastered('letters')){$('letterFinishView').hidden=true;$('lettersView').hidden=false;restartPendingCycle('letters');}
   });
@@ -188,6 +193,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   $('wordsTab').addEventListener('click',()=>requestAnimationFrame(()=>{celebration.hidden=true;document.getElementById('readingView')?.insertBefore(dinoTrack,document.getElementById('readingView')?.querySelector('.stage'));dinoProgress=0;buildDinoSteps();updateDino();resetLessonGoal('words');refreshCurrentNav();}));
   switchSection(section==='letters'?'letters':'words');
   // Put the shared progress track into the initially active section as well.
+  window.addEventListener('phonika:ru-reading-restored',()=>{if(section==='words'){startSession();resetLessonGoal('words');}setActionLabels();refreshCurrentNav();});
   const initialTrackHost=section==='letters'?document.getElementById('lettersView'):document.getElementById('readingView');
   initialTrackHost?.insertBefore(dinoTrack,initialTrackHost.querySelector('.stage'));
   dinoProgress=0;buildDinoSteps();updateDino();
