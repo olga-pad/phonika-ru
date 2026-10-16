@@ -1,0 +1,27 @@
+name: Production RU EN FR smoke
+on:
+  push:
+    branches: [smoke/fr-v1-production]
+  workflow_dispatch:
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install
+      - run: npx playwright install --with-deps chromium
+      - name: Verify published GitHub Pages across RU EN FR
+        env:
+          PHONIKA_TEST_BASE_URL: https://olga-pad.github.io/phonika-ru/
+        run: npx playwright test tests/app.spec.js tests/en-reading.spec.js tests/fr-mvp.spec.js tests/language-section-regression.spec.js --project=chromium --project=mobile --reporter=line
+      - name: Upload smoke results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-ru-en-fr-smoke
+          path: test-results/
+          if-no-files-found: ignore
