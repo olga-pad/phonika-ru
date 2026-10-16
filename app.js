@@ -37,6 +37,9 @@ window.addEventListener('DOMContentLoaded',()=>{
     window.dispatchEvent(new CustomEvent('phonika:learning-level',{detail:{language:lang,level:Number(levelSelect.value)}}));
   },true);
   const renderLanguageParent=()=>{syncLanguageLevel();renderLanguageKnownSounds();renderLanguageLetterStyle();};
+  // Preserve the active Games task when returning from Parent Mode.
+  const parentBackButton=document.getElementById('parentBack');
+  if(parentBackButton){const originalParentBack=parentBackButton.onclick;parentBackButton.onclick=function(e){if(section==='games'){document.getElementById('parentView').hidden=true;document.getElementById('childView').hidden=false;document.getElementById('gamesView').hidden=false;return;}return originalParentBack?.call(this,e);};}
   document.getElementById('parentOpen')?.addEventListener('click',()=>requestAnimationFrame(renderLanguageParent));
 
   window.addEventListener('phonika:ui-language',()=>requestAnimationFrame(renderLanguageParent));
