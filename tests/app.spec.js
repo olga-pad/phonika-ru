@@ -60,7 +60,8 @@ test('подсказка блокирует отметку «Прочитал с
   await resetApp(page);
   await page.getByRole('button', { name: 'Звуки' }).click();
   await page.locator('#letterHelp').click();
-  await expect(page.locator('#letterKnown')).toBeDisabled();
+  await expect(page.locator('#letterKnown')).toContainText('Продолжить');
+  await expect(page.locator('#letterKnown')).toHaveAttribute('data-continue-next','1');
 });
 
 test('родитель может отметить все звуки как знакомые', async ({ page }) => {
@@ -201,7 +202,8 @@ test('после подсказки нельзя получить фейерве
   await resetApp(page);
   await page.getByRole('button', { name: 'Звуки' }).click();
   await page.locator('#letterHelp').click();
-  await expect(page.locator('#letterKnown')).toBeDisabled();
+  await expect(page.locator('#letterKnown')).toContainText('Продолжить');
+  await expect(page.locator('#letterKnown')).toHaveAttribute('data-continue-next','1');
   await expect(page.locator('.correct-confetti')).toHaveCount(0);
 });
 
