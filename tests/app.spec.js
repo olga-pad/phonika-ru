@@ -209,30 +209,30 @@ test('после подсказки нельзя получить фейерве
 
 test('Games восстанавливается после изменения Words в кабинете родителя', async ({ page }) => {
   await resetApp(page);
-  console.log('GAMES RESUME: opening Parent'); await page.locator('#parentOpen').click();
+  await page.locator('#parentOpen').click();
   await page.locator('.tone-known .collapse-toggle').click();
   await page.locator('#toggleAllSounds').click();
-  console.log('GAMES RESUME: changing session size'); await page.locator('#wordSessionSize').selectOption('7');
-  console.log('GAMES RESUME: returning to child'); await page.locator('#parentBack').click();
+  if(await page.locator('.tone-session .collapse-body').isHidden())await page.locator('.tone-session .collapse-toggle').click(); await page.locator('#wordSessionSize').selectOption('7');
+  await page.locator('#parentBack').click();
 
   await page.locator('#gamesTab').click();
-  console.log('GAMES RESUME: opening Find'); await page.locator('#findGameCard').click();
+  await page.locator('#findGameCard').click();
   await page.locator('#findWordsMode').click();
   await expect(page.locator('#findGame')).toBeVisible();
   await expect(page.locator('#findDinoSteps .dino-step')).toHaveCount(14);
 
-  console.log('GAMES RESUME: opening Parent'); await page.locator('#parentOpen').click();
-  console.log('GAMES RESUME: changing session size'); await page.locator('#wordSessionSize').selectOption('3');
-  console.log('GAMES RESUME: returning to child'); await page.locator('#parentBack').click();
+  await page.locator('#parentOpen').click();
+  if(await page.locator('.tone-session .collapse-body').isHidden())await page.locator('.tone-session .collapse-toggle').click(); await page.locator('#wordSessionSize').selectOption('3');
+  await page.locator('#parentBack').click();
   await expect(page.locator('#findGame')).toBeVisible();
   await expect(page.locator('#readingView')).toBeHidden();
   await expect(page.locator('#lettersView')).toBeHidden();
   await expect(page.locator('#findDinoSteps .dino-step')).toHaveCount(6);
   await expect(page.locator('#findDinoSteps .dino-step.done')).toHaveCount(0);
 
-  console.log('GAMES RESUME: opening Parent'); await page.locator('#parentOpen').click();
-  console.log('GAMES RESUME: changing session size'); await page.locator('#wordSessionSize').selectOption('5');
-  console.log('GAMES RESUME: returning to child'); await page.locator('#parentBack').click();
+  await page.locator('#parentOpen').click();
+  if(await page.locator('.tone-session .collapse-body').isHidden())await page.locator('.tone-session .collapse-toggle').click(); await page.locator('#wordSessionSize').selectOption('5');
+  await page.locator('#parentBack').click();
   await expect(page.locator('#findGame')).toBeVisible();
   await expect(page.locator('#readingView')).toBeHidden();
   await expect(page.locator('#findDinoSteps .dino-step')).toHaveCount(10);
